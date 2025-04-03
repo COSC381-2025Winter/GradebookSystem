@@ -1,7 +1,7 @@
 from gradebook import Gradebook
 from instructor import Instructor
 from data import ROSTERS, COURSES
-from colorama import Fore, Back, Style
+from color_ui import print_success, print_error, print_information, print_warning
 
 def main():
     gradebook = Gradebook()
@@ -15,7 +15,7 @@ def main():
         instructor = Instructor(instructor_id)
 
         if not instructor.is_authenticated():
-            print(Fore.RED + "Invalid Instructor ID. Try again. (q for quit)" + Style.RESET_ALL)
+            print_error("Invalid Instructor ID. Try again. (q for quit)")
             continue
 
         instructor.display_courses()
@@ -26,7 +26,7 @@ def main():
                 exit()
 
             if not instructor.has_access(course_id):
-                print("Invalid Course ID or Access Denied.")
+                print_error("Invalid Course ID or Access Denied.")
                 continue
             break;
         
@@ -41,13 +41,13 @@ def main():
             choice = input("Enter choice: ")
 
             if choice == "4":
-                print("Logging out...")
+                print_warning("Logging out...")
                 break
 
             if choice == "1":  # Add Grade
-                print("Students in this course:")
+                print_information("Students in this course:")
                 for sid in ROSTERS[course_id]:
-                    print(f"- {sid})")
+                    print_information(f"- {sid})")
 
                 student_id = int(input("Enter Student ID: "))
                 grade = input("Enter Grade: ")
@@ -55,7 +55,7 @@ def main():
                 if student_id in ROSTERS[course_id]:
                     gradebook.add_grade(instructor, course_id, student_id, grade)
                 else:
-                    print("Invalid Student ID.")
+                    print_error("Invalid Student ID.")
 
             elif choice == "2":  # Edit Grade
                 student_id = int(input("Enter Student ID: "))
@@ -66,7 +66,7 @@ def main():
                 gradebook.view_grades(instructor, course_id)
 
             else:
-                print("Invalid choice. Please try again.")
+                print_error("Invalid choice. Please try again.")
 
 
 if __name__ == "__main__":

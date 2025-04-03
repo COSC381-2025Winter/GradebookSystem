@@ -1,4 +1,5 @@
 from data import INSTRUCTORS, COURSES
+from color_ui import print_information
 
 class Instructor:
     def __init__(self, instructor_id):
@@ -25,6 +26,6 @@ class Instructor:
 
     def display_courses(self):
         """Displays courses taught by the instructor."""
-        print(f"\nWelcome {self.name}! Your courses:")
+        print_information(f"\nWelcome {self.name}! Your courses:")
         for cid, cname in self.courses.items():
-            print(f"- {cname} ({cid})")
+            print_information(f"- {cname} ({cid})")

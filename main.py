@@ -2,13 +2,16 @@ from gradebook import Gradebook
 from instructor import Instructor
 from data import ROSTERS, COURSES
 from color_ui import print_success, print_error, print_information, print_warning
+from util import clear_screen
 
 def main():
     gradebook = Gradebook()
     while True:
+        clear_screen()
         print("\n--- Gradebook System ---")
         user_input = input("Enter your Instructor ID (q for quit): ")
         if user_input == 'q':
+            clear_screen()
             exit()
 
         instructor_id = int(user_input)
@@ -18,9 +21,10 @@ def main():
             print_error("Invalid Instructor ID. Try again. (q for quit)")
             continue
 
-        instructor.display_courses()
-
+        
         while True:
+            clear_screen()
+            instructor.display_courses()
             course_id = input("Enter Course ID (q for quit): ")
             if course_id == 'q':
                 exit()
@@ -32,6 +36,7 @@ def main():
         
 
         while True:
+            clear_screen()
             print(f"\nSelected Course: {course_id}: {COURSES[course_id]["name"]}")
             print("\n1. Add Grade")
             print("2. Edit Grade")
@@ -42,9 +47,12 @@ def main():
 
             if choice == "4":
                 print_warning("Logging out...")
+                input("Press enter to continue.")
                 break
 
             if choice == "1":  # Add Grade
+                clear_screen()
+                print("========Add Grade========\nStudents in this course:")
                 print_information("Students in this course:")
                 for sid in ROSTERS[course_id]:
                     print_information(f"- {sid})")
@@ -56,17 +64,23 @@ def main():
                     gradebook.add_grade(instructor, course_id, student_id, grade)
                 else:
                     print_error("Invalid Student ID.")
+                    input("Press enter to continue.")
 
             elif choice == "2":  # Edit Grade
+                clear_screen()
+                print("========Edit Grade========")
                 student_id = int(input("Enter Student ID: "))
                 new_grade = input("Enter New Grade: ")
                 gradebook.edit_grade(instructor, course_id, student_id, new_grade)
 
             elif choice == "3":  # View Grades
+                clear_screen()
+                print("========View Grades========")
                 gradebook.view_grades(instructor, course_id)
 
             else:
-                print_error("Invalid choice. Please try again.")
+                print_error("Invalid choice.")
+                input("Press enter to try again.")
 
 
 if __name__ == "__main__":

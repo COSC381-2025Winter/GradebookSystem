@@ -1,6 +1,7 @@
 from gradebook import Gradebook
 from instructor import Instructor
 from data import ROSTERS, COURSES
+from colorama import Fore, Back, Style
 
 def main():
     gradebook = Gradebook()
@@ -14,7 +15,7 @@ def main():
         instructor = Instructor(instructor_id)
 
         if not instructor.is_authenticated():
-            print("Invalid Instructor ID. Try again. (q for quit)")
+            print(Fore.RED + "Invalid Instructor ID. Try again. (q for quit)" + Style.RESET_ALL)
             continue
 
         instructor.display_courses()

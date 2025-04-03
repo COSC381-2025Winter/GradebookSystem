@@ -1,6 +1,7 @@
 from gradebook import Gradebook
 from instructor import Instructor
 from data import ROSTERS, COURSES
+from color_ui import print_success, print_error, print_information, print_warning
 from util import clear_screen
 
 def main():
@@ -17,7 +18,7 @@ def main():
         instructor = Instructor(instructor_id)
 
         if not instructor.is_authenticated():
-            print("Invalid Instructor ID. Try again. (q for quit)")
+            print_error("Invalid Instructor ID. Try again. (q for quit)")
             continue
 
         
@@ -29,7 +30,7 @@ def main():
                 exit()
 
             if not instructor.has_access(course_id):
-                print("Invalid Course ID or Access Denied.")
+                print_error("Invalid Course ID or Access Denied.")
                 continue
             break;
         
@@ -45,14 +46,16 @@ def main():
             choice = input("Enter choice: ")
 
             if choice == "4":
-                input("Logging out... Press enter to continue.")
+                print_warning("Logging out...")
+                input("Press enter to continue.")
                 break
 
             if choice == "1":  # Add Grade
                 clear_screen()
                 print("========Add Grade========\nStudents in this course:")
+                print_information("Students in this course:")
                 for sid in ROSTERS[course_id]:
-                    print(f"- {sid})")
+                    print_information(f"- {sid})")
 
                 student_id = int(input("Enter Student ID: "))
                 grade = input("Enter Grade: ")
@@ -60,7 +63,8 @@ def main():
                 if student_id in ROSTERS[course_id]:
                     gradebook.add_grade(instructor, course_id, student_id, grade)
                 else:
-                    input("Invalid Student ID. Press enter to continue.")
+                    print_error("Invalid Student ID.")
+                    input("Press enter to continue.")
 
             elif choice == "2":  # Edit Grade
                 clear_screen()
@@ -75,7 +79,8 @@ def main():
                 gradebook.view_grades(instructor, course_id)
 
             else:
-                input("Invalid choice. Press enter to try again.")
+                print_error("Invalid choice.")
+                input("Press enter to try again.")
 
 
 if __name__ == "__main__":

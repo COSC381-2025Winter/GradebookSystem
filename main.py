@@ -70,8 +70,19 @@ def main():
                         continue
 
 
+                try:
+                    grade_value = float(grade)
+                    if grade_value < 0:
+                        print_error("Grade cannot be negative.")
+                        input("Press enter to continue.")
+                        continue  # Go back to menu
+                except ValueError:
+                    print_error("Invalid grade format. Please enter a number.")
+                    input("Press enter to continue.")
+                    continue  # Go back to menu
+
                 if student_id in ROSTERS[course_id]:
-                    gradebook.add_grade(instructor, course_id, student_id, grade)
+                    gradebook.add_grade(instructor, course_id, student_id, grade_value)
                 else:
                     print_error("Invalid Student ID.")
                     input("Press enter to continue.")

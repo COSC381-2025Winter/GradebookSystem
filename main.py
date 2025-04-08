@@ -42,11 +42,11 @@ def main():
             print("2. Edit Grade")
             print("3. View Grades")
             print("4. Sort Grades")
-            print("5. Logout")
+            print("x. Logout")
 
             choice = input("Enter choice: ")
 
-            if choice == "5":
+            if choice == "x":
                 print_warning("Logging out...")
                 input("Press enter to continue.")
                 break

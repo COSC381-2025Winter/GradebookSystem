@@ -58,9 +58,9 @@ def main():
                     print_information(f"- {sid})")
 
                 student_id = int(input("Enter Student ID: "))
-                grade = input("Enter Grade: ")
 
                 if student_id in ROSTERS[course_id]:
+                    grade = input("Enter Grade: ")
                     gradebook.add_grade(instructor, course_id, student_id, grade)
                 else:
                     print_error("Invalid Student ID.")

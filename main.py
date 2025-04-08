@@ -57,7 +57,13 @@ def main():
                 for sid in ROSTERS[course_id]:
                     print_information(f"- {sid})")
 
-                student_id = int(input("Enter Student ID: "))
+                while True:
+                    try: # use loop to keep asking for valid ID instead of just trying to convert it into an int and crashing if its a non int
+                        student_id = int(input("Enter Student ID: "))
+                        break
+                    except ValueError:
+                        print_error("Invalid input. Please enter a valid integer Student ID.") # there is still the issue of giving an invalid int ID but that is not the issue I was assigned
+
                 grade = input("Enter Grade: ")
 
                 if student_id in ROSTERS[course_id]:
@@ -66,12 +72,20 @@ def main():
                     print_error("Invalid Student ID.")
                     input("Press enter to continue.")
 
+
             elif choice == "2":  # Edit Grade
                 clear_screen()
                 print("========Edit Grade========")
-                student_id = int(input("Enter Student ID: "))
+                while True: # use loop to keep asking for valid ID instead of just trying to convert it into an int and crashing if its a non int
+                    try:
+                        student_id = int(input("Enter Student ID: "))
+                        break
+                    except ValueError:
+                        print_error("Invalid input. Please enter a valid integer Student ID.") # there is still the issue of giving an invalid int ID but that is not the issue I was assigned
+
                 new_grade = input("Enter New Grade: ")
                 gradebook.edit_grade(instructor, course_id, student_id, new_grade)
+
 
             elif choice == "3":  # View Grades
                 clear_screen()

@@ -84,3 +84,17 @@ def test_select_valid_course(monkeypatch, capsys, test_instructor):
     
     # Cleanup
 
+#test an invalid student ID
+def test_invalid_studentID(monkeypatch, capsys, test_instructor):
+    # Act & Arrange
+    responses = iter([test_instructor["id"], test_instructor["courses"][0], '1', '1', '4', '', 'q'])
+    monkeypatch.setattr('builtins.input', lambda _: next(responses))
+
+    with pytest.raises(SystemExit) as exitInfo:
+        main()
+
+    # Assert
+    captured = capsys.readouterr()
+    assert "Invalid Student ID." in captured.out
+    
+    # Cleanup

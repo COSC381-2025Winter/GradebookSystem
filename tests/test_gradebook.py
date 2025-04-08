@@ -1,24 +1,75 @@
-def test_add_negative_grade(capsys):
-    # Import necessary classes
-    from gradebook import Gradebook
-    from instructor import Instructor
-    from data import ROSTERS
+import pytest
+from main import main
 
-    # Use the first course and student from the data file
-    course_id = list(ROSTERS.keys())[0]
-    student_id = ROSTERS[course_id][0]
+def test_negative_grade_input(monkeypatch, capsys):
+    inputs = iter([
+        '1',        # Instructor ID
+        'CS101',    # Course ID
+        '1',        # Add Grade
+        '201',      # Student ID
+        '-50',      # Negative grade
+        '',         # Press enter to continue
+        '4',        # Logout
+        '',         # Press enter to continue after logout
+        'q'         # One extra input so main() can safely loop once more
+    ])
 
-    # Create objects needed for testing
-    gradebook = Gradebook()
-    instructor = Instructor(1)
+    monkeypatch.setattr('builtins.input', lambda _: next(inputs))
+    monkeypatch.setattr('main.clear_screen', lambda: None)
 
-    # Skip the test if the instructor doesn't have access (safety check)
-    if not instructor.has_access(course_id):
-        return
+    class FakeInstructor:
+        def __init__(self, instructor_id):
+            self.instructor_id = instructor_id
+            self.name = "Test Instructor"
+            self.courses = {"CS101": "Intro to CS"}
+        def is_authenticated(self): return True
+        def has_access(self, course_id): return course_id in self.courses
+        def display_courses(self):
+            print(f"Courses for {self.name}:")
+            for cid, cname in self.courses.items():
+                print(f"{cid}: {cname}")
 
-    # Try to add a negative grade (UI logic should prevent this)
-    gradebook.add_grade(instructor, course_id, student_id, -50)
+    monkeypatch.setattr('main.Instructor', FakeInstructor)
 
-    # Capture output and check for an error message
+    with pytest.raises(SystemExit):
+        main()
+
     captured = capsys.readouterr()
     assert "Grade cannot be negative" in captured.out
+
+
+def test_non_numeric_grade_input(monkeypatch, capsys):
+    inputs = iter([
+        '1',        # Instructor ID
+        'CS101',    # Course ID
+        '1',        # Add Grade
+        '201',      # Student ID
+        'abc',      # Invalid grade
+        '',         # Press enter to continue
+        '4',        # Logout
+        '',         # Press enter to continue after logout
+        'q'         # One extra input
+    ])
+
+    monkeypatch.setattr('builtins.input', lambda _: next(inputs))
+    monkeypatch.setattr('main.clear_screen', lambda: None)
+
+    class FakeInstructor:
+        def __init__(self, instructor_id):
+            self.instructor_id = instructor_id
+            self.name = "Test Instructor"
+            self.courses = {"CS101": "Intro to CS"}
+        def is_authenticated(self): return True
+        def has_access(self, course_id): return course_id in self.courses
+        def display_courses(self):
+            print(f"Courses for {self.name}:")
+            for cid, cname in self.courses.items():
+                print(f"{cid}: {cname}")
+
+    monkeypatch.setattr('main.Instructor', FakeInstructor)
+
+    with pytest.raises(SystemExit):
+        main()
+
+    captured = capsys.readouterr()
+    assert "Invalid grade format" in captured.out

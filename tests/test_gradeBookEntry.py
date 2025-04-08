@@ -15,11 +15,11 @@ def test_instructor():
 
 
 def test_empty_grade(monkeypatch, capsys, test_instructor):
-    # Arrange & Act
+    # Arrange
     responses = iter([(test_instructor["id"]), "CS101", "1", "201", "K", "b", "", "4", "", "q"])
-
     monkeypatch.setattr('builtins.input', lambda _: next(responses))
 
+    # Act
     with pytest.raises(SystemExit) as exitInfo:
         main()
 
@@ -27,3 +27,17 @@ def test_empty_grade(monkeypatch, capsys, test_instructor):
     captured = capsys.readouterr()
     assert "\tInvalid grade entered" in captured.out
 
+
+
+def test_valid_grade(monkeypatch, capsys, test_instructor):
+    # Arrange
+    responses = iter([(test_instructor["id"]), "CS101", "1", "201", "c", "", "4", "", "q"])
+    monkeypatch.setattr('builtins.input', lambda _: next(responses))
+
+    # Act
+    with pytest.raises(SystemExit) as exitInfo:
+        main()
+
+    #Assert
+    captured = capsys.readouterr()
+    assert "Grade added" in captured.out

@@ -16,7 +16,7 @@ def test_instructor():
 
 def test_check_empty_string(monkeypatch,capsys):
     #arrange
-    responses = iter(['101','CS101','1','', '201','A','','4','','q'])
+    responses = iter(['101','CS101','1','', '201','A','','5','','q'])
     monkeypatch.setattr('builtins.input', lambda _: next(responses))
 
     with pytest.raises(SystemExit) as exitInfo:

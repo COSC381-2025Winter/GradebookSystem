@@ -62,7 +62,7 @@ def test_negative_grade_input(monkeypatch, capsys):
         '201',      # Student ID
         '-50',      # ❌ Invalid negative grade
         '',         # Press enter after error message
-        '4',        # Menu option: Logout
+        '5',        # Menu option: Logout
         '',         # Press enter after logout
         'q'         # Quit loop to exit main()
     ])
@@ -108,7 +108,7 @@ def test_non_numeric_grade_input(monkeypatch, capsys):
         '201',      # Student ID
         'abc',      # ❌ Invalid non-numeric input
         '',         # Press enter after error
-        '4',        # Logout
+        '5',        # Logout
         '',         # Press enter after logout
         'q'         # Quit loop to end test
     ])

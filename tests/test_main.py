@@ -1,3 +1,4 @@
+import datetime
 from main import main
 import pytest
 
@@ -46,6 +47,19 @@ def test_login_with_valid_id(monkeypatch, capsys, test_instructor):
 
     # Assert
     captured = capsys.readouterr()
+
+    # Determine expected semester and year
+    current_month = datetime.datetime.now().month
+    current_year = datetime.datetime.now().year
+    if current_month in [12, 1, 2, 3, 4]:
+        expected_semester = "Winter"
+    elif current_month in [5, 6, 7, 8]:
+        expected_semester = "Summer"
+    else:  # Months 9, 10, 11
+        expected_semester = "Fall"
+    expected_semester_year_string = f"{expected_semester} {current_year}"
+
+    assert expected_semester_year_string.lower() in captured.out.lower() # Check for "Semester Year"
     assert test_instructor["name"].lower() in captured.out.lower()
     assert test_instructor["courses"][0].lower() in captured.out.lower()
     assert test_instructor["courses"][1].lower() in captured.out.lower()
@@ -83,4 +97,3 @@ def test_select_valid_course(monkeypatch, capsys, test_instructor):
     assert f"{test_instructor["courses"][0]}".lower() in captured.out.lower()
     
     # Cleanup
-

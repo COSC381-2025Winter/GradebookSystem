@@ -58,7 +58,17 @@ def main():
                     print_information(f"- {sid})")
 
                 student_id = int(input("Enter Student ID: "))
-                grade = input("Enter Grade: ")
+
+                isGradeEmpty = True
+                while (isGradeEmpty):
+                    grade = input("Enter Grade: ").upper()
+
+                    if (grade.upper() == "A" or grade.upper() == "B" or grade.upper() == "C" or grade.upper() == "D"):
+                        isGradeEmpty = False
+                    else: 
+                        print("\tInvalid grade entered, try again.")
+                        continue
+
 
                 if student_id in ROSTERS[course_id]:
                     gradebook.add_grade(instructor, course_id, student_id, grade)

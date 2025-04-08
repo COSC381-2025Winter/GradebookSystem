@@ -67,7 +67,17 @@ def main():
                 #cast the string back into an int
                 student_id = int (student_id)
 
-                grade = input("Enter Grade: ")
+
+                isGradeEmpty = True
+                while (isGradeEmpty):
+                    grade = input("Enter Grade: ") 
+
+                    if (not grade or grade == "" or grade.startswith(" ")):
+                        print("\tGrade cannot be empty")
+                        continue
+                        
+                    else: 
+                        isGradeEmpty = False
 
                 try:
                     grade_value = float(grade)

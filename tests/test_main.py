@@ -14,6 +14,21 @@ def test_instructor():
         "invalid_course": "CSabc"
     }
 
+# Test quitting at Instructor ID input using 'q' or 'Q'
+@pytest.mark.parametrize("quit_input", ['q', 'Q'])
+def test_quit_on_instructor_input(monkeypatch, quit_input):
+    monkeypatch.setattr('builtins.input', lambda _: quit_input)
+    with pytest.raises(SystemExit):
+        main()
+
+# Test quitting at Course ID input using 'q' or 'Q'
+@pytest.mark.parametrize("quit_input", ['q', 'Q'])
+def test_quit_on_course_id_input(monkeypatch, quit_input):
+    inputs = iter(['101', quit_input])  # Valid instructor ID, then quit
+    monkeypatch.setattr('builtins.input', lambda _: next(inputs))
+    with pytest.raises(SystemExit):
+        main()
+
 
 # the main function should ask for the user to log in at first
 # test if the user enters an invalid digital id

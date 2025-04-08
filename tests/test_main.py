@@ -80,7 +80,26 @@ def test_select_valid_course(monkeypatch, capsys, test_instructor):
     # Assert
     captured = capsys.readouterr()
     assert "selected course" in captured.out.lower()
-    assert f"{test_instructor["courses"][0]}".lower() in captured.out.lower()
+    assert f"{test_instructor['courses'][0]}".lower() in captured.out.lower()
     
     # Cleanup
+
+def test_add_course_invalid_instructor(monkeypatch, capsys):
+    #Act & Arrange
+    responses = iter([
+        '1',     # Choose Add Course
+        '3',     # Course ID
+        'awe',   # Course Name
+        '45',    # Invalid Instructor ID
+        'asd',   # Instructor Name
+        'q'      # Quit
+    ])
+    monkeypatch.setattr('builtins.input', lambda _: next(responses))
+
+    with pytest.raises(SystemExit):
+        main()
+
+    captured = capsys.readouterr()
+    assert "Error: Instructor not found" in captured.out
+    assert "Traceback" not in captured.out  # Make sure it doesn't crash
 

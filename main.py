@@ -68,8 +68,6 @@ def main():
                     else: 
                         print("\tInvalid grade entered, try again.")
                         continue
-
-
                 try:
                     grade_value = float(grade)
                     if grade_value < 0:

@@ -71,7 +71,7 @@ def main():
                 while (isGradeEmpty):
                     grade = input("Enter Grade: ") 
 
-                    if (grade == " " or grade == ""):
+                    if (not grade or grade == "" or grade.startswith(" ")):
                         print("\tGrade cannot be empty")
                         continue
                         

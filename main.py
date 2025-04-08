@@ -61,13 +61,15 @@ def main():
 
                 isGradeEmpty = True
                 while (isGradeEmpty):
-                    grade = input("Enter Grade: ").upper()
+                    grade = input("Enter Grade: ") 
 
-                    if (grade.upper() == "A" or grade.upper() == "B" or grade.upper() == "C" or grade.upper() == "D"):
-                        isGradeEmpty = False
-                    else: 
-                        print("\tInvalid grade entered, try again.")
+                    if (grade == " " or grade == ""):
+                        print("\tGrade cannot be empty")
                         continue
+                        
+                    else: 
+                        isGradeEmpty = False
+
                 try:
                     grade_value = float(grade)
                     if grade_value < 0:

@@ -72,7 +72,7 @@ class Gradebook:
             print("Grades are empty. Please add a grade")
             return
 
-        if arrangement_type is not 'a' or arrangement_type is not 'd':
+        if arrangement_type != 'a' or arrangement_type != 'd':
             print("Please type either (a/d)")
             return
 

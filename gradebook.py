@@ -65,3 +65,22 @@ class Gradebook:
             print_warning("No grades have been entered for this course yet.")
         
         input("Press enter to continue.")
+
+    #Altered view_grades function to also return a value of true or false dependent on whether or not any grades have been assigned.
+    def grades_to_edit(self, instructor, course_id):
+        """Displays all grades for a course if the instructor is authorized"""
+        if not instructor.has_access(course_id):
+            print_error("Access Denied: You are not authorized to view this course.")
+            input("Press enter to continue.")
+            return
+
+        if course_id in self.grades:
+            print_information(f"\nGrades for {COURSES[course_id]['name']} ({course_id}):")
+            for student_id, data in self.grades[course_id].items():
+                student_name = STUDENTS[student_id]
+                print_information(f"{student_name} ({student_id}): {data['grade']}")
+            return True
+        else:
+            print_warning("No grades have been entered for this course yet. Use 'add' instead")
+            input("Press enter to continue.")
+            return False

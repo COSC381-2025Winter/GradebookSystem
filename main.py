@@ -1,6 +1,6 @@
 from gradebook import Gradebook
 from instructor import Instructor
-from data import ROSTERS, COURSES
+from data import ROSTERS, COURSES, STUDENTS
 from color_ui import print_success, print_error, print_information, print_warning
 from util import clear_screen
 
@@ -56,13 +56,42 @@ def main():
                 print("========Add Grade========\nStudents in this course:")
                 print_information("Students in this course:")
                 for sid in ROSTERS[course_id]:
-                    print_information(f"- {sid})")
+                    print_information(f"- {sid}: {STUDENTS[sid]}")
 
-                student_id = int(input("Enter Student ID: "))
-                grade = input("Enter Grade: ")
+                #remove the cast to an int, to check if its an empty string
+                student_id = input("Enter Student ID: ")
+                while(student_id == ""):
+                    print("You must enter a student id! ")
+                    student_id = input("Enter Student ID: ")
+
+                #cast the string back into an int
+                student_id = int (student_id)
+
+
+                isGradeEmpty = True
+                while (isGradeEmpty):
+                    grade = input("Enter Grade: ") 
+
+                    if (not grade or grade == "" or grade.startswith(" ")):
+                        print("\tGrade cannot be empty")
+                        continue
+                        
+                    else: 
+                        isGradeEmpty = False
+
+                try:
+                    grade_value = float(grade)
+                    if grade_value < 0:
+                        print_error("Grade cannot be negative.")
+                        input("Press enter to continue.")
+                        continue  # Go back to menu
+                except ValueError:
+                    print_error("Invalid grade format. Please enter a number.")
+                    input("Press enter to continue.")
+                    continue  # Go back to menu
 
                 if student_id in ROSTERS[course_id]:
-                    gradebook.add_grade(instructor, course_id, student_id, grade)
+                    gradebook.add_grade(instructor, course_id, student_id, grade_value)
                 else:
                     print_error("Invalid Student ID.")
                     input("Press enter to continue.")

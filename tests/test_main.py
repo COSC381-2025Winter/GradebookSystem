@@ -14,6 +14,20 @@ def test_instructor():
         "invalid_course": "CSabc"
     }
 
+def test_check_empty_string(monkeypatch,capsys):
+    #arrange
+    responses = iter(['101','CS101','1','', '201','A','','4','','q'])
+    monkeypatch.setattr('builtins.input', lambda _: next(responses))
+
+    with pytest.raises(SystemExit) as exitInfo:
+        main()
+
+    #act
+    captured = capsys.readouterr()
+
+    #assert
+    assert "You must enter a student id! " in captured.out
+
 
 # the main function should ask for the user to log in at first
 # test if the user enters an invalid digital id
@@ -22,7 +36,7 @@ def test_login_with_invalid_id(monkeypatch, capsys):
     responses = iter(['10', 'q'])
     monkeypatch.setattr('builtins.input', lambda _: next(responses))
     
-    
+
     # Act
     with pytest.raises(SystemExit) as exitInfo:
         main()

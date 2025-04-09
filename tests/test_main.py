@@ -16,7 +16,7 @@ def test_instructor():
 
 def test_check_empty_string(monkeypatch,capsys):
     #arrange
-    responses = iter(['101','CS101','1','', '201','90','','4','','q'])
+    responses = iter(['101','CS101','1', '', '201','90','4', '', 'q'])
     monkeypatch.setattr('builtins.input', lambda _: next(responses))
 
     with pytest.raises(SystemExit) as exitInfo:
@@ -26,7 +26,7 @@ def test_check_empty_string(monkeypatch,capsys):
     captured = capsys.readouterr()
 
     #assert
-    assert "You must enter a student id! " in captured.out
+    assert "You must enter a student id!" in captured.out
 
 
 # the main function should ask for the user to log in at first
@@ -101,7 +101,7 @@ def test_select_valid_course(monkeypatch, capsys, test_instructor):
 #test an invalid student ID
 def test_invalid_studentID(monkeypatch, capsys, test_instructor):
     # Act & Arrange
-    responses = iter([test_instructor["id"], test_instructor["courses"][0], '1', '1', '4', '', 'q'])
+    responses = iter([test_instructor["id"], test_instructor["courses"][0], '1', '1', '', '4', '', 'q'])
     monkeypatch.setattr('builtins.input', lambda _: next(responses))
 
     with pytest.raises(SystemExit) as exitInfo:

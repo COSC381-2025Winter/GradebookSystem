@@ -55,8 +55,7 @@ def main():
                 print("========Add Grade========\nStudents in this course:")
                 print_information("Students in this course:")
                 for sid in ROSTERS[course_id]:
-
-                    print_information(f"- {sid})")
+                    print_information(f"- {sid}) {STUDENTS[sid]}")
 
                 
                 #remove the cast to an int, to check if its an empty string

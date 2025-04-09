@@ -37,15 +37,19 @@ def test_decending_list(test_grades):
         "202": {"grade": "A", "timestamp": ""}
         }
     
-def test_bad_input(test_grades, capsys):
+def test_bad_input(test_grades, capsys, monkeypatch):
+    monkeypatch.setattr('builtins.input', lambda _: '')
+
     test_grades.sort_courses('q')
 
     captured = capsys.readouterr()
 
     assert "Please type either (a/d)" in captured.out
 
-def test_empty_input(empty_grades, capsys):
-    empty_grades.sort_courses('q')
+def test_empty_input(empty_grades, capsys, monkeypatch):
+    monkeypatch.setattr('builtins.input', lambda _: '')
+
+    empty_grades.sort_courses('a')
 
     captured = capsys.readouterr()
 

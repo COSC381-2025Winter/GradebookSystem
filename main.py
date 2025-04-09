@@ -26,9 +26,10 @@ def main():
             clear_screen()
             instructor.display_courses()
             course_id = input("Enter Course ID (q for quit): ")
+           
             if course_id == 'q':
                 exit()
-
+            course_id = course_id.upper()
             if not instructor.has_access(course_id):
                 print_error("Invalid Course ID or Access Denied.")
                 continue

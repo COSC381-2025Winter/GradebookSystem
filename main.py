@@ -116,7 +116,6 @@ def main():
                         gradebook.sort_courses(inp)
                     else:
                         print("Please type either (a/d)")
-                
                 except: 
                     print("Please type either (a/d)")
 

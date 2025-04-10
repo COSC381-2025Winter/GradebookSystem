@@ -10,7 +10,7 @@ def main():
         clear_screen()
         print("\n--- Gradebook System ---")
         user_input = input("Enter your Instructor ID (q for quit): ")
-        if user_input == 'q':
+        if user_input == 'q' or user_input == 'Q':
             clear_screen()
             exit()
         elif not str(user_input).isnumeric():
@@ -34,8 +34,8 @@ def main():
             clear_screen()
             instructor.display_courses()
             course_id = input("Enter Course ID (q for quit): ")
-           
-            if course_id == 'q':
+            if course_id.lower() == 'q':
+                clear_screen()
                 exit()
             course_id = course_id.upper()
             if not instructor.has_access(course_id):

@@ -13,6 +13,9 @@ def main():
         if user_input == 'q':
             clear_screen()
             exit()
+        elif not str(user_input).isnumeric():
+            print_error("Invalid Instructor ID. Try again. (q for quit)")
+            continue
 
         try:
             instructor_id = int(user_input)

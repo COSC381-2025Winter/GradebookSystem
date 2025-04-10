@@ -14,6 +14,23 @@ def test_instructor():
         "invalid_course": "CSabc"
     }
 
+
+# Test quitting at Instructor ID input using 'q' or 'Q'
+@pytest.mark.parametrize("quit_input", ['q', 'Q'])
+def test_quit_on_instructor_input(monkeypatch, quit_input):
+    monkeypatch.setattr('builtins.input', lambda _: quit_input)
+    with pytest.raises(SystemExit):
+        main()
+
+# Test quitting at Course ID input using 'q' or 'Q'
+@pytest.mark.parametrize("quit_input", ['q', 'Q'])
+def test_quit_on_course_id_input(monkeypatch, quit_input):
+    inputs = iter(['101', quit_input])  # Valid instructor ID, then quit
+    monkeypatch.setattr('builtins.input', lambda _: next(inputs))
+    with pytest.raises(SystemExit):
+        main()
+
+
 def test_check_empty_string(monkeypatch,capsys):
     #arrange
     responses = iter(['101','CS101','1','', '201','A','','x','','q'])
@@ -94,7 +111,7 @@ def test_select_valid_course(monkeypatch, capsys, test_instructor):
     # Assert
     captured = capsys.readouterr()
     assert "selected course" in captured.out.lower()
-    assert f"{test_instructor["courses"][0]}".lower() in captured.out.lower()
+    assert f"{test_instructor['courses'][0]}".lower() in captured.out.lower()
     
     # Cleanup
 
@@ -107,3 +124,4 @@ def test_sort_courses(mocker, test_instructor):
         main() 
     
     mock_sort_courses.assert_called_once_with('a')
+

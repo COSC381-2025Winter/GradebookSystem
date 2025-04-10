@@ -10,12 +10,20 @@ def main():
         clear_screen()
         print("\n--- Gradebook System ---")
         user_input = input("Enter your Instructor ID (q for quit): ")
-        if user_input == 'q':
+        if user_input == 'q' or user_input == 'Q':
             clear_screen()
             print_warning("--- Gradebook System ---\nEnding program...")
             exit()
+        elif not str(user_input).isnumeric():
+            print_error("Invalid Instructor ID. Try again. (q for quit)")
+            continue
 
-        instructor_id = int(user_input)
+        try:
+            instructor_id = int(user_input)
+        except ValueError:
+            print_error("Error: Instructor not found")
+            continue
+
         instructor = Instructor(instructor_id)
 
         if not instructor.is_authenticated():
@@ -28,7 +36,8 @@ def main():
             instructor.display_courses()
             course_id = input("Enter Course ID (q for quit): ")
            
-            if course_id == 'q':
+            if course_id.lower() == 'q':
+                clear_screen()
                 print_warning("--- Gradebook System ---\nEnding program...")
                 exit()
             course_id = course_id.upper()

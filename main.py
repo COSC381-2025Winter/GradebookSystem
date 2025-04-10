@@ -117,8 +117,10 @@ def main():
                         gradebook.sort_courses(inp)
                     else:
                         print("Please type either (a/d)")
+                        input("Press enter to continue.")
                 except: 
                     print("Please type either (a/d)")
+                    input("Press enter to continue.")
 
             else:
                 print_error("Invalid choice.")

@@ -29,3 +29,17 @@ class Instructor:
         print_information(f"\nWelcome {self.name}! Your courses:")
         for cid, cname in self.courses.items():
             print_information(f"- {cname} ({cid})")
+            
+     
+    def get_course_code_by_name(self,course_name):
+    # Iterate through the dictionary to find the course with the given name
+        sucess=False
+        for course_code, course_info in COURSES.items():
+            if course_name.lower() in course_info["name"].lower():  # ignores cases when searching
+             sucess =True
+             break
+        if sucess:
+            return course_code # returns the course code
+
+       
+            

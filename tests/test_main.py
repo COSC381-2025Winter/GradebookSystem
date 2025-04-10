@@ -113,7 +113,6 @@ def test_select_valid_course(monkeypatch, capsys, test_instructor):
     assert "selected course" in captured.out.lower()
     assert f"{test_instructor['courses'][0]}".lower() in captured.out.lower()
     
-    # Cleanup
 
 def test_sort_courses(mocker, test_instructor):
     mock_input = mocker.patch('builtins.input', side_effect=[test_instructor["id"], test_instructor["courses"][0], '4', 'a', 'x','','q'])

@@ -15,16 +15,14 @@ def test_valid_grade():
     assert is_valid_grade("B+") == True
     assert is_valid_grade("X") == False  # Invalid grade
 
-def test_bulk_upload(tmp_path):
-    """Test full CSV upload"""
-    # Create a test CSV file
-    test_file = os.path.join(tmp_path, "test.csv")
-    with open(test_file, 'w') as f:
-        f.write("student_id,grade\n123,A\n456,B+")
-    
-    # Test the upload
+def test_bulk_upload():
+    """Test full CSV upload using sample file"""
     instructor = Instructor(1)  # Test instructor ID
+    
+    # Get the path to the sample file in the tests folder
+    test_file = os.path.join(os.path.dirname(__file__), "sample_grades.csv")
+    
     successes, errors = instructor.bulk_upload_grades("COSC101", test_file)
     
-    assert len(successes) == 2  # Should process 2 valid rows
+    assert len(successes) == 3  # Should process all rows in sample file
     assert len(errors) == 0     # Should have no errors

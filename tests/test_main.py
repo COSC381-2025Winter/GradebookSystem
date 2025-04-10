@@ -14,6 +14,20 @@ def test_instructor():
         "invalid_course": "CSabc"
     }
 
+def test_check_empty_string(monkeypatch,capsys):
+    #arrange
+    responses = iter(['101','CS101','1','', '201','A','','x','','q'])
+    monkeypatch.setattr('builtins.input', lambda _: next(responses))
+
+    with pytest.raises(SystemExit) as exitInfo:
+        main()
+
+    #act
+    captured = capsys.readouterr()
+
+    #assert
+    assert "You must enter a student id! " in captured.out
+
 
 # the main function should ask for the user to log in at first
 # test if the user enters an invalid digital id
@@ -22,7 +36,7 @@ def test_login_with_invalid_id(monkeypatch, capsys):
     responses = iter(['10', 'q'])
     monkeypatch.setattr('builtins.input', lambda _: next(responses))
     
-    
+
     # Act
     with pytest.raises(SystemExit) as exitInfo:
         main()
@@ -71,7 +85,7 @@ def test_select_invalid_course(monkeypatch, capsys, test_instructor):
 # test select a valid course
 def test_select_valid_course(monkeypatch, capsys, test_instructor):
     # Act & Arrange
-    responses = iter([test_instructor["id"], test_instructor["courses"][0], '4', '', 'q'])
+    responses = iter([test_instructor["id"], test_instructor["courses"][0], 'x', '', 'q'])
     monkeypatch.setattr('builtins.input', lambda _: next(responses))
 
     with pytest.raises(SystemExit) as exitInfo:
@@ -80,7 +94,36 @@ def test_select_valid_course(monkeypatch, capsys, test_instructor):
     # Assert
     captured = capsys.readouterr()
     assert "selected course" in captured.out.lower()
-    assert f"{test_instructor["courses"][0]}".lower() in captured.out.lower()
+    assert f"{test_instructor['courses'][0]}".lower() in captured.out.lower()
     
     # Cleanup
+
+def test_add_course_invalid_instructor(monkeypatch, capsys):
+    #Act & Arrange
+    responses = iter([
+        '1',     # Choose Add Course
+        '3',     # Course ID
+        'awe',   # Course Name
+        '45',    # Invalid Instructor ID
+        'asd',   # Instructor Name
+        'q'      # Quit
+    ])
+    monkeypatch.setattr('builtins.input', lambda _: next(responses))
+
+    with pytest.raises(SystemExit):
+        main()
+
+    captured = capsys.readouterr()
+    assert "Error: Instructor not found" in captured.out
+    assert "Traceback" not in captured.out  # Make sure it doesn't crash
+
+def test_sort_courses(mocker, test_instructor):
+    mock_input = mocker.patch('builtins.input', side_effect=[test_instructor["id"], test_instructor["courses"][0], '4', 'a', 'x','','q'])
+    
+    mock_sort_courses = mocker.patch('main.Gradebook.sort_courses')
+    
+    with pytest.raises(SystemExit):
+        main() 
+    
+    mock_sort_courses.assert_called_once_with('a')
 

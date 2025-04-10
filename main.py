@@ -26,18 +26,20 @@ def main():
             print_error("Invalid Instructor ID. Try again. (q for quit)")
             continue
 
+        
         while True:
             clear_screen()
             instructor.display_courses()
             course_id = input("Enter Course ID (q for quit): ")
-
+           
             if course_id == 'q':
                 exit()
             course_id = course_id.upper()
             if not instructor.has_access(course_id):
                 print_error("Invalid Course ID or Access Denied.")
                 continue
-            break
+            break;
+        
 
         while True:
             clear_screen()
@@ -55,13 +57,17 @@ def main():
                 input("Press enter to continue.")
                 break
 
-            elif choice == "1":  # Add Grade
+            if choice == "1":  # Add Grade
                 clear_screen()
                 print("========Add Grade========\nStudents in this course:")
                 print_information("Students in this course:")
                 for sid in ROSTERS[course_id]:
                     print_information(f"- {sid}: {STUDENTS[sid]}")
 
+                #remove the cast to an int, to check if its an empty string
+                student_id = input("Enter Student ID: ")
+                while(student_id == ""):
+                    print("You must enter a student id! ")
                 # validate student ID input
                 while True: # use loop to keep asking for valid ID instead of just trying to convert it into an int and crashing if its a non int
                     student_input = input("Enter Student ID: ").strip()
@@ -74,24 +80,30 @@ def main():
                     except ValueError:
                         print_error("Invalid input. Please enter a valid integer Student ID.")
 
-                # validate grade input
-                while True:
-                    grade = input("Enter Grade: ").strip()
-                    if not grade or grade.startswith(" "):
-                        print_error("Grade cannot be empty.")
-                        continue
-                    try:
-                        grade_value = float(grade)
-                        if grade_value < 0:
-                            print_error("Grade cannot be negative.")
-                            input("Press enter to continue.")
-                            continue
-                        break
-                    except ValueError:
-                        print_error("Invalid grade format. Please enter a number.")
-                        input("Press enter to continue.")
 
-                if student_id in ROSTERS[course_id]: # there is still the issue of giving an invalid int ID but that is not the issue I was assigned
+                isGradeEmpty = True
+                while (isGradeEmpty):
+                    grade = input("Enter Grade: ") 
+
+                    if (not grade or grade == "" or grade.startswith(" ")):
+                        print("\tGrade cannot be empty")
+                        continue
+                        
+                    else: 
+                        isGradeEmpty = False
+
+                try:
+                    grade_value = float(grade)
+                    if grade_value < 0:
+                        print_error("Grade cannot be negative.")
+                        input("Press enter to continue.")
+                        continue  # Go back to menu
+                except ValueError:
+                    print_error("Invalid grade format. Please enter a number.")
+                    input("Press enter to continue.")
+                    continue  # Go back to menu
+
+                if student_id in ROSTERS[course_id]:
                     gradebook.add_grade(instructor, course_id, student_id, grade_value)
                 else:
                     print_error("Invalid Student ID.")
@@ -100,13 +112,17 @@ def main():
             elif choice == "2":  # Edit Grade
                 clear_screen()
                 print("========Edit Grade========")
-                while True:
+                # validate student ID input
+                while True: # use loop to keep asking for valid ID instead of just trying to convert it into an int and crashing if its a non int
+                    student_input = input("Enter Student ID: ").strip()
+                    if student_input == "":
+                        print_error("You must enter a student ID.")
+                        continue
                     try:
-                        student_id = int(input("Enter Student ID: "))
+                        student_id = int(student_input)
                         break
                     except ValueError:
                         print_error("Invalid input. Please enter a valid integer Student ID.")
-
                 new_grade = input("Enter New Grade: ")
                 gradebook.edit_grade(instructor, course_id, student_id, new_grade)
 
@@ -117,14 +133,14 @@ def main():
 
             elif choice == "4":
                 try:
-                    inp = input("Would you like to sort by ascending or descending order? (a/d): ")
+                    inp = input("Would you like to sort by ascending or decending order? (a/d): ")
                     inp = inp.lower()
-                    if inp in ('a', 'd'):
+                    if inp == 'a' or inp == 'd':
                         gradebook.sort_courses(inp)
                     else:
                         print("Please type either (a/d)")
                         input("Press enter to continue.")
-                except Exception:
+                except: 
                     print("Please type either (a/d)")
                     input("Press enter to continue.")
 

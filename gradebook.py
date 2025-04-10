@@ -65,3 +65,31 @@ class Gradebook:
             print_warning("No grades have been entered for this course yet.")
         
         input("Press enter to continue.")
+
+    def sort_courses(self, arrangement_type):
+        # Checks if dictionary is empty
+        if not self.grades:
+            print("Grades are empty. Please add a grade")
+            input("Press enter to continue.")
+            return
+
+        if arrangement_type != 'a' and arrangement_type != 'd':
+            print("Please type either (a/d)")
+            input("Press enter to continue.")
+            return
+
+        # Sort the list alphabetically 
+        if arrangement_type == 'd':
+            sorted_grades = {course: dict(sorted(students.items(), key=lambda item: item[1]["grade"])) for course, students in self.grades.items()}
+
+        # Reverses the dictionary
+        elif arrangement_type == 'a':
+            sorted_grades = {course: dict(sorted(students.items(), key=lambda item: item[1]["grade"], reverse=True)) for course, students in self.grades.items()}
+
+        # Replace the original dictionary with sorted one
+        self.grades = sorted_grades
+
+        
+
+
+

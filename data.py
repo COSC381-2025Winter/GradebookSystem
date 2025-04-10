@@ -51,3 +51,14 @@ ROSTERS = {
     "CS301": [219, 220, 221],
     "CS402": [219, 222, 223]
 }
+
+# Validation
+VALID_GRADES = ['A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-', 'D+', 'D', 'F']
+
+def is_valid_student_id(student_id):
+    """Check if ID is 3 digits"""
+    return str(student_id).isdigit() and len(str(student_id)) == 3
+
+def is_valid_grade(grade):
+    """Check if grade is in VALID_GRADES"""
+    return grade.upper() in VALID_GRADES

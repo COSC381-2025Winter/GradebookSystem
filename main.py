@@ -71,10 +71,17 @@ def main():
                 student_id = input("Enter Student ID: ")
                 while(student_id == ""):
                     print("You must enter a student id! ")
-                    student_id = input("Enter Student ID: ")
-
-                #cast the string back into an int
-                student_id = int (student_id)
+                # validate student ID input
+                while True: # use loop to keep asking for valid ID instead of just trying to convert it into an int and crashing if its a non int
+                    student_input = input("Enter Student ID: ").strip()
+                    if student_input == "":
+                        print_error("You must enter a student ID.")
+                        continue
+                    try:
+                        student_id = int(student_input)
+                        break
+                    except ValueError:
+                        print_error("Invalid input. Please enter a valid integer Student ID.")
 
 
                 isGradeEmpty = True
@@ -108,7 +115,17 @@ def main():
             elif choice == "2":  # Edit Grade
                 clear_screen()
                 print("========Edit Grade========")
-                student_id = int(input("Enter Student ID: "))
+                # validate student ID input
+                while True: # use loop to keep asking for valid ID instead of just trying to convert it into an int and crashing if its a non int
+                    student_input = input("Enter Student ID: ").strip()
+                    if student_input == "":
+                        print_error("You must enter a student ID.")
+                        continue
+                    try:
+                        student_id = int(student_input)
+                        break
+                    except ValueError:
+                        print_error("Invalid input. Please enter a valid integer Student ID.")
                 new_grade = input("Enter New Grade: ")
                 gradebook.edit_grade(instructor, course_id, student_id, new_grade)
 

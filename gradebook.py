@@ -6,7 +6,7 @@ class Gradebook:
     def __init__(self):
         self.grades = {}  # {course_id: {student_id: {"grade": x, "timestamp": y}}}
 
-    def add_grade(self, instructor, course_id, student_id, grade):
+    def add_grade(self, instructor, course_id, student_id, grade, force=False):
         """Adds a grade for a student in a specific course"""
         if not instructor.has_access(course_id):
             print_error("Access Denied: You are not authorized to grade this course.")
@@ -18,7 +18,7 @@ class Gradebook:
 
         now = datetime.datetime.now()
 
-        if student_id in self.grades[course_id]:
+        if student_id in self.grades[course_id] and not force:
             print_error("Error: Grade already exists. Use 'edit' instead.")
             input("Press enter to continue.")
         else:
@@ -59,9 +59,9 @@ class Gradebook:
         if course_id in self.grades:
             print_information(f"\nGrades for {COURSES[course_id]['name']} ({course_id}):")
             for student_id, data in self.grades[course_id].items():
-                student_name = STUDENTS[student_id]
+                student_name = STUDENTS.get(student_id, f"Student {student_id}")
                 print_information(f"{student_name} ({student_id}): {data['grade']}")
         else:
             print_warning("No grades have been entered for this course yet.")
-        
+
         input("Press enter to continue.")

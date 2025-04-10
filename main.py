@@ -38,6 +38,8 @@ def main():
             
             if course_id.replace(' ','').isalpha():        
                 course_id = instructor.get_course_code_by_name(course_id)   #Grabs the Course id
+            if course_id is  not None:
+                course_id = course_id.upper()
 
             if not instructor.has_access(course_id):
                 print_error("Invalid Course ID or Access Denied.")

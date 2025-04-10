@@ -12,6 +12,7 @@ def main():
         user_input = input("Enter your Instructor ID (q for quit): ")
         if user_input == 'q':
             clear_screen()
+            print_warning("--- Gradebook System ---\nEnding program...")
             exit()
 
         instructor_id = int(user_input)
@@ -28,6 +29,7 @@ def main():
             course_id = input("Enter Course ID (q for quit): ")
            
             if course_id == 'q':
+                print_warning("--- Gradebook System ---\nEnding program...")
                 exit()
             course_id = course_id.upper()
             if not instructor.has_access(course_id):
@@ -38,7 +40,7 @@ def main():
 
         while True:
             clear_screen()
-            print(f"\nSelected Course: {course_id}: {COURSES[course_id]["name"]}")
+            print(f"\nSelected Course: {course_id}: {COURSES[course_id]['name']}")
             print("\n1. Add Grade")
             print("2. Edit Grade")
             print("3. View Grades")
@@ -68,6 +70,8 @@ def main():
                 #cast the string back into an int
                 student_id = int (student_id)
 
+                if student_id in ROSTERS[course_id]:
+                    print_success(f"Student found!\n")
 
                 isGradeEmpty = True
                 while (isGradeEmpty):

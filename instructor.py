@@ -1,5 +1,7 @@
 from data import INSTRUCTORS, COURSES
 from color_ui import print_information
+import csv
+from data import is_valid_student_id, is_valid_grade
 
 class Instructor:
     def __init__(self, instructor_id):
@@ -29,3 +31,34 @@ class Instructor:
         print_information(f"\nWelcome {self.name}! Your courses:")
         for cid, cname in self.courses.items():
             print_information(f"- {cname} ({cid})")
+
+    def bulk_upload_grades(self, course_id, file_path):
+        """Upload grades from CSV file"""
+        success = []
+        errors = []
+        
+        try:
+            with open(file_path, 'r') as file:
+                reader = csv.DictReader(file)
+                if not all(field in reader.fieldnames for field in ['student_id', 'grade']):
+                    return [], ["CSV must have 'student_id' and 'grade' columns"]
+                
+                for row in reader:
+                    student_id = row['student_id'].strip()
+                    grade = row['grade'].strip().upper()
+                    
+                    if not is_valid_student_id(student_id):
+                        errors.append(f"Invalid ID: {student_id}")
+                        continue
+                        
+                    if not is_valid_grade(grade):
+                        errors.append(f"Invalid grade: {grade}")
+                        continue
+                    
+                    # If we get here, it's valid!
+                    success.append(f"Updated {student_id} to {grade}")
+                    
+        except Exception as e:
+            errors.append(f"File error: {str(e)}")
+        
+        return success, errors

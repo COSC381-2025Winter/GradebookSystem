@@ -19,7 +19,7 @@ def test_func(test_get_course_code_by_name):        # Assert
     
 def test_multiple_inputs(monkeypatch,capsys):
     # Simulating multiple inputs by using a list
-    inputs = iter([102,"CS102","4"," ","q"])    # test for regular input 
+    inputs = iter([102,"CS102","x","x","q"])    # test for regular input 
     
    
     

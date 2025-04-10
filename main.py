@@ -10,7 +10,7 @@ def main():
         clear_screen()
         print("\n--- Gradebook System ---")
         user_input = input("Enter your Instructor ID (q for quit): ")
-        if user_input == 'q':
+        if user_input == 'q' or user_input == 'Q':
             clear_screen()
             exit()
         elif not str(user_input).isnumeric():
@@ -37,6 +37,7 @@ def main():
 
             course_id = input("Enter Course ID  or a Course name (q for quit): ")
             if course_id == 'q':
+                clear_screen()
                 exit()
             
             if course_id.replace(' ','').isalpha():        

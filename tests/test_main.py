@@ -128,7 +128,7 @@ def test_sort_courses(mocker, test_instructor):
 
 def test_grades_to_edit(monkeypatch, capsys, test_instructor):
     # Act & Arrange
-    responses = iter([test_instructor["id"], test_instructor["courses"][0], '1', '201', 'A', '', '2', '201', 'B', '', '4', '', 'q'])
+    responses = iter([test_instructor["id"], test_instructor["courses"][0], '1', '201', '99', '', '2', '201', '88', '', 'x', '', 'q'])
     monkeypatch.setattr('builtins.input', lambda _: next(responses))
 
     with pytest.raises(SystemExit) as exitInfo:
@@ -136,4 +136,4 @@ def test_grades_to_edit(monkeypatch, capsys, test_instructor):
 
     # Assert
     captured = capsys.readouterr()
-    assert "Alice (201): A" in captured.out
+    assert "Alice (201): 99.0" in captured.out

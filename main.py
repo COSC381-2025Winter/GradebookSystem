@@ -42,11 +42,12 @@ def main():
             print("\n1. Add Grade")
             print("2. Edit Grade")
             print("3. View Grades")
-            print("4. Logout")
+            print("4. Sort Grades")
+            print("x. Logout")
 
             choice = input("Enter choice: ")
 
-            if choice == "4":
+            if choice == "x":
                 print_warning("Logging out...")
                 input("Press enter to continue.")
                 break
@@ -107,6 +108,19 @@ def main():
                 clear_screen()
                 print("========View Grades========")
                 gradebook.view_grades(instructor, course_id)
+
+            elif choice == "4":
+                try:
+                    inp = input("Would you like to sort by ascending or decending order? (a/d): ")
+                    inp = inp.lower()
+                    if inp == 'a' or inp == 'd':
+                        gradebook.sort_courses(inp)
+                    else:
+                        print("Please type either (a/d)")
+                        input("Press enter to continue.")
+                except: 
+                    print("Please type either (a/d)")
+                    input("Press enter to continue.")
 
             else:
                 print_error("Invalid choice.")

@@ -16,7 +16,7 @@ def test_instructor():
 
 def test_check_empty_string(monkeypatch,capsys):
     #arrange
-    responses = iter(['101','CS101','1','', '201','A','','4','','q'])
+    responses = iter(['101','CS101','1','', '201','A','','x','','q'])
     monkeypatch.setattr('builtins.input', lambda _: next(responses))
 
     with pytest.raises(SystemExit) as exitInfo:
@@ -85,7 +85,7 @@ def test_select_invalid_course(monkeypatch, capsys, test_instructor):
 # test select a valid course
 def test_select_valid_course(monkeypatch, capsys, test_instructor):
     # Act & Arrange
-    responses = iter([test_instructor["id"], test_instructor["courses"][0], '4', '', 'q'])
+    responses = iter([test_instructor["id"], test_instructor["courses"][0], 'x', '', 'q'])
     monkeypatch.setattr('builtins.input', lambda _: next(responses))
 
     with pytest.raises(SystemExit) as exitInfo:
@@ -98,3 +98,12 @@ def test_select_valid_course(monkeypatch, capsys, test_instructor):
     
     # Cleanup
 
+def test_sort_courses(mocker, test_instructor):
+    mock_input = mocker.patch('builtins.input', side_effect=[test_instructor["id"], test_instructor["courses"][0], '4', 'a', 'x','','q'])
+    
+    mock_sort_courses = mocker.patch('main.Gradebook.sort_courses')
+    
+    with pytest.raises(SystemExit):
+        main() 
+    
+    mock_sort_courses.assert_called_once_with('a')

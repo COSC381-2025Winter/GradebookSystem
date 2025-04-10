@@ -3,13 +3,14 @@ import pytest
 from instructor import Instructor
 from gradebook import Gradebook
 from data import INSTRUCTORS, STUDENTS, COURSES, ROSTERS
+from main import main
 
-# --- Setup: Mock input to suppress prompts during testing ---
+# Setup: Mock input to suppress prompts during testing
 import builtins
 builtins.input = lambda _: '\n'  # Mock input for all input() calls during tests
 
 # ----------------------------
-# 🔍 Tests for data.py
+# Tests for data.py
 # ----------------------------
 
 def test_data_instructors():
@@ -33,7 +34,7 @@ def test_data_rosters():
     assert len(ROSTERS["CS302"]) == 3
 
 # ----------------------------
-# 🔍 Tests for instructor.py
+# Tests for instructor.py
 # ----------------------------
 
 def test_instructor_authentication():
@@ -54,7 +55,7 @@ def test_invalid_instructor():
     assert fake.courses == []
 
 # ----------------------------
-# 🔍 Tests for gradebook.py
+# Tests for gradebook.py
 # ----------------------------
 
 @pytest.fixture
@@ -83,7 +84,7 @@ def test_edit_grade_within_7_days(monkeypatch, test_instructor):
     course_id = "CS101"
     student_id = 202
     gb.add_grade(test_instructor, course_id, student_id, 70, force=True)
-    
+
     monkeypatch.setattr('builtins.input', lambda _: '\n')
     gb.edit_grade(test_instructor, course_id, student_id, 95)
     assert gb.grades[course_id][student_id]["grade"] == 95
@@ -102,3 +103,48 @@ def test_edit_grade_after_7_days(monkeypatch, test_instructor):
 
     # Grade should not be updated due to time restriction
     assert gb.grades[course_id][student_id]["grade"] == 75
+
+# ----------------------------
+# Tests for main.py interaction
+# ----------------------------
+
+def test_login_with_invalid_id(monkeypatch, capsys):
+    responses = iter(['10', 'q'])
+    monkeypatch.setattr('builtins.input', lambda _: next(responses))
+
+    with pytest.raises(SystemExit):
+        main()
+    captured = capsys.readouterr()
+    assert 'instructor id' in captured.out.lower()
+
+@pytest.mark.parametrize("quit_input", ['q', 'Q'])
+def test_quit_on_instructor_input(monkeypatch, quit_input):
+    monkeypatch.setattr('builtins.input', lambda _: quit_input)
+    with pytest.raises(SystemExit):
+        main()
+
+@pytest.mark.parametrize("quit_input", ['q', 'Q'])
+def test_quit_on_course_id_input(monkeypatch, quit_input):
+    inputs = iter(['101', quit_input])
+    monkeypatch.setattr('builtins.input', lambda _: next(inputs))
+    with pytest.raises(SystemExit):
+        main()
+
+def test_check_empty_string(monkeypatch, capsys):
+    responses = iter(['101', 'CS101', '1', '', '201', 'A', '', 'x', '', 'q'])
+    monkeypatch.setattr('builtins.input', lambda _: next(responses))
+
+    with pytest.raises(SystemExit):
+        main()
+    captured = capsys.readouterr()
+    assert "you must enter a student id" in captured.out.lower()
+
+def test_select_valid_course(monkeypatch, capsys):
+    responses = iter(['101', 'CS101', 'x', '', 'q'])
+    monkeypatch.setattr('builtins.input', lambda _: next(responses))
+
+    with pytest.raises(SystemExit):
+        main()
+    captured = capsys.readouterr()
+    assert "selected course" in captured.out.lower()
+    assert "cs101" in captured.out.lower()

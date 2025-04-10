@@ -1,6 +1,6 @@
 from gradebook import Gradebook
 from instructor import Instructor
-from data import ROSTERS, COURSES
+from data import ROSTERS, COURSES, STUDENTS
 from color_ui import print_success, print_error, print_information, print_warning
 from util import clear_screen
 
@@ -10,9 +10,12 @@ def main():
         clear_screen()
         print("\n--- Gradebook System ---")
         user_input = input("Enter your Instructor ID (q for quit): ")
-        if user_input == 'q':
+        if user_input.lower() == 'q':
             clear_screen()
             exit()
+        elif not str(user_input).isnumeric():
+            print_error("Invalid Instructor ID. Try again. (q for quit)")
+            continue
 
         try:
             instructor_id = int(user_input)
@@ -32,9 +35,10 @@ def main():
             clear_screen()
             instructor.display_courses()
             course_id = input("Enter Course ID (q for quit): ")
-            if course_id == 'q':
+            if course_id.lower() == 'q':
+                clear_screen()
                 exit()
-
+            course_id = course_id.upper()
             if not instructor.has_access(course_id):
                 print_error("Invalid Course ID or Access Denied.")
                 input("Press enter to continue.")
@@ -47,12 +51,13 @@ def main():
             print("\n1. Add Grade")
             print("2. Edit Grade")
             print("3. View Grades")
-            print("4. Add Student")  # <-- New Option
-            print("5. Logout")
+            print("4. Sort Grades")
+            print("5. Add Student")
+            print("x. Logout")
 
             choice = input("Enter choice: ")
 
-            if choice == "5":
+            if choice.lower() == "x":
                 print_warning("Logging out...")
                 input("Press enter to continue.")
                 break
@@ -62,19 +67,38 @@ def main():
                 print("========Add Grade========\nStudents in this course:")
                 print_information("Students in this course:")
                 for sid in ROSTERS[course_id]:
-                    print_information(f"- {sid})")
+                    print_information(f"- {sid}: {STUDENTS[sid]}")
+
+                student_id = input("Enter Student ID: ")
+                while student_id == "":
+                    print("You must enter a student ID!")
+                    student_id = input("Enter Student ID: ")
+                student_id = int(student_id)
+
+                isGradeEmpty = True
+                while isGradeEmpty:
+                    grade = input("Enter Grade: ")
+                    if not grade or grade.strip() == "":
+                        print("\tGrade cannot be empty")
+                        continue
+                    else:
+                        isGradeEmpty = False
 
                 try:
-                    student_id = int(input("Enter Student ID: "))
-                    grade = int(input("Enter Grade: "))
-
-                    if student_id in ROSTERS[course_id]:
-                        gradebook.add_grade(instructor, course_id, student_id, grade)
-                    else:
-                        print_error("Invalid Student ID.")
+                    grade_value = float(grade)
+                    if grade_value < 0:
+                        print_error("Grade cannot be negative.")
                         input("Press enter to continue.")
+                        continue
                 except ValueError:
-                    print_error("Invalid input.")
+                    print_error("Invalid grade format. Please enter a number.")
+                    input("Press enter to continue.")
+                    continue
+
+                if student_id in ROSTERS[course_id]:
+                    gradebook.add_grade(instructor, course_id, student_id, grade_value)
+                else:
+                    print_error("Invalid Student ID.")
                     input("Press enter to continue.")
 
             elif choice == "2":  # Edit Grade
@@ -93,7 +117,12 @@ def main():
                 print("========View Grades========")
                 gradebook.view_grades(instructor, course_id)
 
-            elif choice == "4":  # Add Student
+            elif choice == "4":  # Sort Grades
+                # Placeholder for future sort functionality
+                print_warning("Sort feature not yet implemented.")
+                input("Press enter to continue.")
+
+            elif choice == "5":  # Add Student
                 clear_screen()
                 print("========Add Student========")
                 try:
@@ -107,10 +136,8 @@ def main():
                         print_success(f"Student {new_student_id} added with grade {default_grade}.")
                     else:
                         print_warning(f"Student {new_student_id} is already in the course.")
-
                 except ValueError:
                     print_error("Invalid input. Please enter valid numbers.")
-
                 input("Press enter to continue.")
 
             else:

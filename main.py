@@ -14,7 +14,12 @@ def main():
             clear_screen()
             exit()
 
-        instructor_id = int(user_input)
+        try:
+            instructor_id = int(user_input)
+        except ValueError:
+            print_error("Error: Instructor not found")
+            continue
+
         instructor = Instructor(instructor_id)
 
         if not instructor.is_authenticated():
@@ -38,7 +43,7 @@ def main():
 
         while True:
             clear_screen()
-            print(f"\nSelected Course: {course_id}: {COURSES[course_id]["name"]}")
+            print(f"\nSelected Course: {course_id}: {COURSES[course_id]['name']}")
             print("\n1. Add Grade")
             print("2. Edit Grade")
             print("3. View Grades")

@@ -124,6 +124,17 @@ def test_invalid_studentID(monkeypatch, capsys, test_instructor):
     monkeypatch.setattr('builtins.input', lambda _: next(responses))
 
     with pytest.raises(SystemExit) as exitInfo:
+
+def test_add_course_invalid_instructor(monkeypatch, capsys):
+    # Arrange
+    responses = iter([
+        '45',  # Invalid Instructor ID
+        'q'    # Quit after invalid attempt
+    ])
+    monkeypatch.setattr('builtins.input', lambda _: next(responses))
+
+    # Act
+    with pytest.raises(SystemExit):
         main()
 
     # Assert
@@ -131,6 +142,8 @@ def test_invalid_studentID(monkeypatch, capsys, test_instructor):
     assert "Invalid Student ID." in captured.out
     
     # Cleanup
+    assert "Invalid Instructor ID" in captured.out
+    assert "Traceback" not in captured.out
 
 def test_sort_courses(mocker, test_instructor):
     mock_input = mocker.patch('builtins.input', side_effect=[test_instructor["id"], test_instructor["courses"][0], '4', 'a', 'x','','q'])

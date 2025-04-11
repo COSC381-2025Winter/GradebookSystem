@@ -65,3 +65,23 @@ class Gradebook:
             print_warning("No grades have been entered for this course yet.")
         
         input("Press enter to continue.")
+
+    def search_student(self, course_id, query):
+        """Search for a student by ID or name in the course roster"""
+        matches = []
+
+        # Ensure query is treated as a string for comparison
+        query_str = str(query).lower()
+        
+        # Search for matches in the roster
+        for student_id in ROSTERS[course_id]:
+            student_name = STUDENTS.get(student_id, "Unknown")
+            if query_str in student_name.lower() or query == str(student_id):
+                matches.append((student_id, student_name))      # add student(s) that match search to list
+
+        # Display results
+        if matches:
+            print("\nMatching Students:")
+            for sid, name in matches:
+                print(f"- {name} (ID: {sid})")
+        

@@ -10,7 +10,7 @@ class Instructor:
         else:
             self.instructor_id = None
             self.name = None
-            self.courses = []
+            self.courses = []     
 
     def get_courses(self):
         """Returns the list of courses assigned to the instructor."""
@@ -29,3 +29,8 @@ class Instructor:
         print_information(f"\nWelcome {self.name}! Your courses:")
         for cid, cname in self.courses.items():
             print_information(f"- {cname} ({cid})")
+
+    def add_instructor(name):
+        new_id = max(INSTRUCTORS.keys()) + 1
+        INSTRUCTORS[new_id]= name
+        return new_id            

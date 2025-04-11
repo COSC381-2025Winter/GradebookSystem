@@ -9,6 +9,22 @@ def main():
     while True:
         clear_screen()
         print("\n--- Gradebook System ---")
+        new = input("Are you a new instructor? (y/n)")
+        
+        if new.upper == 'y':
+            clear_screen()
+            instructor_name = input("What is the new instructors name")
+            try:
+                instructor_id = int(instructor_name)
+            except ValueError:
+                print("Error found")
+                continue
+        elif new.upper == 'n':
+            clear_screen()
+            break
+
+        
+
         user_input = input("Enter your Instructor ID (q for quit): ")
         if user_input == 'q' or user_input == 'Q':
             clear_screen()
@@ -47,7 +63,8 @@ def main():
         while True:
             clear_screen()
             print(f"\nSelected Course: {course_id}: {COURSES[course_id]['name']}")
-            print("\n1. Add Grade")
+            print("\n0. Register new Instructor")
+            print("1. Add Grade")
             print("2. Edit Grade")
             print("3. View Grades")
             print("4. Sort Grades")

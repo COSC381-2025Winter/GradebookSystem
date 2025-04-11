@@ -42,6 +42,7 @@ def test_show_names_when_adding_grade(monkeypatch, capsys, test_instructor, test
     responses = iter([test_instructor["id"], 
                      test_course["id"],
                      "1", test_student["id"], "A", "\n", "x", "\n", "q"])
+
     monkeypatch.setattr('builtins.input', lambda _: next(responses))
 
     #Act

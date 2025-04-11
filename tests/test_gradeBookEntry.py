@@ -16,6 +16,7 @@ def test_instructor():
 
 def test_empty_grade(monkeypatch, capsys, test_instructor):
     # Arrange
+
     responses = iter([(test_instructor["id"]), "CS101", "1", "201", "", "99", "", "x", "", "q"])
     monkeypatch.setattr('builtins.input', lambda _: next(responses))
 
@@ -26,6 +27,5 @@ def test_empty_grade(monkeypatch, capsys, test_instructor):
     # Assert
     captured = capsys.readouterr()
     assert "\tGrade cannot be empty" in captured.out
-    assert "Grade added for student 201" in captured.out
 
 

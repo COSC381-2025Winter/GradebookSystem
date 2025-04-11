@@ -106,7 +106,7 @@ def test_negative_grade_input(monkeypatch, capsys):
 def test_non_numeric_grade_input(monkeypatch, capsys):
     # Simulated user input sequence:
     inputs = iter([
-        '1',        # Instructor ID
+        '101',        # Instructor ID
         'CS101',    # Course ID
         '1',        # Add Grade
         '201',      # Student ID

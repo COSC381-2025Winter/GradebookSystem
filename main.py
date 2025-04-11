@@ -51,6 +51,7 @@ def main():
             print("2. Edit Grade")
             print("3. View Grades")
             print("4. Sort Grades")
+            print("5. Search Students")
             print("x. Logout")
 
             choice = input("Enter choice: ")
@@ -116,7 +117,7 @@ def main():
                 clear_screen()
                 print("========View Grades========")
                 gradebook.view_grades(instructor, course_id)
-
+            
             elif choice == "4":
                 try:
                     inp = input("Would you like to sort by ascending or decending order? (a/d): ")
@@ -129,6 +130,18 @@ def main():
                 except: 
                     print("Please type either (a/d)")
                     input("Press enter to continue.")
+
+            elif choice == "5": # Search Student
+                while True:
+                    clear_screen()
+                    print("========Search Student=========")
+                    query = input("Enter Student ID or Name to search (or type 'back' to return): ")
+
+                    if query.lower() == 'back':
+                        break   # Exit the search functionality and return to course menu
+
+                    gradebook.search_student(course_id, query)
+                    input("\nPress enter to continue searching or type 'back' in the next prompt.") # Pause for user review
 
             else:
                 print_error("Invalid choice.")

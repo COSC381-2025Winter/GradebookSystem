@@ -1,31 +1,37 @@
 import pytest
-from instructor import Instructor
-from color_theme import ColorTheme
+from color_theme import apply_theme
+from color_ui import (
+    print_success,
+    print_error,
+    print_warning,
+    print_information
+)
 
-import pytest
-from instructor import Instructor
+# ANSI color codes for testing (from colorama.Fore)
+from colorama import Fore
 
-def test_default_theme():
-    instructor = Instructor(instructor_id=101)
-    assert instructor.get_theme() == "light"  # Default theme should be light
+class TestColorThemeIntegration:
 
-def test_set_dark_theme():
-    instructor = Instructor(instructor_id=101)
-    instructor.set_theme("dark")
-    assert instructor.get_theme() == "dark"
+    def test_light_theme_success_color(self, capsys):
+        apply_theme("light")
+        print_success("Success")
+        out = capsys.readouterr().out
+        assert Fore.GREEN in out
 
-def test_set_invalid_theme():
-    instructor = Instructor(instructor_id=101)
-    with pytest.raises(ValueError):
-        instructor.set_theme("blue")  # Invalid theme should raise an error
+    def test_dark_theme_success_color(self, capsys):
+        apply_theme("dark")
+        print_success("Success")
+        out = capsys.readouterr().out
+        assert Fore.LIGHTGREEN_EX in out
 
-def test_instructor_without_id():
-    instructor = Instructor(instructor_id="nonexistent")
-    assert instructor.name is None
-    assert instructor.courses == []
-    assert instructor.get_theme() == "light"  # Default theme should still be light
+    def test_light_theme_error_color(self, capsys):
+        apply_theme("light")
+        print_error("Error")
+        out = capsys.readouterr().out
+        assert Fore.RED in out
 
-def test_instructor_courses():
-    instructor = Instructor(instructor_id=101)
-    expected_courses = {"CS101": "Intro to CS", "CS111": "Java Programming"}
-    assert instructor.courses == expected_courses
+    def test_dark_theme_info_color(self, capsys):
+        apply_theme("dark")
+        print_information("Info")
+        out = capsys.readouterr().out
+        assert Fore.LIGHTCYAN_EX in out

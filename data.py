@@ -51,3 +51,10 @@ ROSTERS = {
     "CS301": [219, 220, 221],
     "CS402": [219, 222, 223]
 }
+INSTRUCTORS[105] = "Dr. Ahmed"
+
+INSTRUCTORS[106] = "Dr. Moe"
+
+INSTRUCTORS[107] = "Dr. test"
+
+INSTRUCTORS[108] = "Dr. test2"

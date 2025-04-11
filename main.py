@@ -3,6 +3,7 @@ from instructor import Instructor
 from data import ROSTERS, COURSES, STUDENTS
 from color_ui import print_success, print_error, print_information, print_warning
 from util import clear_screen
+import os
 
 def main():
     gradebook = Gradebook()
@@ -10,7 +11,11 @@ def main():
     
     testcase = Instructor.get_Instructors()
 
-   
+    test1 = os.path.dirname(os.path.abspath(__file__))
+    #print(test1)
+    #with open(test1 + "\\data.py", 'r') as file:
+                #content = file.read()
+    #print(content)
 
 
     while True:

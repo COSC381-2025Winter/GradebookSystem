@@ -36,9 +36,20 @@ class Instructor:
 
     @staticmethod
     def add_instructor(name):
-        with open()
+        root_name = os.path.dirname(os.path.abspath(__file__))
+        file_name = os.path.join(root_name, "data.py")
 
+        #read the whole file
+        with open(root_name + "\\data.py", 'r') as file:
+                content = file.read()
+        
+        
         new_id = max(INSTRUCTORS.keys()) + 1
         INSTRUCTORS[new_id]= name
+         # Append the new instructor to the file
+
+        with open(file_name, 'a') as file:
+             file.write(f'\nINSTRUCTORS[{new_id}] = "{name}"\n')
+             
         return new_id            
     

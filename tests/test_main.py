@@ -125,11 +125,11 @@ def test_invalid_studentID(monkeypatch, capsys, test_instructor):
 
     with pytest.raises(SystemExit) as exitInfo:
         main()
-    
+
     # Assert
     captured = capsys.readouterr()
     assert "Invalid Student ID." in captured.out
-
+    
 def test_add_course_invalid_instructor(monkeypatch, capsys):
     # Arrange
     responses = iter([

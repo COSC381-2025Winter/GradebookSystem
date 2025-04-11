@@ -80,7 +80,7 @@ def main():
                 except ValueError:
                         print_error("Invalid ID format. Please enter a number.")
                         continue  # Go back to menu
-                
+
                 if student_id in ROSTERS[course_id]:
                     isGradeEmpty = True
                     while (isGradeEmpty):
@@ -88,10 +88,19 @@ def main():
                         if (not grade or grade == "" or grade.startswith(" ")):
                             print("\tGrade cannot be empty")
                             continue
-                                
+
                         else: 
                             isGradeEmpty = False
 
+                    try:
+                        grade_value = float(grade)
+
+                        if grade_value < 0:
+                            print_error("Grade cannot be negative.")
+                            input("Press enter to continue.")
+                            continue  # Go back to menu
+                    except ValueError:
+                        print_error("Invalid grade format. Please enter a number.")
                     try:
                         grade_value = float(grade)
                         if grade_value < 0:

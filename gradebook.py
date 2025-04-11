@@ -84,4 +84,5 @@ class Gradebook:
             print("\nMatching Students:")
             for sid, name in matches:
                 print(f"- {name} (ID: {sid})")
-        
+        else:
+            print("No matching students found.")

@@ -64,9 +64,12 @@ def main():
                     print("You must enter a student id! ")
                     student_id = input("Enter Student ID: ")
 
-                #cast the string back into an int
-                student_id = int (student_id)
-
+                #trys to cast the string back into an int
+                try:
+                    student_id = int (student_id)
+                except ValueError:
+                        print_error("Invalid ID format. Please enter a number.")
+                        continue  # Go back to menu
                 
                 if student_id in ROSTERS[course_id]:
                     isGradeEmpty = True

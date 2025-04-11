@@ -37,15 +37,16 @@ def main():
 
         while True:
             clear_screen()
-            print(f"\nSelected Course: {course_id}: {COURSES[course_id]["name"]}")
+            print(f"\nSelected Course: {course_id}: {COURSES[course_id]['name']}")
             print("\n1. Add Grade")
             print("2. Edit Grade")
             print("3. View Grades")
-            print("4. Logout")
+            print("4. Search Student")
+            print("5. Logout")
 
             choice = input("Enter choice: ")
 
-            if choice == "4":
+            if choice == "5":
                 print_warning("Logging out...")
                 input("Press enter to continue.")
                 break
@@ -77,6 +78,18 @@ def main():
                 clear_screen()
                 print("========View Grades========")
                 gradebook.view_grades(instructor, course_id)
+            
+            elif choice == "4": # Search Student
+                while True:
+                    clear_screen()
+                    print("========Search Student=========")
+                    query = input("Enter Student ID or Name to search (or type 'back' to return): ")
+
+                    if query.lower() == 'back':
+                        break   # Exit the search functionality and return to course menu
+
+                    gradebook.search_student(course_id, query)
+                    input("\nPress enter to continue searching or type 'back' in the next prompt.") # Pause for user review
 
             else:
                 print_error("Invalid choice.")

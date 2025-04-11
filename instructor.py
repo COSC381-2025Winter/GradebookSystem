@@ -1,4 +1,5 @@
 from data import INSTRUCTORS, COURSES
+import os
 from color_ui import print_information
 
 class Instructor:
@@ -11,6 +12,9 @@ class Instructor:
             self.instructor_id = None
             self.name = None
             self.courses = []     
+
+    def get_Instructors():
+        return INSTRUCTORS
 
     def get_courses(self):
         """Returns the list of courses assigned to the instructor."""
@@ -30,7 +34,11 @@ class Instructor:
         for cid, cname in self.courses.items():
             print_information(f"- {cname} ({cid})")
 
+    @staticmethod
     def add_instructor(name):
+        with open()
+
         new_id = max(INSTRUCTORS.keys()) + 1
         INSTRUCTORS[new_id]= name
         return new_id            
+    

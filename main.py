@@ -6,23 +6,36 @@ from util import clear_screen
 
 def main():
     gradebook = Gradebook()
-    while True:
-        clear_screen()
-        print("\n--- Gradebook System ---")
-        new = input("Are you a new instructor? (y/n)")
-        
-        if new.upper == 'y':
-            clear_screen()
-            instructor_name = input("What is the new instructors name")
-            try:
-                instructor_id = int(instructor_name)
-            except ValueError:
-                print("Error found")
-                continue
-        elif new.upper == 'n':
-            clear_screen()
-            break
 
+    
+    testcase = Instructor.get_Instructors()
+
+   
+
+
+    while True:
+       
+        #clear_screen()
+        print("\n--- Gradebook System ---")
+        new_choice = input("Are you a new instructor? (y/n): ")
+
+        new_choice = new_choice.upper()
+
+       
+        if new_choice == 'Y':
+            clear_screen()
+            instructor_name = input("What is the Instructors name, ie: Dr. Smith: ")
+            if not instructor_name:
+                print_error("Instructor name cannot be empty")
+                continue
+        elif new_choice == 'N':
+                clear_screen()
+
+        instructor_id = Instructor.add_instructor(instructor_name)
+        print_success(f"Instructor '{instructor_name}' registered with ID {instructor_id}")
+        input("Press Enter to continue...")      
+        
+        
         
 
         user_input = input("Enter your Instructor ID (q for quit): ")
@@ -63,7 +76,6 @@ def main():
         while True:
             clear_screen()
             print(f"\nSelected Course: {course_id}: {COURSES[course_id]['name']}")
-            print("\n0. Register new Instructor")
             print("1. Add Grade")
             print("2. Edit Grade")
             print("3. View Grades")

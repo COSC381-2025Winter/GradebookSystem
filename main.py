@@ -38,15 +38,16 @@ def main():
 
         while True:
             clear_screen()
-            print(f"\nSelected Course: {course_id}: {COURSES[course_id]["name"]}")
+            print(f"\nSelected Course: {course_id}: {COURSES[course_id]['name']}")
             print("\n1. Add Grade")
             print("2. Edit Grade")
             print("3. View Grades")
             print("4. Logout")
+            print("5. View Grade History")
 
             choice = input("Enter choice: ")
 
-            if choice == "4":
+            if choice == "4":  # Logout
                 print_warning("Logging out...")
                 input("Press enter to continue.")
                 break
@@ -107,6 +108,20 @@ def main():
                 clear_screen()
                 print("========View Grades========")
                 gradebook.view_grades(instructor, course_id)
+                
+            elif choice == "5":  # View Grade History
+                clear_screen()
+                print("========View Grade History========")
+                print_information("Students in this course:")
+                for sid in ROSTERS[course_id]:
+                    print_information(f"- {sid}: {STUDENTS[sid]}")
+                
+                try:
+                    student_id = int(input("Enter Student ID: "))
+                    gradebook.view_grade_history(instructor, course_id, student_id)
+                except ValueError:
+                    print_error("Invalid input. Student ID must be a number.")
+                    input("Press enter to continue.")
 
             else:
                 print_error("Invalid choice.")

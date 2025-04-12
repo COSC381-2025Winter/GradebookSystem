@@ -109,6 +109,7 @@ class Gradebook:
             print_warning("No grades have been entered for this course yet. Use 'add' instead")
             input("Press enter to continue.")
             return False
+
     def search_student(self, course_id, query):
         """Search for a student by ID or name in the course roster"""
         matches = []

@@ -115,14 +115,8 @@ def main():
             elif choice == "2":  # Edit Grade
                 clear_screen()
                 print("========Edit Grade========")
-
                 # call helper method for search_student function
                 gradebook.helper_search_student(course_id)
-
-                # replace edit grade header
-                clear_screen()
-                print("========Edit Grade========")
-
                 grade_exists = gradebook.grades_to_edit(instructor, course_id)
 
                 if(grade_exists == True):

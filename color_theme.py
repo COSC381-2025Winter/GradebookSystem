@@ -1,4 +1,4 @@
-from colorama import Fore
+from colorama import Fore, Back, Style
 from color_ui import set_theme_colors
 
 class ColorTheme:
@@ -28,22 +28,21 @@ class ColorTheme:
 
 # 🔹 Module-level utility function for applying the theme globally
 def apply_theme(theme):
-    """
-    Apply the color theme globally using set_theme_colors.
-    """
     if theme == "light":
+        # Brighter text on dark background (now LIGHT MODE)
         set_theme_colors({
-            "success": Fore.GREEN,
-            "error": Fore.RED,
-            "warning": Fore.YELLOW,
-            "info": Fore.BLUE
+            "success": Fore.LIGHTGREEN_EX + Back.LIGHTWHITE_EX + Style.BRIGHT,
+            "error": Fore.LIGHTRED_EX + Back.LIGHTWHITE_EX + Style.BRIGHT,
+            "warning": Fore.LIGHTYELLOW_EX + Back.LIGHTWHITE_EX + Style.BRIGHT,
+            "info": Fore.LIGHTCYAN_EX + Back.LIGHTWHITE_EX + Style.BRIGHT
         })
     elif theme == "dark":
+        # Standard/neutral tone text (now DARK MODE)
         set_theme_colors({
-            "success": Fore.LIGHTGREEN_EX,
-            "error": Fore.LIGHTRED_EX,
-            "warning": Fore.LIGHTYELLOW_EX,
-            "info": Fore.CYAN
+            "success": Fore.GREEN + Back.BLACK,
+            "error": Fore.RED + Back.BLACK,
+            "warning": Fore.YELLOW + Back.BLACK,
+            "info": Fore.BLUE + Back.BLACK
         })
     else:
         raise ValueError("Invalid theme. Choose 'light' or 'dark'.")

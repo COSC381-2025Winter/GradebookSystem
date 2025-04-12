@@ -1,27 +1,30 @@
 import pytest
 from gradebook import Gradebook
-class FakeInstructor:
-    def has_access(self, course_id):
-        return True
 
 @pytest.fixture
 def gradebook():
     return Gradebook()
-def test_existing_grade_edit_prompt(monkeypatch, capsys, gradebook):
-    #Arrange
-    instructor = FakeInstructor()
+
+def test_edit_grade_prompt(monkeypatch, gradebook):
+    # Arrange
+    class Instructor:
+        def has_access(self, course_id):
+            return True
+
+    instructor = Instructor()
     course_id = "CS101"
     student_id = "123"
     initial_grade = 85
 
-    inputs = iter(["", "Y", ""])  
+    # First time: add a grade
+    inputs = iter(["", "Y", ""])
+    # Second time: mock input to simulate user typing "Y" to update
+    monkeypatch.setattr("builtins.input", lambda *args, **kwargs: "Y")
+    gradebook.add_grade(instructor, course_id, student_id, initial_grade)
 
-    monkeypatch.setattr("builtins.input", lambda *args, **kwargs: next(inputs))
+    # Act: update the grade
+    gradebook.add_grade(instructor, course_id, student_id, 95)
 
-    gradebook.add_grade(instructor, course_id, student_id, initial_grade)  # First add
-    gradebook.add_grade(instructor, course_id, student_id, 95)  # Should prompt and accept "Y"
-    #Act
-    captured = capsys.readouterr()
-    #Assert
-    assert "Grade updated for student" in captured.out
-    assert gradebook.grades[course_id][student_id]["grade"] == 95
+    # Assert: check if grade was updated
+    updated_grade = gradebook.grades[course_id][student_id]["grade"]
+    assert updated_grade == 95

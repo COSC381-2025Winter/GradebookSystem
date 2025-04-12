@@ -38,7 +38,7 @@ def test_student():
 # test if matching student is displayed after searching for one specific student using their id (test within add grade option)
 def test_matching_student_displayed(monkeypatch, capsys, test_instructor, test_student, test_course):
     # Arrange
-    responses = iter([test_instructor["id"], test_course["id"], "1", "y", str(test_student["id"][0]), "\n", "back", str(test_student["id"][0]), "85", "\n", "x", "\n", "q"])
+    responses = iter([test_instructor["id"], "light", test_course["id"], "1", "y", str(test_student["id"][0]), "\n", "back", str(test_student["id"][0]), "85", "\n", "x", "\n", "q"])
     monkeypatch.setattr('builtins.input', lambda _: next(responses))
 
     # Act
@@ -53,7 +53,7 @@ def test_matching_student_displayed(monkeypatch, capsys, test_instructor, test_s
 # test if matching students are displayed after searching for letter "c" that may be apart of multiple students' names (test within edit grade option)
 def test_display_students_containing_letter_match(monkeypatch, capsys, test_instructor, test_student, test_course):
     # Arrange
-    responses = iter([test_instructor["id"], test_course["id"], "2", "Y", "c", "\n", "back", str(test_student["id"][1]), "68", "\n", "x", "\n", "q"])
+    responses = iter([test_instructor["id"], "light", test_course["id"], "2", "Y", "c", "\n", "back", str(test_student["id"][1]), "68", "\n", "x", "\n", "q"])
     monkeypatch.setattr('builtins.input', lambda _: next(responses))
 
     # Act
@@ -70,7 +70,7 @@ def test_display_students_containing_letter_match(monkeypatch, capsys, test_inst
 # test if no matching students found displays message (test within edit grade option)
 def test_no_matching_students(monkeypatch, capsys, test_instructor, test_student, test_course):
     # Arrange
-    responses = iter([test_instructor["id"], test_course["id"], "2", "y", "zxy", "\n", "back", str(test_student["id"][0]), "99", "\n", "x", "\n", "q"])
+    responses = iter([test_instructor["id"], "light", test_course["id"], "2", "y", "zxy", "\n", "back", str(test_student["id"][0]), "99", "\n", "x", "\n", "q"])
     monkeypatch.setattr('builtins.input', lambda _: next(responses))
 
     # Act

@@ -68,9 +68,13 @@ def test_login_with_invalid_id(monkeypatch, capsys):
     # Cleanup
 
 # test if the user enters a valid digital id
-# Removed @patch('main.datetime') as datetime is not used directly in main.py
-def test_login_with_valid_id(monkeypatch, capsys, test_instructor):
+@patch('instructor.datetime') # Mock the datetime module in instructor.py
+def test_login_with_valid_id(mock_dt_module, monkeypatch, capsys, test_instructor):
     # Arrange
+    # Mock datetime.datetime.now() to return an arbitrary date
+    mock_dt_module.datetime.now.return_value = datetime.datetime(2024, 9, 15)
+    expected_semester_year_string = "Fall 2024"
+
     responses = iter([str(test_instructor["id"]), 'q']) # Ensure ID is string
     monkeypatch.setattr('builtins.input', lambda _: next(responses))
 
@@ -81,15 +85,72 @@ def test_login_with_valid_id(monkeypatch, capsys, test_instructor):
     # Assert
     captured = capsys.readouterr()
 
-    # Since datetime is not mocked, we cannot assert the specific semester.
-    # We can still assert that the instructor name and courses are shown.
-    # assert expected_semester_year_string.lower() in captured.out.lower() # Check for "Fall 2024" - Removed assertion
+    # Now we can assert the specific semester and year
+    assert expected_semester_year_string.lower() in captured.out.lower()
     assert test_instructor["name"].lower() in captured.out.lower()
     assert test_instructor["courses"][0].lower() in captured.out.lower()
     assert test_instructor["courses"][1].lower() in captured.out.lower()
     assert exitInfo.value.code == None
 
     # Cleanup
+
+
+# Test login with mocked date 5/1/2000
+@patch('instructor.datetime') # Mock the datetime module in instructor.py
+def test_login_with_mocked_date_2000(mock_dt_module, monkeypatch, capsys, test_instructor):
+    # Arrange
+    mock_dt_module.datetime.now.return_value = datetime.datetime(2000, 5, 1)
+    expected_semester_year_string = "Summer 2000" # Corrected from Spring
+    responses = iter([str(test_instructor["id"]), 'q'])
+    monkeypatch.setattr('builtins.input', lambda _: next(responses))
+
+    # Act
+    with pytest.raises(SystemExit):
+        main()
+
+    # Assert
+    captured = capsys.readouterr()
+    assert expected_semester_year_string.lower() in captured.out.lower()
+    assert test_instructor["name"].lower() in captured.out.lower()
+
+
+# Test login with mocked date 1/1/1999
+@patch('instructor.datetime') # Mock the datetime module in instructor.py
+def test_login_with_mocked_date_1999(mock_dt_module, monkeypatch, capsys, test_instructor):
+    # Arrange
+    mock_dt_module.datetime.now.return_value = datetime.datetime(1999, 1, 1)
+    expected_semester_year_string = "Winter 1999"
+    responses = iter([str(test_instructor["id"]), 'q'])
+    monkeypatch.setattr('builtins.input', lambda _: next(responses))
+
+    # Act
+    with pytest.raises(SystemExit):
+        main()
+
+    # Assert
+    captured = capsys.readouterr()
+    assert expected_semester_year_string.lower() in captured.out.lower()
+    assert test_instructor["name"].lower() in captured.out.lower()
+
+
+# Test login with mocked date 10/15/2024
+@patch('instructor.datetime') # Mock the datetime module in instructor.py
+def test_login_with_mocked_date_2024_oct(mock_dt_module, monkeypatch, capsys, test_instructor):
+    # Arrange
+    mock_dt_module.datetime.now.return_value = datetime.datetime(2024, 10, 15)
+    expected_semester_year_string = "Fall 2024"
+    responses = iter([str(test_instructor["id"]), 'q'])
+    monkeypatch.setattr('builtins.input', lambda _: next(responses))
+
+    # Act
+    with pytest.raises(SystemExit):
+        main()
+
+    # Assert
+    captured = capsys.readouterr()
+    assert expected_semester_year_string.lower() in captured.out.lower()
+    assert test_instructor["name"].lower() in captured.out.lower()
+
 
 # test select an invalid course
 def test_select_invalid_course(monkeypatch, capsys, test_instructor):
@@ -122,12 +183,12 @@ def test_select_valid_course(monkeypatch, capsys, test_instructor):
     
     # Cleanup
 
-def test_sort_courses(mocker, test_instructor): # Added comma
+def test_sort_courses(mocker, test_instructor):
     mock_input = mocker.patch('builtins.input', side_effect=[test_instructor["id"], test_instructor["courses"][0], '4', 'a', 'x','','q'])
-    
+
     mock_sort_courses = mocker.patch('main.Gradebook.sort_courses')
-    
+
     with pytest.raises(SystemExit):
-        main() 
-    
+        main()
+
     mock_sort_courses.assert_called_once_with('a')

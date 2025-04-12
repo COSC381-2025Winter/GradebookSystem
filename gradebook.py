@@ -1,6 +1,7 @@
 import datetime
 from data import COURSES, STUDENTS, ROSTERS
 from color_ui import print_success, print_error, print_information, print_warning
+from util import clear_screen
 
 class Gradebook:
     def __init__(self):
@@ -109,3 +110,31 @@ class Gradebook:
                 print(f"- {name} (ID: {sid})")
         else:
             print("No matching students found.")
+
+    def helper_search_student(self, course_id):
+        answer = True
+        # prompt search for student option
+        while (answer):
+            answer = input("Would you like to search for students by ID/name?(y/n): ")
+            if answer.lower() == "y":
+                # end loop to prompt search
+                answer = False
+                # call search_student function to allow search
+                while True:
+                    clear_screen()
+                    print("========Search Student=========")
+                    query = input("Enter Student ID or Name to search (or type 'back' to return): ")
+
+                    if query.lower() == 'back':
+                        break   # Exit the search functionality and return to course menu
+
+                    self.search_student(course_id, query)
+                    input("\nPress enter to continue searching or type 'back' in the next prompt.") # Pause for user review
+
+            elif answer.lower() == "n":
+                # end loop to prompt search
+                answer = False
+                break   # proceed with normal method functionality
+
+            else:
+                print("invalid input")

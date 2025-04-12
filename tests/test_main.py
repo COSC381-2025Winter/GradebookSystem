@@ -1,5 +1,5 @@
 import datetime
-from unittest.mock import patch
+from unittest.mock import patch, Mock
 from main import main
 import pytest
 
@@ -68,11 +68,12 @@ def test_login_with_invalid_id(monkeypatch, capsys):
     # Cleanup
 
 # test if the user enters a valid digital id
-@patch('instructor.datetime') # Mock the datetime module in instructor.py
-def test_login_with_valid_id(mock_dt_module, monkeypatch, capsys, test_instructor):
+def test_login_with_valid_id(monkeypatch, capsys, test_instructor):
     # Arrange
-    # Mock datetime.datetime.now() to return an arbitrary date
-    mock_dt_module.datetime.now.return_value = datetime.datetime(2024, 9, 15)
+    # Mock datetime.datetime class in instructor module
+    mock_datetime = Mock()
+    mock_datetime.now.return_value = datetime.datetime(2024, 9, 15)
+    monkeypatch.setattr('instructor.datetime.datetime', mock_datetime)
     expected_semester_year_string = "Fall 2024"
 
     responses = iter([str(test_instructor["id"]), 'q']) # Ensure ID is string
@@ -96,10 +97,11 @@ def test_login_with_valid_id(mock_dt_module, monkeypatch, capsys, test_instructo
 
 
 # Test login with mocked date 5/1/2000
-@patch('instructor.datetime') # Mock the datetime module in instructor.py
-def test_login_with_mocked_date_2000(mock_dt_module, monkeypatch, capsys, test_instructor):
+def test_login_with_mocked_date_2000(monkeypatch, capsys, test_instructor):
     # Arrange
-    mock_dt_module.datetime.now.return_value = datetime.datetime(2000, 5, 1)
+    mock_datetime = Mock()
+    mock_datetime.now.return_value = datetime.datetime(2000, 5, 1)
+    monkeypatch.setattr('instructor.datetime.datetime', mock_datetime)
     expected_semester_year_string = "Summer 2000" # Corrected from Spring
     responses = iter([str(test_instructor["id"]), 'q'])
     monkeypatch.setattr('builtins.input', lambda _: next(responses))
@@ -115,10 +117,11 @@ def test_login_with_mocked_date_2000(mock_dt_module, monkeypatch, capsys, test_i
 
 
 # Test login with mocked date 1/1/1999
-@patch('instructor.datetime') # Mock the datetime module in instructor.py
-def test_login_with_mocked_date_1999(mock_dt_module, monkeypatch, capsys, test_instructor):
+def test_login_with_mocked_date_1999(monkeypatch, capsys, test_instructor):
     # Arrange
-    mock_dt_module.datetime.now.return_value = datetime.datetime(1999, 1, 1)
+    mock_datetime = Mock()
+    mock_datetime.now.return_value = datetime.datetime(1999, 1, 1)
+    monkeypatch.setattr('instructor.datetime.datetime', mock_datetime)
     expected_semester_year_string = "Winter 1999"
     responses = iter([str(test_instructor["id"]), 'q'])
     monkeypatch.setattr('builtins.input', lambda _: next(responses))
@@ -134,10 +137,11 @@ def test_login_with_mocked_date_1999(mock_dt_module, monkeypatch, capsys, test_i
 
 
 # Test login with mocked date 10/15/2024
-@patch('instructor.datetime') # Mock the datetime module in instructor.py
-def test_login_with_mocked_date_2024_oct(mock_dt_module, monkeypatch, capsys, test_instructor):
+def test_login_with_mocked_date_2024_oct(monkeypatch, capsys, test_instructor):
     # Arrange
-    mock_dt_module.datetime.now.return_value = datetime.datetime(2024, 10, 15)
+    mock_datetime = Mock()
+    mock_datetime.now.return_value = datetime.datetime(2024, 10, 15)
+    monkeypatch.setattr('instructor.datetime.datetime', mock_datetime)
     expected_semester_year_string = "Fall 2024"
     responses = iter([str(test_instructor["id"]), 'q'])
     monkeypatch.setattr('builtins.input', lambda _: next(responses))

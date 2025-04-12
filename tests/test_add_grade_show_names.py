@@ -23,6 +23,7 @@ def test_course():
         "id": "CS101",
         "name": "Intro to CS",
         "instructor_id": 101,
+        "color_theme": "light",
         "roster": [201, 202, 203, 204, 205, 206]
     }
 
@@ -40,8 +41,9 @@ def test_student():
 def test_show_names_when_adding_grade(monkeypatch, capsys, test_instructor, test_student, test_course):
     #Arrange
     responses = iter([test_instructor["id"], 
-                     test_course["id"],
-                     "1", test_student["id"], "A", "\n", "x", "\n", "q"])
+                    "light",
+                    test_course["id"],
+                    "1", test_student["id"], "A", "\n", "x", "\n", "q"])
     monkeypatch.setattr('builtins.input', lambda _: next(responses))
 
     #Act

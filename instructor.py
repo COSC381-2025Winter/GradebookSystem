@@ -42,14 +42,19 @@ class Instructor:
         #read the whole file
         with open(root_name + "\\data.py", 'r') as file:
                 content = file.read()
-        
+
         
         new_id = max(INSTRUCTORS.keys()) + 1
         INSTRUCTORS[new_id]= name
          # Append the new instructor to the file
 
         with open(file_name, 'a') as file:
-             file.write(f'\nINSTRUCTORS[{new_id}] = "{name}"\n')
+            file.write('\nINSTRUCTORS = {')
+            for instructor in INSTRUCTORS:
+                file.write(f'\n\t{instructor}: "{INSTRUCTORS[instructor]}", ')
+                
+            # file.write(f'\nINSTRUCTORS[{new_id}] = "{name}"\n')
+            file.write('\n}')
              
         return new_id            
     

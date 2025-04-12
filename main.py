@@ -12,6 +12,7 @@ def main():
     testcase = Instructor.get_Instructors()
 
     test1 = os.path.dirname(os.path.abspath(__file__))
+    #print(testcase)
     #print(test1)
     #with open(test1 + "\\data.py", 'r') as file:
                 #content = file.read()
@@ -33,16 +34,14 @@ def main():
             if not instructor_name:
                 print_error("Instructor name cannot be empty")
                 continue
+            else:
+                instructor_id = Instructor.add_instructor(instructor_name)
+                print_success(f"Instructor '{instructor_name}' registered with ID {instructor_id}")
+                input("Press Enter to continue...")   
         elif new_choice == 'N':
                 clear_screen()
-
-        instructor_id = Instructor.add_instructor(instructor_name)
-        print_success(f"Instructor '{instructor_name}' registered with ID {instructor_id}")
-        input("Press Enter to continue...")      
         
         
-        
-
         user_input = input("Enter your Instructor ID (q for quit): ")
         if user_input == 'q' or user_input == 'Q':
             clear_screen()
@@ -75,7 +74,7 @@ def main():
             if not instructor.has_access(course_id):
                 print_error("Invalid Course ID or Access Denied.")
                 continue
-            break;
+            break
         
 
         while True:
@@ -167,6 +166,8 @@ def main():
             else:
                 print_error("Invalid choice.")
                 input("Press enter to try again.")
+
+  
 
 
 if __name__ == "__main__":

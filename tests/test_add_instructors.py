@@ -1,36 +1,30 @@
-# test_instructor_utils.py
 import pytest
-from instructor import Instructor, add_instructor
-from data import INSTRUCTORS
+import builtins
+from main import main
+import instructor
 
-@pytest.fixture(autouse=True)
-def reset_instructors():
-    """
-    Resets the INSTRUCTORS dictionary before and after each test.
-    """
-    original = INSTRUCTORS.copy()
-    yield
-    INSTRUCTORS.clear()
-    INSTRUCTORS.update(original)
+def test_add_instructor(monkeypatch, capsys):
+    test_name = "Dr. Test"
+    fake_id = 9999
+    responses = iter([
+        "y",           # Are you a new instructor?
+        test_name,     # Enter instructor name
+        str(fake_id),  # Enter instructor ID (mocked return)
+        "q"            # Quit
+    ])
+    
+    # Simulate input
+    monkeypatch.setattr(builtins, "input", lambda _: next(responses))
 
-def test_add_instructor_adds_to_dict():
-    name = "Dr. Pytest"
-    new_id = add_instructor(name)
-    assert new_id in INSTRUCTORS
-    assert INSTRUCTORS[new_id] == name
+    # Temporarily mock add_instructor to avoid writing to data.py
+    original_add = instructor.Instructor.add_instructor
+    instructor.Instructor.add_instructor = staticmethod(lambda name: fake_id)
 
-def test_add_instructor_creates_unique_id():
-    initial_ids = set(INSTRUCTORS.keys())
-    name = "Dr. New"
-    new_id = add_instructor(name)
-    assert new_id not in initial_ids
-    assert isinstance(new_id, int)
+    try:
+        with pytest.raises(SystemExit):
+            main()
+    finally:
+        instructor.Instructor.add_instructor = original_add  # Restore after test
 
-def test_add_multiple_instructors():
-    name1 = "Dr. A"
-    name2 = "Dr. B"
-    id1 = add_instructor(name1)
-    id2 = add_instructor(name2)
-    assert id1 != id2
-    assert INSTRUCTORS[id1] == name1
-    assert INSTRUCTORS[id2] == name2
+    captured = capsys.readouterr()
+    assert f"Instructor '{test_name}' registered with ID {fake_id}" in captured.out

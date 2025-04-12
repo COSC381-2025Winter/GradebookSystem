@@ -25,8 +25,10 @@ def test_quit_on_course_id_input(monkeypatch, quit_input):
     with pytest.raises(SystemExit):
         main()
 
-def test_check_empty_string(monkeypatch, capsys):
-    responses = iter(['101', 'light', 'CS101', '1', '', '201', 'A', '', 'x', '', 'q'])
+
+def test_check_empty_string(monkeypatch,capsys):
+    #arrange
+    responses = iter(['101', 'light','CS101','1','n', '', '201','A','','x','','q'])
     monkeypatch.setattr('builtins.input', lambda _: next(responses))
 
     with pytest.raises(SystemExit):

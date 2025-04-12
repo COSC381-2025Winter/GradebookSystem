@@ -79,6 +79,16 @@ def main():
                 for sid in ROSTERS[course_id]:
                     print_information(f"- {sid}: {STUDENTS[sid]}")
 
+
+                # call helper method for search_student function
+                gradebook.helper_search_student(course_id)
+
+                # replace add grade header
+                clear_screen()
+                print("========Add Grade========")
+
+                #remove the cast to an int, to check if its an empty string
+
                 student_id = input("Enter Student ID: ")
                 while student_id == "":
                     print("You must enter a student id! ")
@@ -115,6 +125,14 @@ def main():
             elif choice == "2":  # Edit Grade
                 clear_screen()
                 print("========Edit Grade========")
+
+                # call helper method for search_student function
+                gradebook.helper_search_student(course_id)
+
+                # replace edit grade header
+                clear_screen()
+                print("========Edit Grade========")
+
                 student_id = int(input("Enter Student ID: "))
                 new_grade = input("Enter New Grade: ")
                 gradebook.edit_grade(instructor, course_id, student_id, new_grade)
@@ -123,7 +141,7 @@ def main():
                 clear_screen()
                 print("========View Grades========")
                 gradebook.view_grades(instructor, course_id)
-
+            
             elif choice == "4":
                 try:
                     inp = input("Would you like to sort by ascending or decending order? (a/d): ")

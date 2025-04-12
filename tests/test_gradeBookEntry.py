@@ -15,19 +15,7 @@ def test_instructor():
 
 def test_empty_grade(monkeypatch, capsys, test_instructor):
     # Arrange
-    responses = iter([
-        test_instructor["id"],  # Instructor ID
-        "light",                # Theme input
-        "CS101",                # Course ID
-        "1",                    # Add Grade
-        "201",                  # Student ID
-        "",                     # Empty grade (should trigger error)
-        "99",                   # Valid fallback grade
-        "",                     # Enter to continue
-        "x",                    # Logout
-        "",                     # Enter after logout
-        "q"                     # Quit
-    ])
+    responses = iter([(test_instructor["id"]), "light","CS101", "1", "n", "201", "", "99", "", "x", "", "q"])
     monkeypatch.setattr('builtins.input', lambda _: next(responses))
 
     # Act

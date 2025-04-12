@@ -52,6 +52,7 @@ def test_negative_grade_input(monkeypatch, capsys):
         'light',    # Theme input
         'CS101',    # Course ID
         '1',        # Menu option: Add Grade
+        'n',        # do not search students by id/name
         '201',      # Student ID
         '-50',      # Negative grade
         '',         # Press enter after error
@@ -87,7 +88,8 @@ def test_non_numeric_grade_input(monkeypatch, capsys):
         '1',        # Instructor ID
         'light',    # Theme input
         'CS101',    # Course ID
-        '1',        # Menu option: Add Grade
+        '1',        # Add Grade
+        'n',
         '201',      # Student ID
         'abc',      # Non-numeric grade
         '',         # Press enter after error

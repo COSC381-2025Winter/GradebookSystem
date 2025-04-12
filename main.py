@@ -51,7 +51,6 @@ def main():
             print("2. Edit Grade")
             print("3. View Grades")
             print("4. Sort Grades")
-            print("5. Search Students")
             print("x. Logout")
 
             choice = input("Enter choice: ")
@@ -67,6 +66,13 @@ def main():
                 print_information("Students in this course:")
                 for sid in ROSTERS[course_id]:
                     print_information(f"- {sid}: {STUDENTS[sid]}")
+
+                # call helper method for search_student function
+                gradebook.helper_search_student(course_id)
+
+                # replace add grade header
+                clear_screen()
+                print("========Add Grade========")
 
                 #remove the cast to an int, to check if its an empty string
                 student_id = input("Enter Student ID: ")
@@ -109,6 +115,14 @@ def main():
             elif choice == "2":  # Edit Grade
                 clear_screen()
                 print("========Edit Grade========")
+
+                # call helper method for search_student function
+                gradebook.helper_search_student(course_id)
+
+                # replace edit grade header
+                clear_screen()
+                print("========Edit Grade========")
+
                 student_id = int(input("Enter Student ID: "))
                 new_grade = input("Enter New Grade: ")
                 gradebook.edit_grade(instructor, course_id, student_id, new_grade)
@@ -130,18 +144,6 @@ def main():
                 except: 
                     print("Please type either (a/d)")
                     input("Press enter to continue.")
-
-            elif choice == "5": # Search Student
-                while True:
-                    clear_screen()
-                    print("========Search Student=========")
-                    query = input("Enter Student ID or Name to search (or type 'back' to return): ")
-
-                    if query.lower() == 'back':
-                        break   # Exit the search functionality and return to course menu
-
-                    gradebook.search_student(course_id, query)
-                    input("\nPress enter to continue searching or type 'back' in the next prompt.") # Pause for user review
 
             else:
                 print_error("Invalid choice.")

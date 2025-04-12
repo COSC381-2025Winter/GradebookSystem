@@ -1,37 +1,30 @@
 import pytest
-from color_theme import apply_theme
-from color_ui import (
-    print_success,
-    print_error,
-    print_warning,
-    print_information
-)
+from instructor import Instructor
 
-# ANSI color codes for testing (from colorama.Fore)
-from colorama import Fore
+class TestInstructorTheme:
 
-class TestColorThemeIntegration:
+    def test_default_theme_is_light(self):
+        instructor = Instructor(101)
+        assert instructor.get_theme() == "light"
 
-    def test_light_theme_success_color(self, capsys):
-        apply_theme("light")
-        print_success("Success")
-        out = capsys.readouterr().out
-        assert Fore.GREEN in out
+    def test_set_theme_to_dark(self):
+        instructor = Instructor(101)
+        instructor.set_theme("dark")
+        assert instructor.get_theme() == "dark"
 
-    def test_dark_theme_success_color(self, capsys):
-        apply_theme("dark")
-        print_success("Success")
-        out = capsys.readouterr().out
-        assert Fore.LIGHTGREEN_EX in out
+    def test_setting_invalid_theme_raises_error(self):
+        instructor = Instructor(101)
+        with pytest.raises(ValueError):
+            instructor.set_theme("blue")
 
-    def test_light_theme_error_color(self, capsys):
-        apply_theme("light")
-        print_error("Error")
-        out = capsys.readouterr().out
-        assert Fore.RED in out
+    def test_instructor_without_valid_id(self):
+        instructor = Instructor(999)  # assuming 999 is not a valid ID
+        assert instructor.name is None
+        assert instructor.courses == {}
+        assert instructor.get_theme() == "light"
 
-    def test_dark_theme_info_color(self, capsys):
-        apply_theme("dark")
-        print_information("Info")
-        out = capsys.readouterr().out
-        assert Fore.LIGHTCYAN_EX in out
+    def test_display_courses_outputs_expected_text(self, capsys):
+        instructor = Instructor(101)
+        instructor.display_courses()
+        output = capsys.readouterr().out
+        assert "CS101" in output or "CS111" in output

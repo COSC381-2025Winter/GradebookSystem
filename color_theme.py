@@ -26,28 +26,28 @@ class ColorTheme:
         """
         return self.theme
 
-# ---------- Global Theme Integration Helpers ----------
-
-def apply_theme(theme_name):
+# 🔹 Module-level utility function for applying the theme globally
+def apply_theme(theme):
     """
-    Apply the selected theme globally by changing color_ui styles.
+    Apply the color theme globally using set_theme_colors.
     """
-    if theme_name == "dark":
-        theme_colors = {
-            "success": Fore.LIGHTGREEN_EX,
-            "error": Fore.LIGHTRED_EX,
-            "warning": Fore.LIGHTYELLOW_EX,
-            "info": Fore.LIGHTCYAN_EX
-        }
-    else:  # light theme (default)
-        theme_colors = {
+    if theme == "light":
+        set_theme_colors({
             "success": Fore.GREEN,
             "error": Fore.RED,
             "warning": Fore.YELLOW,
             "info": Fore.BLUE
-        }
+        })
+    elif theme == "dark":
+        set_theme_colors({
+            "success": Fore.LIGHTGREEN_EX,
+            "error": Fore.LIGHTRED_EX,
+            "warning": Fore.LIGHTYELLOW_EX,
+            "info": Fore.CYAN
+        })
+    else:
+        raise ValueError("Invalid theme. Choose 'light' or 'dark'.")
 
-    set_theme_colors(theme_colors)
-
+# 🔹 Module-level utility function for available themes
 def list_available_themes():
     return ["light", "dark"]

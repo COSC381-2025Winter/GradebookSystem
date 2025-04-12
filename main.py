@@ -5,7 +5,7 @@ from color_ui import print_success, print_error, print_information, print_warnin
 from color_theme import apply_theme, list_available_themes
 from util import clear_screen
 
-def prompt_for_theme():
+def prompt_for_theme(instructor):
     theme = None
     while theme not in list_available_themes():
         print_information("Available themes: " + ", ".join(list_available_themes()))
@@ -41,7 +41,7 @@ def main():
             continue
 
         # 🔹 Prompt for theme after successful login
-        prompt_for_theme()
+        prompt_for_theme(instructor)
 
         while True:
             clear_screen()

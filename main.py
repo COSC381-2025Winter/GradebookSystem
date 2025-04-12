@@ -123,9 +123,12 @@ def main():
                 clear_screen()
                 print("========Edit Grade========")
 
-                student_id = int(input("Enter Student ID: "))
-                new_grade = input("Enter New Grade: ")
-                gradebook.edit_grade(instructor, course_id, student_id, new_grade)
+                grade_exists = gradebook.grades_to_edit(instructor, course_id)
+
+                if(grade_exists == True):
+                    student_id = int(input("Enter Student ID: "))
+                    new_grade = input("Enter New Grade: ")
+                    gradebook.edit_grade(instructor, course_id, student_id, new_grade)
 
             elif choice == "3":  # View Grades
                 clear_screen()

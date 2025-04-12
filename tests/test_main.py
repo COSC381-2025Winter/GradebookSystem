@@ -145,7 +145,7 @@ def test_sort_courses(mocker, test_instructor):
 
 def test_grades_to_edit(monkeypatch, capsys, test_instructor):
     # Act & Arrange
-    responses = iter([test_instructor["id"], test_instructor["courses"][0], '1', '201', '99', '', '2', '201', '88', '', 'x', '', 'q'])
+    responses = iter([test_instructor["id"], test_instructor["courses"][0], '1', 'n', '201', '99', '', '2', 'n', '201', '88', '', 'x', '', 'q'])
     monkeypatch.setattr('builtins.input', lambda _: next(responses))
 
     with pytest.raises(SystemExit) as exitInfo:
@@ -154,3 +154,15 @@ def test_grades_to_edit(monkeypatch, capsys, test_instructor):
     # Assert
     captured = capsys.readouterr()
     assert "Alice (201): 99.0" in captured.out
+
+def test_edit_invalid_id(monkeypatch, capsys, test_instructor):
+    # Act & Arrange
+    responses = iter([test_instructor["id"], test_instructor["courses"][0], '1', 'n', '201', '99', '', '2', 'n', '202', '88', '', 'x', '', 'q'])
+    monkeypatch.setattr('builtins.input', lambda _: next(responses))
+
+    with pytest.raises(SystemExit) as exitInfo:
+        main()
+
+    # Assert
+    captured = capsys.readouterr()
+    assert "Error: No existing grade found. Use 'add' instead." in captured.out

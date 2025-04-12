@@ -2,7 +2,18 @@ from gradebook import Gradebook
 from instructor import Instructor
 from data import ROSTERS, COURSES, STUDENTS
 from color_ui import print_success, print_error, print_information, print_warning
+from color_theme import apply_theme, list_available_themes
 from util import clear_screen
+
+def prompt_for_theme(instructor):
+    theme = None
+    while theme not in list_available_themes():
+        print_information("Available themes: " + ", ".join(list_available_themes()))
+        theme = input("Choose a theme (light/dark): ").strip().lower()
+        if theme not in list_available_themes():
+            print_error("Invalid theme. Please choose 'light' or 'dark'.\n")
+    apply_theme(theme)
+    print_success(f"Theme '{theme}' applied successfully!\n")
 
 def main():
     gradebook = Gradebook()
@@ -29,7 +40,9 @@ def main():
             print_error("Invalid Instructor ID. Try again. (q for quit)")
             continue
 
-        
+        # 🔹 Prompt for theme after successful login
+        prompt_for_theme(instructor)
+
         while True:
             clear_screen()
             instructor.display_courses()
@@ -42,7 +55,6 @@ def main():
                 print_error("Invalid Course ID or Access Denied.")
                 continue
             break;
-        
 
         while True:
             clear_screen()
@@ -67,6 +79,7 @@ def main():
                 for sid in ROSTERS[course_id]:
                     print_information(f"- {sid}: {STUDENTS[sid]}")
 
+
                 # call helper method for search_student function
                 gradebook.helper_search_student(course_id)
 
@@ -75,23 +88,20 @@ def main():
                 print("========Add Grade========")
 
                 #remove the cast to an int, to check if its an empty string
+
                 student_id = input("Enter Student ID: ")
-                while(student_id == ""):
+                while student_id == "":
                     print("You must enter a student id! ")
                     student_id = input("Enter Student ID: ")
 
-                #cast the string back into an int
-                student_id = int (student_id)
-
+                student_id = int(student_id)
 
                 isGradeEmpty = True
-                while (isGradeEmpty):
+                while isGradeEmpty:
                     grade = input("Enter Grade: ") 
-
-                    if (not grade or grade == "" or grade.startswith(" ")):
+                    if not grade or grade == "" or grade.startswith(" "):
                         print("\tGrade cannot be empty")
                         continue
-                        
                     else: 
                         isGradeEmpty = False
 
@@ -145,7 +155,6 @@ def main():
             else:
                 print_error("Invalid choice.")
                 input("Press enter to try again.")
-
 
 if __name__ == "__main__":
     main()

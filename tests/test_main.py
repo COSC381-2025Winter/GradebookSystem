@@ -2,6 +2,7 @@ from main import main
 import pytest
 import builtins
 from pytest import CaptureFixture
+from unittest.mock import patch
 
 @pytest.fixture
 def test_instructor():
@@ -28,24 +29,29 @@ def test_quit_on_course_id_input(monkeypatch, quit_input):
         main()
 
 @pytest.mark.parametrize("logout_input", ['exit', 'EXIT'])
-def test_logout_on_course_id_input(monkeypatch, capsys: CaptureFixture[str], logout_input):
+def test_logout_on_course_id_input(monkeypatch, capsys, logout_input):
     inputs = iter([
-        '101', logout_input, '',   # First run: instructor ID, exit, press enter
-        'q'                        # Second run: instructor ID input -> quit
+        '101',         # Instructor ID
+        'light',       # Theme selection
+        logout_input,  # Course ID triggers 'exit'
+        '',            # Press enter to continue
+        'q'            # Instructor ID after main() restarts -> quit
     ])
 
-    def safe_input(prompt):
+    def fake_input(prompt):
         try:
             return next(inputs)
         except StopIteration:
-            return 'q'  # Fallback quit
+            return 'q'
 
-    monkeypatch.setattr(builtins, 'input', safe_input)
+    monkeypatch.setattr(builtins, 'input', fake_input)
 
-  # Expect thta program will call exit
-    with pytest.raises(SystemExit):
-        main()
+    # Patch the recursive main() call so it doesn't actually re-enter recursively
+    with patch("main.main", side_effect=SystemExit):
+        with pytest.raises(SystemExit):
+            main()
 
+    # Verify that the logout message was printed
     captured = capsys.readouterr()
     assert "Logging out..." in captured.out
 

@@ -21,7 +21,6 @@ def main():
             print_error("Invalid Instructor ID. Try again. (q for quit)")
             continue
 
-        
         while True:
             clear_screen()
             instructor.display_courses()
@@ -33,16 +32,16 @@ def main():
             if not instructor.has_access(course_id):
                 print_error("Invalid Course ID or Access Denied.")
                 continue
-            break;
-        
+            break
 
         while True:
             clear_screen()
-            print(f"\nSelected Course: {course_id}: {COURSES[course_id]["name"]}")
+            print(f"\nSelected Course: {course_id}: {COURSES[course_id]['name']}")
             print("\n1. Add Grade")
             print("2. Edit Grade")
             print("3. View Grades")
             print("4. Sort Grades")
+            print("5. Bulk Upload Grades")
             print("x. Logout")
 
             choice = input("Enter choice: ")
@@ -52,31 +51,26 @@ def main():
                 input("Press enter to continue.")
                 break
 
-            if choice == "1":  # Add Grade
+            elif choice == "1":
                 clear_screen()
                 print("========Add Grade========\nStudents in this course:")
                 print_information("Students in this course:")
                 for sid in ROSTERS[course_id]:
                     print_information(f"- {sid}: {STUDENTS[sid]}")
 
-                #remove the cast to an int, to check if its an empty string
                 student_id = input("Enter Student ID: ")
-                while(student_id == ""):
-                    print("You must enter a student id! ")
+                while student_id == "":
+                    print("You must enter a student ID!")
                     student_id = input("Enter Student ID: ")
 
-                #cast the string back into an int
-                student_id = int (student_id)
-
+                student_id = int(student_id)
 
                 isGradeEmpty = True
-                while (isGradeEmpty):
+                while isGradeEmpty:
                     grade = input("Enter Grade: ") 
-
-                    if (not grade or grade == "" or grade.startswith(" ")):
+                    if not grade or grade.startswith(" "):
                         print("\tGrade cannot be empty")
                         continue
-                        
                     else: 
                         isGradeEmpty = False
 
@@ -85,11 +79,11 @@ def main():
                     if grade_value < 0:
                         print_error("Grade cannot be negative.")
                         input("Press enter to continue.")
-                        continue  # Go back to menu
+                        continue
                 except ValueError:
                     print_error("Invalid grade format. Please enter a number.")
                     input("Press enter to continue.")
-                    continue  # Go back to menu
+                    continue
 
                 if student_id in ROSTERS[course_id]:
                     gradebook.add_grade(instructor, course_id, student_id, grade_value)
@@ -97,35 +91,58 @@ def main():
                     print_error("Invalid Student ID.")
                     input("Press enter to continue.")
 
-            elif choice == "2":  # Edit Grade
+            elif choice == "2":
                 clear_screen()
                 print("========Edit Grade========")
                 student_id = int(input("Enter Student ID: "))
                 new_grade = input("Enter New Grade: ")
                 gradebook.edit_grade(instructor, course_id, student_id, new_grade)
 
-            elif choice == "3":  # View Grades
+            elif choice == "3":
                 clear_screen()
                 print("========View Grades========")
                 gradebook.view_grades(instructor, course_id)
 
             elif choice == "4":
                 try:
-                    inp = input("Would you like to sort by ascending or decending order? (a/d): ")
+                    inp = input("Would you like to sort by ascending or descending order? (a/d): ")
                     inp = inp.lower()
-                    if inp == 'a' or inp == 'd':
+                    if inp in ['a', 'd']:
                         gradebook.sort_courses(inp)
                     else:
                         print("Please type either (a/d)")
                         input("Press enter to continue.")
-                except: 
+                except:
                     print("Please type either (a/d)")
                     input("Press enter to continue.")
+
+            elif choice == "5":
+                clear_screen()
+                print("=== Bulk Upload Grades ===")
+
+                file_path = input("Enter the path to your CSV file (q to cancel): ")
+                if file_path.lower() == 'q':
+                    input("Press enter to return to the main menu.")
+                    continue
+
+                successes, errors = instructor.bulk_upload_grades(course_id, file_path)
+
+                if successes:
+                    print_success(f"\n{len(successes)} rows processed successfully.")
+                    for s in successes:
+                        print_information(s)
+
+                if errors:
+                    print_error(f"\n{len(errors)} errors occurred.")
+                    for e in errors:
+                        print_error(e)
+                    print_warning("\nPlease fix errors and re-upload if needed.")
+
+                input("\nPress enter to continue.")
 
             else:
                 print_error("Invalid choice.")
                 input("Press enter to try again.")
-
 
 if __name__ == "__main__":
     main()

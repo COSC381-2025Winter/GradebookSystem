@@ -55,3 +55,11 @@ ROSTERS = {
 
 
 
+
+INSTRUCTORS = {
+	101: "Dr. Smith", 
+	102: "Dr. Johnson", 
+	103: "Prof. Lee", 
+	104: "Dr. Davis", 
+	105: "dr.Ahmed", 
+}

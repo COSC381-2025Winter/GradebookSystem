@@ -7,7 +7,7 @@ def test_add_instructor(monkeypatch, capsys):
     test_name = "Dr. Test"
     fake_id = 9999
     responses = iter([
-        "y",           # Are you a new instructor?
+        "0",           # Are you a new instructor?
         test_name,     # Enter instructor name
         str(fake_id),  # Enter instructor ID (mocked return)
         "q"            # Quit

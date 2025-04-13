@@ -8,27 +8,17 @@ import os
 def main():
     gradebook = Gradebook()
 
-    
-    testcase = Instructor.get_Instructors()
-
-    test1 = os.path.dirname(os.path.abspath(__file__))
-    #print(testcase)
-    #print(test1)
-    #with open(test1 + "\\data.py", 'r') as file:
-                #content = file.read()
-    #print(content)
-
-
     while True:
        
-        #clear_screen()
+        clear_screen()
         print("\n--- Gradebook System ---")
-        new_choice = input("Are you a new instructor? (y/n): ")
-
-        new_choice = new_choice.upper()
-
-       
-        if new_choice == 'Y':
+        
+        clear_screen()
+        user_input = input("Enter your Instructor ID  (q for quit) 0 for new instructor: ")
+        if user_input == 'q' or user_input == 'Q':
+            clear_screen()
+            exit()
+        elif user_input == '0':
             clear_screen()
             instructor_name = input("What is the Instructors name, ie: Dr. Smith: ")
             if not instructor_name:
@@ -37,19 +27,11 @@ def main():
             else:
                 instructor_id = Instructor.add_instructor(instructor_name)
                 print_success(f"Instructor '{instructor_name}' registered with ID {instructor_id}")
-                input("Press Enter to continue...")   
-        elif new_choice == 'N':
-                clear_screen()
-        
-        
-        user_input = input("Enter your Instructor ID (q for quit): ")
-        if user_input == 'q' or user_input == 'Q':
-            clear_screen()
-            exit()
+                input("Press Enter to continue...")
         elif not str(user_input).isnumeric():
             print_error("Invalid Instructor ID. Try again. (q for quit)")
             continue
-
+       
         try:
             instructor_id = int(user_input)
         except ValueError:
@@ -80,6 +62,7 @@ def main():
         while True:
             clear_screen()
             print(f"\nSelected Course: {course_id}: {COURSES[course_id]['name']}")
+            print("0. Add Grade")
             print("1. Add Grade")
             print("2. Edit Grade")
             print("3. View Grades")
@@ -168,7 +151,5 @@ def main():
                 input("Press enter to try again.")
 
   
-
-
 if __name__ == "__main__":
     main()

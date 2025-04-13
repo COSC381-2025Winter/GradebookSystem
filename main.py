@@ -12,7 +12,7 @@ def main():
         user_input = input("Enter your Instructor ID (q for quit): ")
         if user_input == 'q' or user_input == 'Q':
             clear_screen()
-            print_warning("--- Gradebook System ---\nEnding program...")
+            print_warning("--- Gradebook System ---\nEnding program...") # -----------------
             exit()
         elif not str(user_input).isnumeric():
             print_error("Invalid Instructor ID. Try again. (q for quit)")
@@ -29,7 +29,8 @@ def main():
         if not instructor.is_authenticated():
             print_error("Invalid Instructor ID. Try again. (q for quit)")
             continue
-
+        else:
+            print_success("Instructor found!\n") # ----------------------------
         
         while True:
             clear_screen()
@@ -38,12 +39,14 @@ def main():
            
             if course_id.lower() == 'q':
                 clear_screen()
-                print_warning("--- Gradebook System ---\nEnding program...")
+                print_warning("--- Gradebook System ---\nEnding program...") # ---------------------
                 exit()
             course_id = course_id.upper()
             if not instructor.has_access(course_id):
                 print_error("Invalid Course ID or Access Denied.")
                 continue
+            else:
+                print_success("Valid Course ID!") # -----------------------------------
             break;
         
 
@@ -80,7 +83,7 @@ def main():
                 student_id = int (student_id)
 
                 if student_id in ROSTERS[course_id]:
-                    print_success(f"Student found!\n")
+                    print_success(f"Student found!\n") # ------------------------------------------------
 
                 isGradeEmpty = True
                 while (isGradeEmpty):
@@ -106,6 +109,7 @@ def main():
 
                 if student_id in ROSTERS[course_id]:
                     gradebook.add_grade(instructor, course_id, student_id, grade_value)
+                    print_success("Grade added successfully!\n") # ---------------------------------
                 else:
                     print_error("Invalid Student ID.")
                     input("Press enter to continue.")
@@ -116,6 +120,7 @@ def main():
                 student_id = int(input("Enter Student ID: "))
                 new_grade = input("Enter New Grade: ")
                 gradebook.edit_grade(instructor, course_id, student_id, new_grade)
+                print_success(f"Student with ID {student_id} grade changed successfully!") # --------------------------
 
             elif choice == "3":  # View Grades
                 clear_screen()

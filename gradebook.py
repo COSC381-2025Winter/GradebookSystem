@@ -81,10 +81,12 @@ class Gradebook:
         # Sort the list alphabetically 
         if arrangement_type == 'd':
             sorted_grades = {course: dict(sorted(students.items(), key=lambda item: item[1]["grade"])) for course, students in self.grades.items()}
+            print_success("Grades printed in descending order!\n") # --------------------------------
 
         # Reverses the dictionary
         elif arrangement_type == 'a':
             sorted_grades = {course: dict(sorted(students.items(), key=lambda item: item[1]["grade"], reverse=True)) for course, students in self.grades.items()}
+            print_success("Grades printed in ascending order!\n") # --------------------------------
 
         # Replace the original dictionary with sorted one
         self.grades = sorted_grades

@@ -1,5 +1,7 @@
 from main import main
 import pytest
+import builtins
+from pytest import CaptureFixture
 
 @pytest.fixture
 def test_instructor():
@@ -25,6 +27,27 @@ def test_quit_on_course_id_input(monkeypatch, quit_input):
     with pytest.raises(SystemExit):
         main()
 
+@pytest.mark.parametrize("logout_input", ['exit', 'EXIT'])
+def test_logout_on_course_id_input(monkeypatch, capsys: CaptureFixture[str], logout_input):
+    inputs = iter([
+        '101', logout_input, '',   # First run: instructor ID, exit, press enter
+        'q'                        # Second run: instructor ID input -> quit
+    ])
+
+    def safe_input(prompt):
+        try:
+            return next(inputs)
+        except StopIteration:
+            return 'q'  # Fallback quit
+
+    monkeypatch.setattr(builtins, 'input', safe_input)
+
+  # Expect thta program will call exit
+    with pytest.raises(SystemExit):
+        main()
+
+    captured = capsys.readouterr()
+    assert "Logging out..." in captured.out
 
 def test_check_empty_string(monkeypatch,capsys):
     #arrange

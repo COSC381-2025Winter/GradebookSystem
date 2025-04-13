@@ -37,6 +37,7 @@ def main():
             if course_id.lower() == 'q':
                 clear_screen()
                 exit()
+                
             if course_id.lower() ==  'exit':
                  print_warning("Logging out...")
                  input("Press enter to continue.")

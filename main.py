@@ -28,12 +28,11 @@ def main():
 
         if not instructor.is_authenticated():
             print_error("Invalid Instructor ID. Try again. (q for quit)")
-            continue
-        else:
-            print_success("Instructor found!\n") # ----------------------------
+            continue 
         
         while True:
             clear_screen()
+            print_success("Instructor found!\n") # ----------------------------
             instructor.display_courses()
             course_id = input("Enter Course ID (q for quit): ")
            
@@ -126,7 +125,6 @@ def main():
                 clear_screen()
                 print("========View Grades========")
                 gradebook.view_grades(instructor, course_id)
-
             elif choice == "4":
                 try:
                     inp = input("Would you like to sort by ascending or decending order? (a/d): ")

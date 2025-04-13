@@ -61,6 +61,7 @@ class Gradebook:
             for student_id, data in self.grades[course_id].items():
                 student_name = STUDENTS[student_id]
                 print_information(f"{student_name} ({student_id}): {data['grade']}")
+            print_success("\nGrades found!\n") # -----------------------------------------------
         else:
             print_warning("No grades have been entered for this course yet.")
         

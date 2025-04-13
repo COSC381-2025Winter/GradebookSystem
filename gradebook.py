@@ -7,7 +7,11 @@ class Gradebook:
         self.grades = {}  # {course_id: {student_id: {"grade": x, "timestamp": y}}}
 
     def add_grade(self, instructor, course_id, student_id, grade, force=False):
-        """Adds a grade for a student in a specific course"""
+        """
+        Adds a grade for a student in a specific course.
+        The 'force' parameter allows overwriting an existing grade, 
+        used when adding a student with an initial grade.
+        """
         if not instructor.has_access(course_id):
             print_error("Access Denied: You are not authorized to grade this course.")
             input("Press enter to continue.")

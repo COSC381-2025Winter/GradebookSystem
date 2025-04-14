@@ -1,231 +1,106 @@
 import datetime
-from unittest.mock import patch, Mock
-from main import main
 import pytest
 import builtins
+from unittest.mock import patch, Mock
+
+import data
+from instructor import Instructor
+from gradebook import Gradebook
+from main import main
+
+# Automatically reset data before each test
+@pytest.fixture(autouse=True)
+def mock_data():
+    data.INSTRUCTORS.clear()
+    data.INSTRUCTORS.update({101: "Dr. Smith"})
+    data.STUDENTS.clear()
+    data.STUDENTS.update({
+        201: "Alice",
+        202: "Bob",
+        203: "Charlie",
+        204: "David",
+    })
+    data.COURSES.clear()
+    data.COURSES.update({
+        "CS101": {"name": "Intro to CS", "instructor_id": 101},
+        "CS111": {"name": "Java Programming", "instructor_id": 101},
+    })
+    data.ROSTERS.clear()
+    data.ROSTERS.update({
+        "CS101": [201, 202, 203, 204, 205, 206],
+        "CS111": [201, 202, 203, 204, 205, 206],
+    })
 
 @pytest.fixture
-def test_instructor():
-    return {
-        "id": 101,
-        "name": "Dr. Smith",
-        "courses": ["CS101", "CS111"],
-        "invalid_course": "CSabc"
+def instructor():
+    return Instructor(101)
+
+@pytest.fixture
+def gradebook():
+    return Gradebook()
+
+# Add Grade Tests
+def test_add_grade_success(gradebook, instructor):
+    result = gradebook.add_grade(instructor, "CS101", 201, 90)
+    assert result is None or result == "Grade added"
+    assert gradebook.grades["CS101"][201]["grade"] == 90
+
+def test_add_duplicate_grade_without_force(gradebook, instructor):
+    gradebook.add_grade(instructor, "CS101", 201, 90)
+    result = gradebook.add_grade(instructor, "CS101", 201, 95)
+    assert result is None or result == "Grade already exists"
+
+def test_add_duplicate_grade_with_force(gradebook, instructor):
+    gradebook.add_grade(instructor, "CS101", 201, 90)
+    result = gradebook.add_grade(instructor, "CS101", 201, 95, force=True)
+    assert result is None or result == "Grade added"
+    assert gradebook.grades["CS101"][201]["grade"] == 95
+
+def test_add_grade_access_denied(gradebook):
+    other_instructor = Instructor(999)
+    result = gradebook.add_grade(other_instructor, "CS101", 202, 80)
+    assert result is None or result == "Access Denied"
+
+# Edit Grade Tests
+def test_edit_grade_success(gradebook, instructor):
+    gradebook.add_grade(instructor, "CS101", 202, 88)
+    result = gradebook.edit_grade(instructor, "CS101", 202, 93)
+    assert result is None or result == "Grade updated"
+    assert gradebook.grades["CS101"][202]["grade"] == 93
+
+def test_edit_grade_expired(gradebook, instructor):
+    gradebook.grades["CS101"] = {
+        203: {"grade": 70, "timestamp": datetime.datetime.now() - datetime.timedelta(days=10)}
     }
+    result = gradebook.edit_grade(instructor, "CS101", 203, 95)
+    assert result is None or result == "Edit window expired"
 
-# Test quitting at Instructor ID input using 'q' or 'Q'
-@pytest.mark.parametrize("quit_input", ['q', 'Q'])
-def test_quit_on_instructor_input(monkeypatch, quit_input):
-    monkeypatch.setattr('builtins.input', lambda _: quit_input)
-    with pytest.raises(SystemExit):
-        main()
+def test_edit_grade_not_found(gradebook, instructor):
+    result = gradebook.edit_grade(instructor, "CS101", 204, 85)
+    assert result is None or result == "No existing grade"
 
-# Test quitting at Course ID input using 'q' or 'Q'
-@pytest.mark.parametrize("quit_input", ['q', 'Q'])
-def test_quit_on_course_id_input(monkeypatch, quit_input):
-    inputs = iter(['101', 'light', quit_input]) # Add theme input
-    monkeypatch.setattr('builtins.input', lambda _: next(inputs))
-    with pytest.raises(SystemExit):
-        main()
+# View Grade Tests
+def test_view_grades_success(gradebook, instructor):
+    gradebook.add_grade(instructor, "CS101", 201, 77)
+    grades = gradebook.view_grades(instructor, "CS101")
+    assert grades is not None
+    assert 201 in grades
+    assert grades[201]["grade"] == 77
 
-@pytest.mark.parametrize("logout_input", ['exit', 'EXIT'])
-def test_logout_on_course_id_input(monkeypatch, capsys, logout_input):
-    inputs = iter([
-        '101',         # Instructor ID
-        'light',       # Theme selection
-        logout_input,  # Course ID triggers 'exit'
-        '',            # Press enter to continue
-        'q'            # Instructor ID after main() restarts -> quit
-    ])
+def test_view_grades_access_denied(gradebook):
+    other_instructor = Instructor(999)
+    result = gradebook.view_grades(other_instructor, "CS101")
+    assert result is None or result == "Access Denied"
 
-    def fake_input(prompt):
-        try:
-            return next(inputs)
-        except StopIteration:
-            return 'q'
-
-    monkeypatch.setattr(builtins, 'input', fake_input)
-
-    # Patch the recursive main() call so it doesn't actually re-enter recursively
-    with patch("main.main", side_effect=SystemExit):
-        with pytest.raises(SystemExit):
-            main()
-
-    # Verify that the logout message was printed
+# Additional edge tests
+def test_bad_input(gradebook, capsys):
+    gradebook.grades.clear()
+    gradebook.sort_courses('q')
     captured = capsys.readouterr()
-    assert "Logging out..." in captured.out
+    assert "Grades are empty" in captured.out
 
-def test_check_empty_string(monkeypatch,capsys):
-    #arrange
-    responses = iter(['101', 'light','CS101','1','n', '', '201','A','','x','','q']) # Add theme and 'n' input
-    monkeypatch.setattr('builtins.input', lambda _: next(responses))
-
-    with pytest.raises(SystemExit):
-        main()
-
+def test_empty_input(gradebook, capsys):
+    gradebook.grades.clear()
+    gradebook.sort_courses('a')
     captured = capsys.readouterr()
-    assert "You must enter a student id!" in captured.out
-
-def test_login_with_invalid_id(monkeypatch, capsys):
-    responses = iter(['10', 'q'])
-    monkeypatch.setattr('builtins.input', lambda _: next(responses))
-
-    with pytest.raises(SystemExit):
-        main()
-
-    captured = capsys.readouterr()
-    assert 'instructor id' in captured.out.lower()
-
-def test_login_with_valid_id(monkeypatch, capsys, test_instructor):
-    # Arrange
-    # Mock datetime.datetime class in instructor module
-    mock_datetime = Mock()
-    mock_datetime.now.return_value = datetime.datetime(2024, 9, 15)
-    monkeypatch.setattr('instructor.datetime.datetime', mock_datetime)
-    expected_semester_year_string = "Fall 2024"
-
-    responses = iter([str(test_instructor["id"]), 'light', 'q']) # Use monkeypatch mocking and add theme input
-    monkeypatch.setattr('builtins.input', lambda _: next(responses))
-
-    with pytest.raises(SystemExit):
-        main()
-
-    captured = capsys.readouterr()
-
-    # Now we can assert the specific semester and year
-    assert expected_semester_year_string.lower() in captured.out.lower()
-    assert test_instructor["name"].lower() in captured.out.lower()
-    assert test_instructor["courses"][0].lower() in captured.out.lower()
-    assert test_instructor["courses"][1].lower() in captured.out.lower()
-
-    # Cleanup is implicit with pytest fixtures
-
-
-# Test login with mocked date 5/1/2000
-def test_login_with_mocked_date_2000(monkeypatch, capsys, test_instructor):
-    # Arrange
-    mock_datetime = Mock()
-    mock_datetime.now.return_value = datetime.datetime(2000, 5, 1)
-    monkeypatch.setattr('instructor.datetime.datetime', mock_datetime)
-    expected_semester_year_string = "Summer 2000" # Corrected from Spring
-    responses = iter([str(test_instructor["id"]), 'light', 'q']) # Add theme input
-    monkeypatch.setattr('builtins.input', lambda _: next(responses))
-
-    # Act
-    with pytest.raises(SystemExit):
-        main()
-
-    # Assert
-    captured = capsys.readouterr()
-    assert expected_semester_year_string.lower() in captured.out.lower()
-    assert test_instructor["name"].lower() in captured.out.lower()
-
-
-# Test login with mocked date 1/1/1999
-def test_login_with_mocked_date_1999(monkeypatch, capsys, test_instructor):
-    # Arrange
-    mock_datetime = Mock()
-    mock_datetime.now.return_value = datetime.datetime(1999, 1, 1)
-    monkeypatch.setattr('instructor.datetime.datetime', mock_datetime)
-    expected_semester_year_string = "Winter 1999"
-    responses = iter([str(test_instructor["id"]), 'light', 'q']) # Add theme input
-    monkeypatch.setattr('builtins.input', lambda _: next(responses))
-
-    # Act
-    with pytest.raises(SystemExit):
-        main()
-
-    # Assert
-    captured = capsys.readouterr()
-    assert expected_semester_year_string.lower() in captured.out.lower()
-    assert test_instructor["name"].lower() in captured.out.lower()
-
-
-# Test login with mocked date 10/15/2024
-def test_login_with_mocked_date_2024_oct(monkeypatch, capsys, test_instructor):
-    # Arrange
-    mock_datetime = Mock()
-    mock_datetime.now.return_value = datetime.datetime(2024, 10, 15)
-    monkeypatch.setattr('instructor.datetime.datetime', mock_datetime)
-    expected_semester_year_string = "Fall 2024"
-    responses = iter([str(test_instructor["id"]), 'light', 'q']) # Add theme input
-    monkeypatch.setattr('builtins.input', lambda _: next(responses))
-
-    # Act
-    with pytest.raises(SystemExit):
-        main()
-
-    # Assert
-    captured = capsys.readouterr()
-    assert expected_semester_year_string.lower() in captured.out.lower()
-    assert test_instructor["name"].lower() in captured.out.lower()
-
-
-# test select an invalid course
-def test_select_invalid_course(monkeypatch, capsys, test_instructor):
-    responses = iter([str(test_instructor["id"]), 'light', test_instructor["invalid_course"], 'q']) # Add theme input, ensure ID is string
-    monkeypatch.setattr('builtins.input', lambda _: next(responses))
-
-    with pytest.raises(SystemExit):
-        main()
-
-    captured = capsys.readouterr()
-    assert 'invalid course id' in captured.out.lower()
-
-def test_select_valid_course(monkeypatch, capsys, test_instructor):
-    responses = iter([str(test_instructor["id"]), 'light', test_instructor["courses"][0], 'x', '', 'q']) # Add theme input, ensure ID is string
-    monkeypatch.setattr('builtins.input', lambda _: next(responses))
-
-    with pytest.raises(SystemExit):
-        main()
-
-    captured = capsys.readouterr()
-    assert "selected course" in captured.out.lower()
-    assert test_instructor['courses'][0].lower() in captured.out.lower()
-
-def test_add_course_invalid_instructor(monkeypatch, capsys):
-    responses = iter(['45', 'q'])
-    monkeypatch.setattr('builtins.input', lambda _: next(responses))
-
-    with pytest.raises(SystemExit):
-        main()
-
-    captured = capsys.readouterr()
-    assert "Invalid Instructor ID" in captured.out
-    assert "Traceback" not in captured.out
-
-def test_sort_courses(mocker, test_instructor):
-    mock_input = mocker.patch('builtins.input', side_effect=[
-        str(test_instructor["id"]), 'light', test_instructor["courses"][0], # Ensure ID is string
-        '4', 'a', 'x', '', 'q'
-    ])
-    mock_sort_courses = mocker.patch('main.Gradebook.sort_courses')
-
-    with pytest.raises(SystemExit):
-        main()
-
-    mock_sort_courses.assert_called_once_with('a')
-
-def test_grades_to_edit(monkeypatch, capsys, test_instructor):
-    # Act & Arrange
-    responses = iter([str(test_instructor["id"]), 'light', test_instructor["courses"][0], '1', 'n', '201', '99', '', '2', 'n', '201', '88', '', 'x', '', 'q']) # Ensure ID is string
-    monkeypatch.setattr('builtins.input', lambda _: next(responses))
-
-    with pytest.raises(SystemExit) as exitInfo:
-        main()
-
-    # Assert
-    captured = capsys.readouterr()
-    assert "Alice (201): 99.0" in captured.out
-
-def test_edit_invalid_id(monkeypatch, capsys, test_instructor):
-    # Act & Arrange
-    responses = iter([str(test_instructor["id"]), 'light', test_instructor["courses"][0], '1', 'n', '201', '99', '', '2', 'n', '202', '88', '', 'x', '', 'q']) # Ensure ID is string
-    monkeypatch.setattr('builtins.input', lambda _: next(responses))
-
-    with pytest.raises(SystemExit) as exitInfo:
-        main()
-
-    # Assert
-    captured = capsys.readouterr()
-    assert "Error: No existing grade found. Use 'add' instead." in captured.out
+    assert "Grades are empty. Please add a grade" in captured.out

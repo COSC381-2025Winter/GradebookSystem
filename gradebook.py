@@ -1,6 +1,7 @@
 import datetime
 from data import COURSES, STUDENTS, ROSTERS
 from color_ui import print_success, print_error, print_information, print_warning
+from util import clear_screen
 
 class Gradebook:
     def __init__(self):
@@ -88,7 +89,6 @@ class Gradebook:
 
         input("Press enter to continue.")
 
-
     def convert_to_letter_grade(self, numeric_grade):
         """Converts a numeric grade to a letter grade with +/-"""
         if numeric_grade >= 97:
@@ -117,9 +117,9 @@ class Gradebook:
             return 'D−'
         else:
             return 'F'
-        
+
     def sort_courses(self, arrangement_type):
-        # Checks if dictionary is empty
+        """Sorts course grades in ascending or descending order"""
         if not self.grades:
             print("Grades are empty. Please add a grade")
             input("Press enter to continue.")
@@ -130,13 +130,67 @@ class Gradebook:
             input("Press enter to continue.")
             return
 
-        # Sort the list alphabetically 
         if arrangement_type == 'd':
             sorted_grades = {course: dict(sorted(students.items(), key=lambda item: item[1]["grade"])) for course, students in self.grades.items()}
-
-        # Reverses the dictionary
-        elif arrangement_type == 'a':
+        else:  # arrangement_type == 'a'
             sorted_grades = {course: dict(sorted(students.items(), key=lambda item: item[1]["grade"], reverse=True)) for course, students in self.grades.items()}
 
-        # Replace the original dictionary with sorted one
         self.grades = sorted_grades
+
+    def grades_to_edit(self, instructor, course_id):
+        """Displays all grades for a course and returns True if grades exist"""
+        if not instructor.has_access(course_id):
+            print_error("Access Denied: You are not authorized to view this course.")
+            input("Press enter to continue.")
+            return False
+
+        if course_id in self.grades:
+            print_information(f"\nGrades for {COURSES[course_id]['name']} ({course_id}):")
+            for student_id, data in self.grades[course_id].items():
+                student_name = STUDENTS[student_id]
+                print_information(f"{student_name} ({student_id}): {data['grade']}")
+            return True
+        else:
+            print_warning("No grades have been entered for this course yet. Use 'add' instead")
+            input("Press enter to continue.")
+            return False
+
+    def search_student(self, course_id, query):
+        """Search for a student by ID or name in the course roster"""
+        matches = []
+        query_str = str(query).lower()
+
+        for student_id in ROSTERS[course_id]:
+            student_name = STUDENTS.get(student_id, "Unknown")
+            if query_str in student_name.lower() or query == str(student_id):
+                matches.append((student_id, student_name))
+
+        if matches:
+            print("\nMatching Students:")
+            for sid, name in matches:
+                print(f"- {name} (ID: {sid})")
+        else:
+            print("No matching students found.")
+
+    def helper_search_student(self, course_id):
+        """Helper function that prompts and handles student search input"""
+        answer = True
+        while answer:
+            answer = input("Would you like to search for students by ID/name?(y/n): ")
+            if answer.lower() == "y":
+                answer = False
+                while True:
+                    clear_screen()
+                    print("========Search Student=========")
+                    query = input("Enter Student ID or Name to search (or type 'back' to return): ")
+
+                    if query.lower() == 'back':
+                        break
+
+                    self.search_student(course_id, query)
+                    input("\nPress enter to continue searching or type 'back' in the next prompt.")
+            elif answer.lower() == "n":
+                answer = False
+                break
+            else:
+                print("Invalid input")

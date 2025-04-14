@@ -39,10 +39,6 @@ def instructor():
 def gradebook():
     return Gradebook()
 
-@pytest.fixture(autouse=True)
-def patch_input(monkeypatch):
-    monkeypatch.setattr("builtins.input", lambda _: "")
-
 # Add Grade Tests
 def test_add_grade_success(gradebook, instructor):
     result = gradebook.add_grade(instructor, "CS101", 201, 90)

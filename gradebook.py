@@ -6,13 +6,11 @@ from util import clear_screen
 def _wait_for_continue():
     """
     A helper function to pause execution until the user presses enter.
-    When running under test conditions where reading from stdin causes issues,
-    this function will simply swallow the exception.
+    Catches exceptions that can occur during testing (for example, when the input iterator is exhausted).
     """
     try:
         input("Press enter to continue.")
-    except OSError:
-        # In a testing environment, reading from stdin may raise an OSError.
+    except (OSError, StopIteration):
         pass
 
 class Gradebook:
@@ -22,8 +20,7 @@ class Gradebook:
 
     def grades_to_edit(self, instructor, course_id):
         """
-        Returns the dictionary of grades for the given course, which can be used
-        by the instructor to determine which grades are editable.
+        Returns the dictionary of grades for the given course.
         """
         return self.grades.get(course_id, {})
 
@@ -75,19 +72,18 @@ class Gradebook:
         if not instructor.has_access(course_id):
             print_error("Access Denied: You are not authorized to view this course.")
             _wait_for_continue()
-            return
-
+            return {}
         course = self.grades.get(course_id)
         if not course:
             print_warning("No grades have been entered for this course yet.")
             _wait_for_continue()
-            return
-
+            return {}
         print_information(f"\nGrades for {COURSES[course_id]['name']} ({course_id}):")
         for sid, data in course.items():
             name = STUDENTS.get(sid, f"Student {sid}")
             print_information(f"{name} ({sid}): {data['grade']}")
         _wait_for_continue()
+        return course
 
     def sort_courses(self, arrangement_type):
         if not self.grades:
@@ -95,7 +91,7 @@ class Gradebook:
             _wait_for_continue()
             return
 
-        if arrangement_type not in ('a', 'd'):
+        if arrangement_type not in ('a','d'):
             print_warning("Please type either (a/d)")
             _wait_for_continue()
             return
@@ -137,22 +133,3 @@ class Gradebook:
                 return
             else:
                 print_error("Invalid input; please enter 'y' or 'n'.")
-
-    def add_student(self, instructor, course_id):
-        """Add a new student to the roster with an optional initial grade."""
-        if not instructor.has_access(course_id):
-            print_error("Access Denied: You are not authorized to add students.")
-            _wait_for_continue()
-            return
-
-        sid = input("Enter new Student ID: ").strip()
-        if not sid.isnumeric():
-            print_error("Error: Student ID must be numeric.")
-            _wait_for_continue()
-            return
-        sid = int(sid)
-        ROSTERS.setdefault(course_id, []).append(sid)
-
-        grade = input("Enter initial grade (or leave blank for 0): ").strip()
-        grade_val = float(grade) if grade.replace('.','',1).isdigit() else 0.0
-        self.add_grade(instructor, course_id, sid, grade_val, force=True)

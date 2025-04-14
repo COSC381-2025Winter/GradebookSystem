@@ -1,9 +1,12 @@
 import datetime
 import pytest
+import builtins
+from unittest.mock import patch, Mock
 
 import data
 from instructor import Instructor
 from gradebook import Gradebook
+from main import main
 
 # Automatically reset data.INSTRUCTORS, data.COURSES, data.STUDENTS, data.ROSTERS before each test
 @pytest.fixture(autouse=True)
@@ -36,6 +39,7 @@ def instructor():
 def gradebook():
     return Gradebook()
 
+# Add Grade Tests
 def test_add_grade_success(gradebook, instructor):
     result = gradebook.add_grade(instructor, "CS101", 201, 90)
     assert result == "Grade added"
@@ -57,6 +61,7 @@ def test_add_grade_access_denied(gradebook):
     result = gradebook.add_grade(other_instructor, "CS101", 202, 80)
     assert result == "Access Denied"
 
+# Edit Grade Tests
 def test_edit_grade_success(gradebook, instructor):
     gradebook.add_grade(instructor, "CS101", 202, 88)
     result = gradebook.edit_grade(instructor, "CS101", 202, 93)
@@ -74,6 +79,7 @@ def test_edit_grade_not_found(gradebook, instructor):
     result = gradebook.edit_grade(instructor, "CS101", 204, 85)
     assert result == "No existing grade"
 
+# View Grade Tests
 def test_view_grades_success(gradebook, instructor):
     gradebook.add_grade(instructor, "CS101", 201, 77)
     grades = gradebook.view_grades(instructor, "CS101")

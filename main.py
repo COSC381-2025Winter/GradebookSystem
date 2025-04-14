@@ -33,19 +33,17 @@ def main():
         while True:
             clear_screen()
             instructor.display_courses()
-            course_id_input = input("Enter Course ID (q for quit): ")
-
-            if str(course_id_input).lower() == 'q':
+            course_id = input("Enter Course ID (q for quit / exit to logout): ")
+            if course_id.lower() == 'q':
                 clear_screen()
                 exit()
 
-            try:
-                course_id = str(course_id_input).upper()
-            except AttributeError:
-                print_error("Invalid Course ID format.")
+            if course_id.lower() == 'exit':
+                print_warning("Logging out...")
                 input("Press enter to continue.")
-                continue
+                main()
 
+            course_id = course_id.upper()
             if not instructor.has_access(course_id):
                 print_error("Invalid Course ID or Access Denied.")
                 input("Press enter to continue.")

@@ -1,109 +1,139 @@
 import datetime
 from data import COURSES, STUDENTS, ROSTERS
+from color_ui import print_success, print_error, print_information, print_warning
 from util import clear_screen
 
 class Gradebook:
     def __init__(self):
-        # grades: {course_id: {student_id: {"grade": x, "timestamp": y}}}
+        # { course_id: { student_id: { "grade": x, "timestamp": datetime } } }
         self.grades = {}
 
     def add_grade(self, instructor, course_id, student_id, grade, force=False):
-        """
-        Adds a grade for a student in a specific course.
-        Returns a status string for testing.
-        """
         if not instructor.has_access(course_id):
-            return "Access Denied"
+            print_error("Access Denied: You are not authorized to grade this course.")
+            input("Press enter to continue.")
+            return
 
         if course_id not in self.grades:
             self.grades[course_id] = {}
 
         now = datetime.datetime.now()
         if student_id in self.grades[course_id] and not force:
-            return "Grade already exists"
-
-        self.grades[course_id][student_id] = {"grade": grade, "timestamp": now}
-        return "Grade added"
+            print_error("Error: Grade already exists. Use 'edit' instead.")
+            input("Press enter to continue.")
+        else:
+            self.grades[course_id][student_id] = {"grade": grade, "timestamp": now}
+            name = STUDENTS.get(student_id, f"Student {student_id}")
+            print_success(f"Grade added for {name} ({student_id}): {grade}")
+            input("Press enter to continue.")
 
     def edit_grade(self, instructor, course_id, student_id, new_grade):
-        """
-        Edits an existing grade within 7 days of the original entry.
-        Returns a status string for testing.
-        """
         if not instructor.has_access(course_id):
-            return "Access Denied"
+            print_error("Access Denied: You are not authorized to edit this course.")
+            input("Press enter to continue.")
+            return
 
-        if course_id in self.grades and student_id in self.grades[course_id]:
-            old_timestamp = self.grades[course_id][student_id]["timestamp"]
-            now = datetime.datetime.now()
-            if (now - old_timestamp).days <= 7:
-                self.grades[course_id][student_id] = {"grade": new_grade, "timestamp": now}
-                return "Grade updated"
-            else:
-                return "Edit window expired"
-        else:
-            return "No existing grade"
+        course = self.grades.get(course_id, {})
+        entry = course.get(student_id)
+        if not entry:
+            print_error("Error: No existing grade found. Use 'add' instead.")
+            input("Press enter to continue.")
+            return
+
+        delta = datetime.datetime.now() - entry["timestamp"]
+        if delta.days > 7:
+            print_error("Error: Grade editing period (7 days) has expired.")
+            input("Press enter to continue.")
+            return
+
+        now = datetime.datetime.now()
+        self.grades[course_id][student_id] = {"grade": new_grade, "timestamp": now}
+        name = STUDENTS.get(student_id, f"Student {student_id}")
+        print_success(f"Grade updated for {name} ({student_id}): {new_grade}")
+        input("Press enter to continue.")
 
     def view_grades(self, instructor, course_id):
-        """
-        Returns the grades dict for a course or an access error string.
-        """
         if not instructor.has_access(course_id):
-            return "Access Denied"
-        return self.grades.get(course_id, {})
+            print_error("Access Denied: You are not authorized to view this course.")
+            input("Press enter to continue.")
+            return
+
+        course = self.grades.get(course_id)
+        if not course:
+            print_warning("No grades have been entered for this course yet.")
+            input("Press enter to continue.")
+            return
+
+        print_information(f"\nGrades for {COURSES[course_id]['name']} ({course_id}):")
+        for sid, data in course.items():
+            name = STUDENTS.get(sid, f"Student {sid}")
+            print_information(f"{name} ({sid}): {data['grade']}")
+        input("Press enter to continue.")
+
+    def sort_courses(self, arrangement_type):
+        if not self.grades:
+            print_warning("Grades are empty. Please add a grade")
+            input("Press enter to continue.")
+            return
+
+        if arrangement_type not in ('a','d'):
+            print_warning("Please type either (a/d)")
+            input("Press enter to continue.")
+            return
+
+        reverse = (arrangement_type == 'a')
+        for course, students in self.grades.items():
+            self.grades[course] = dict(
+                sorted(students.items(), key=lambda kv: kv[1]["grade"], reverse=reverse)
+            )
 
     def search_student(self, course_id, query):
-        """Search for a student by ID or name in the course roster"""
         matches = []
-        query_str = str(query).lower()
-        for student_id in ROSTERS.get(course_id, []):
-            student_name = STUDENTS.get(student_id, "Unknown")
-            if query_str in student_name.lower() or query_str == str(student_id):
-                matches.append((student_id, student_name))
+        q = str(query).lower()
+        for sid in ROSTERS.get(course_id, []):
+            name = STUDENTS.get(sid, "Unknown")
+            if q in name.lower() or q == str(sid):
+                matches.append((sid, name))
+
         if matches:
-            return [f"- {name} (ID: {sid})" for sid, name in matches]
+            print_information("\nMatching Students:")
+            for sid, name in matches:
+                print_information(f"- {name} (ID: {sid})")
         else:
-            return []
+            print_warning("No matching students found.")
 
     def helper_search_student(self, course_id):
-        """Interactive helper to search for students before grading"""
         while True:
-            answer = input("Would you like to search for students by ID/name?(y/n): ")
-            if answer.lower() == 'y':
-                while True:
-                    clear_screen()
-                    print("========Search Student=========")
-                    query = input("Enter Student ID or Name to search (or type 'back' to return): ")
-                    if query.lower() == 'back':
-                        break
-                    results = self.search_student(course_id, query)
-                    if results:
-                        for line in results:
-                            print(line)
-                    else:
-                        print("No matching students found.")
-                    cont = input("\nPress enter to continue searching or type 'back' in the next prompt.")
-                    if cont.lower() == 'back':
-                        break
-                break
-            elif answer.lower() == 'n':
-                break
+            ans = input("Search students by ID/name? (y/n): ").strip().lower()
+            if ans == 'y':
+                clear_screen()
+                print_information("======== Search Student ========")
+                query = input("Enter Student ID or Name (or 'back'): ")
+                if query.lower() == 'back':
+                    return
+                self.search_student(course_id, query)
+                input("Press enter to continue.")
+            elif ans == 'n':
+                return
             else:
-                print("invalid input")
+                print_error("Invalid input; please enter 'y' or 'n'.")
 
-    def sort_courses(self, order):
-        """Sorts each course's grades by grade value.
-        'a' for ascending, 'd' for descending.
-        Returns the updated grades dict or an error string.
-        """
-        if not self.grades:
-            return "No grades to sort"
-        if order not in ('a', 'd'):
-            return "Invalid sort order"
-        sorted_grades = {}
-        for cid, students in self.grades.items():
-            reverse = (order == 'd')
-            sorted_items = sorted(students.items(), key=lambda item: item[1]['grade'], reverse=reverse)
-            sorted_grades[cid] = dict(sorted_items)
-        self.grades = sorted_grades
-        return self.grades
+    def add_student(self, instructor, course_id):
+        """Add a new student to the roster with an optional initial grade."""
+        if not instructor.has_access(course_id):
+            print_error("Access Denied: You are not authorized to add students.")
+            input("Press enter to continue.")
+            return
+
+        sid = input("Enter new Student ID: ").strip()
+        if not sid.isnumeric():
+            print_error("Error: Student ID must be numeric.")
+            input("Press enter to continue.")
+            return
+        sid = int(sid)
+        ROSTERS.setdefault(course_id, []).append(sid)
+
+        grade = input("Enter initial grade (or leave blank for 0): ").strip()
+        grade_val = float(grade) if grade.replace('.','',1).isdigit() else 0.0
+        self.add_grade(instructor, course_id, sid, grade_val, force=True)
+

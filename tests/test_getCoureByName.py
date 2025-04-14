@@ -19,7 +19,7 @@ def test_func(test_get_course_code_by_name):        # Assert
     
 def test_multiple_inputs(monkeypatch,capsys):
     # Simulating multiple inputs by using a list
-    inputs = iter([102,"CS102","x","x","q"])    # test for regular input 
+    inputs = iter([102,"light","CS102","x","x","q"])    # test for regular input 
     
    
     
@@ -38,7 +38,7 @@ def test_multiple_inputs(monkeypatch,capsys):
     
     print(captured.out)
     
-    assert "[33mLogging out...\x1b[0m\n\n--- Gradebook System ---\n" in captured.out
+    assert "1mLogging out...\x1b[0m\n\n--- Gradebook System ---\n" in captured.out
 
 
 

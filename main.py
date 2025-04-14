@@ -1,4 +1,4 @@
-rom util import clear_screen
+from util import clear_screen
 from data import INSTRUCTORS, COURSES, STUDENTS, ROSTERS
 from gradebook import Gradebook
 from instructor import Instructor

@@ -16,15 +16,15 @@ def test_edit_grade_prompt(monkeypatch, gradebook):
     student_id = "123"
     initial_grade = 85
 
-    # First time: add a grade
-    inputs = iter(["", "Y", ""])
-    # Second time: mock input to simulate user typing "Y" to update
+    
     monkeypatch.setattr("builtins.input", lambda *args, **kwargs: "Y")
     gradebook.add_grade(instructor, course_id, student_id, initial_grade)
 
-    # Act: update the grade
-    gradebook.add_grade(instructor, course_id, student_id, 95)
+    gradebook.add_grade(instructor, course_id, student_id, initial_grade)
 
-    # Assert: check if grade was updated
+    # Act: edit the grade
+    gradebook.edit_grade(instructor, course_id, student_id, 95)
+
+    # Assert
     updated_grade = gradebook.grades[course_id][student_id]["grade"]
     assert updated_grade == 95

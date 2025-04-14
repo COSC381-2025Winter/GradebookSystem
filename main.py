@@ -38,7 +38,7 @@ def main():
             if str(course_id).lower() == 'q':
                 clear_screen()
                 exit()
-            course_id = course_id.upper()
+            course_id = str(course_id).upper()
             if not instructor.has_access(course_id):
                 print_error("Invalid Course ID or Access Denied.")
                 input("Press enter to continue.")

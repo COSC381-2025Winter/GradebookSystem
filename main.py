@@ -1,14 +1,18 @@
-from util import *
+from util import clear_screen, print_error, print_success, print_warning, print_information
 from data import INSTRUCTORS, COURSES, STUDENTS, ROSTERS
 from gradebook import Gradebook
 from instructor import Instructor
 
+# Main function to start the Gradebook System
+# Handles instructor authentication and menu navigation
 def main():
     gradebook = Gradebook()
+
     while True:
         clear_screen()
         print("\n--- Gradebook System ---")
         user_input = input("Enter your Instructor ID (q for quit): ")
+
         if str(user_input).lower() == 'q':
             clear_screen()
             exit()
@@ -30,13 +34,16 @@ def main():
             input("Press enter to continue.")
             continue
 
+        # Instructor authenticated, prompt for course selection
         while True:
             clear_screen()
             instructor.display_courses()
             course_id_input = input("Enter Course ID (q for quit): ")
+
             if str(course_id_input).lower() == 'q':
                 clear_screen()
                 exit()
+
             try:
                 course_id = str(course_id_input).upper()
             except AttributeError:
@@ -48,8 +55,10 @@ def main():
                 print_error("Invalid Course ID or Access Denied.")
                 input("Press enter to continue.")
                 continue
-            break
 
+            break  # Valid course selected
+
+        # Course selected, present options to the instructor
         while True:
             clear_screen()
             print(f"\nSelected Course: {course_id}: {COURSES[course_id]['name']}")
@@ -82,11 +91,11 @@ def main():
 
                 isGradeEmpty = True
                 while isGradeEmpty:
-                    grade = input("Enter Grade: ") 
+                    grade = input("Enter Grade: ")
                     if not grade or grade.strip() == "":
                         print("\tGrade cannot be empty")
                         continue
-                    else: 
+                    else:
                         isGradeEmpty = False
 
                 try:
@@ -150,3 +159,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

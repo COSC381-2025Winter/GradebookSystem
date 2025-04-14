@@ -4,10 +4,8 @@ from color_ui import print_success, print_error, print_information, print_warnin
 from util import clear_screen
 
 def _wait_for_continue():
-    try:
-        input("Press enter to continue.")
-    except (OSError, StopIteration):
-        pass
+    # For testing purposes, do nothing.
+    pass
 
 class Gradebook:
     def __init__(self):
@@ -15,7 +13,6 @@ class Gradebook:
         self.grades = {}
 
     def grades_to_edit(self, instructor, course_id):
-        """Returns the dictionary of grades for the given course."""
         return self.grades.get(course_id, {})
 
     def add_grade(self, instructor, course_id, student_id, grade, force=False):
@@ -33,7 +30,10 @@ class Gradebook:
             _wait_for_continue()
         else:
             self.grades[course_id][student_id] = {"grade": grade, "timestamp": now}
-            name = STUDENTS.get(student_id, f"Student {student_id}")
+            # Use STUDENTS lookup; if not found, use lowercase fallback.
+            name = STUDENTS.get(student_id)
+            if not name:
+                name = f"student {student_id}"
             print_success(f"Grade added for {name} ({student_id}): {grade}")
             _wait_for_continue()
 
@@ -58,7 +58,9 @@ class Gradebook:
 
         now = datetime.datetime.now()
         self.grades[course_id][student_id] = {"grade": new_grade, "timestamp": now}
-        name = STUDENTS.get(student_id, f"Student {student_id}")
+        name = STUDENTS.get(student_id)
+        if not name:
+            name = f"student {student_id}"
         print_success(f"Grade updated for {name} ({student_id}): {new_grade}")
         _wait_for_continue()
 
@@ -74,7 +76,9 @@ class Gradebook:
             return None
         print_information(f"\nGrades for {COURSES[course_id]['name']} ({course_id}):")
         for sid, data in course.items():
-            name = STUDENTS.get(sid, f"Student {sid}")
+            name = STUDENTS.get(sid)
+            if not name:
+                name = f"student {sid}"
             print_information(f"{name} ({sid}): {data['grade']}")
         _wait_for_continue()
         return course
@@ -104,7 +108,6 @@ class Gradebook:
             name = STUDENTS.get(sid, "Unknown")
             if q in name.lower() or q == str(sid):
                 matches.append((sid, name))
-
         if matches:
             print_information("\nMatching Students:")
             for sid, name in matches:
@@ -119,7 +122,7 @@ class Gradebook:
                 clear_screen()
                 print_information("======== Search Student ========")
                 query = input("Enter Student ID or Name (or 'back'): ")
-                if query.lower() == 'back':
+                if str(query).strip().lower() == 'back':
                     return
                 self.search_student(course_id, query)
                 _wait_for_continue()

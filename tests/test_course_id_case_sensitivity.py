@@ -14,7 +14,7 @@ x. logout
   
 def test_Course_selection_with_lowercase(monkeypatch, capsys,expected_output):
 # Act & Arrange
-    responses = iter(["101","cs101", 'x', ' ', 'q'])
+    responses = iter(["101", "light", "cs101", 'x', ' ', 'q'])
     monkeypatch.setattr('builtins.input', lambda _: next(responses))
     
     with pytest.raises(SystemExit) as exitInfo:
@@ -28,7 +28,7 @@ def test_Course_selection_with_lowercase(monkeypatch, capsys,expected_output):
     
 def test_Course_selection_with_uppercase(monkeypatch, capsys,expected_output):
 # Act & Arrange
-    responses = iter(["101","CS101", 'x', ' ', 'q'])
+    responses = iter(["101", "light", "CS101", 'x', ' ', 'q'])
     monkeypatch.setattr('builtins.input', lambda _: next(responses))
     
     with pytest.raises(SystemExit) as exitInfo:
@@ -42,7 +42,7 @@ def test_Course_selection_with_uppercase(monkeypatch, capsys,expected_output):
     
 def test_Course_selection_with_mixed_input(monkeypatch, capsys,expected_output):
 # Act & Arrange
-    responses = iter(["101","Cs101", 'x', ' ', 'q'])
+    responses = iter(["101", "light", "Cs101", 'x', ' ', 'q'])
     monkeypatch.setattr('builtins.input', lambda _: next(responses))
     
     with pytest.raises(SystemExit) as exitInfo:

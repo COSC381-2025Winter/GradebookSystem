@@ -1,13 +1,20 @@
 import sys
+import sys
 from instructor import Instructor
 from gradebook import Gradebook
-from util import clear_screen
+from util import clear_screen as real_clear_screen
 from color_ui import print_error
+
+# Define a local clear_screen() that only clears if stdout is a TTY.
+def clear_screen():
+    import sys
+    if sys.stdout.isatty():
+        real_clear_screen()
 
 def main():
     try:
         gradebook = Gradebook()
-        # Outer loop: log in as instructor.
+        # Log in:
         clear_screen()
         print("\n--- Gradebook System ---")
         user_input = str(input("Enter your Instructor ID (q for quit): ")).strip()
@@ -16,7 +23,7 @@ def main():
             sys.exit()
         if not user_input.isnumeric():
             print_error("Invalid Instructor ID. Try again. (q for quit)")
-            sys.exit()  # End program if invalid
+            sys.exit()
         instructor = Instructor(int(user_input))
         if not instructor.is_authenticated():
             print_error("Invalid Instructor ID. Try again. (q for quit)")
@@ -50,7 +57,7 @@ def main():
             print("x. logout")
             choice = str(input("Enter choice: ")).strip().lower()
             if choice == 'x':
-                sys.exit()  # Exit immediately on logout
+                sys.exit()  # Immediately exit after logout.
             if choice == '1':
                 clear_screen()
                 gradebook.helper_search_student(course_id)

@@ -1,4 +1,4 @@
-from util import clear_screen
+rom util import clear_screen
 from data import INSTRUCTORS, COURSES, STUDENTS, ROSTERS
 from gradebook import Gradebook
 from instructor import Instructor
@@ -150,9 +150,9 @@ def main():
                     if new_student_id not in ROSTERS[course_id]:
                         ROSTERS[course_id].append(new_student_id)
                         gradebook.add_grade(instructor, course_id, new_student_id, default_grade, force=True)
-                        print(f"\033[92mStudent {new_student_id} added with grade {default_grade}.\033[0m")
+                        print("\033[92mStudent {} added with grade {}.\033[0m".format(new_student_id, default_grade))
                     else:
-                        print(f"\033[93mStudent {new_student_id} is already in the course.\033[0m")
+                        print("\033[93mStudent {} is already in the course.\033[0m".format(new_student_id))
                 except ValueError:
                     print("\033[91mInvalid input. Please enter valid numbers.\033[0m")
                 input("Press enter to continue.")

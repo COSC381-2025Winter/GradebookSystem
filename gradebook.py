@@ -4,10 +4,6 @@ from color_ui import print_success, print_error, print_information, print_warnin
 from util import clear_screen
 
 def _wait_for_continue():
-    """
-    A helper function to pause execution until the user presses enter.
-    Catches exceptions that can occur during testing (for example, when the input iterator is exhausted).
-    """
     try:
         input("Press enter to continue.")
     except (OSError, StopIteration):
@@ -15,13 +11,11 @@ def _wait_for_continue():
 
 class Gradebook:
     def __init__(self):
-        # { course_id: { student_id: { "grade": x, "timestamp": datetime } } }
+        # Grades structure: { course_id: { student_id: { "grade": x, "timestamp": datetime } } }
         self.grades = {}
 
     def grades_to_edit(self, instructor, course_id):
-        """
-        Returns the dictionary of grades for the given course.
-        """
+        """Returns the dictionary of grades for the given course."""
         return self.grades.get(course_id, {})
 
     def add_grade(self, instructor, course_id, student_id, grade, force=False):
@@ -72,12 +66,12 @@ class Gradebook:
         if not instructor.has_access(course_id):
             print_error("Access Denied: You are not authorized to view this course.")
             _wait_for_continue()
-            return {}
+            return "Access Denied"
         course = self.grades.get(course_id)
         if not course:
             print_warning("No grades have been entered for this course yet.")
             _wait_for_continue()
-            return {}
+            return None
         print_information(f"\nGrades for {COURSES[course_id]['name']} ({course_id}):")
         for sid, data in course.items():
             name = STUDENTS.get(sid, f"Student {sid}")
@@ -91,7 +85,7 @@ class Gradebook:
             _wait_for_continue()
             return
 
-        if arrangement_type not in ('a','d'):
+        if arrangement_type not in ('a', 'd'):
             print_warning("Please type either (a/d)")
             _wait_for_continue()
             return
@@ -120,7 +114,7 @@ class Gradebook:
 
     def helper_search_student(self, course_id):
         while True:
-            ans = input("Search students by ID/name? (y/n): ").strip().lower()
+            ans = str(input("Search students by ID/name? (y/n): ")).strip().lower()
             if ans == 'y':
                 clear_screen()
                 print_information("======== Search Student ========")

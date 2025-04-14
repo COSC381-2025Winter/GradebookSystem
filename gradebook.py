@@ -158,3 +158,13 @@ class Gradebook:
 
             else:
                 print("invalid input")
+    def delete_grade(self, instructor, course_id, student_id):
+        if not instructor.has_access(course_id):
+            print_error("Access denied.")
+            return
+        if course_id in self.grades and student_id in self.grades[course_id]:
+            del self.grades[course_id][student_id]
+            print_success(f"Grade for student {student_id} deleted successfully.")
+        else:
+            print_error("Grade not found for the student.")
+

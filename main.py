@@ -63,6 +63,7 @@ def main():
             print("2. Edit Grade")
             print("3. View Grades")
             print("4. Sort Grades")
+            print("5. Delete Grades")
             print("x. Logout")
 
             choice = input("Enter choice: ")
@@ -150,6 +151,23 @@ def main():
                         input("Press enter to continue.")
                 except: 
                     print("Please type either (a/d)")
+                    input("Press enter to continue.")
+
+
+            elif choice == "5":  # Delete Grade
+                clear_screen()
+                print("========Delete Grade========")
+                gradebook.helper_search_student(course_id)
+                grade_exists = gradebook.grades_to_edit(instructor, course_id)
+
+                if grade_exists:
+                    student_id = input("Enter Student ID to delete grade: ")
+                    confirm = input(f"Are you sure you want to delete the grade for student {student_id}? (y/n): ").lower()
+                if confirm == 'y':
+                    gradebook.delete_grade(instructor, course_id, int(student_id))
+                    print_success("Grade deleted successfully.")
+                else:
+                    print_warning("Deletion canceled.")
                     input("Press enter to continue.")
 
             else:

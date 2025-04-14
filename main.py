@@ -42,7 +42,6 @@ def main():
 
         prompt_for_theme(instructor)
 
-<<<<<<< HEAD
         while True:  # Stay logged in
             # Course selection loop
             while True:
@@ -53,26 +52,6 @@ def main():
                     print_warning("Logging out...")
                     input("Press enter to continue.")
                     return  # End program
-=======
-        while True:
-            clear_screen()
-            instructor.display_courses()
-            course_id = input("Enter Course ID (q for quit / exit to logout): ")
-            if course_id.lower() == 'q':
-                clear_screen()
-                exit()
-                
-            if course_id.lower() ==  'exit':
-                 print_warning("Logging out...")
-                 input("Press enter to continue.")
-                 main()
-
-            course_id = course_id.upper()
-            if not instructor.has_access(course_id):
-                print_error("Invalid Course ID or Access Denied.")
-                continue
-            break;
->>>>>>> main
 
                 course_id = course_id.upper()
                 if not instructor.has_access(course_id):

@@ -57,7 +57,9 @@ def test_logout_on_course_id_input(monkeypatch, capsys, logout_input):
 
 def test_check_empty_string(monkeypatch,capsys):
     #arrange
+
     responses = iter(['101', 'light','CS101','1','n', '', '201','A','','x','','q']) # Add theme and 'n' input
+
     monkeypatch.setattr('builtins.input', lambda _: next(responses))
 
     with pytest.raises(SystemExit):
@@ -183,13 +185,27 @@ def test_select_valid_course(monkeypatch, capsys, test_instructor):
     assert "selected course" in captured.out.lower()
     assert test_instructor['courses'][0].lower() in captured.out.lower()
 
+#test an invalid student ID
+def test_invalid_studentID(monkeypatch, capsys, test_instructor):
+    # Act & Arrange
+    responses = iter([test_instructor["id"], test_instructor["courses"][0], '1', '1', '', 'x', '', 'q'])
+    monkeypatch.setattr('builtins.input', lambda _: next(responses))
+
+    with pytest.raises(SystemExit) as exitInfo:
+        main()
+
+    # Assert
+    captured = capsys.readouterr()
+    assert "Invalid Student ID." in captured.out
+    
 def test_add_course_invalid_instructor(monkeypatch, capsys):
     responses = iter(['45', 'q'])
     monkeypatch.setattr('builtins.input', lambda _: next(responses))
 
     with pytest.raises(SystemExit):
         main()
-
+    
+    # Assert
     captured = capsys.readouterr()
     assert "Invalid Instructor ID" in captured.out
     assert "Traceback" not in captured.out

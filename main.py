@@ -85,7 +85,6 @@ def main():
                 for sid in ROSTERS[course_id]:
                     print_information(f"- {sid}: {STUDENTS[sid]}")
 
-
                 # call helper method for search_student function
                 gradebook.helper_search_student(course_id)
 
@@ -100,6 +99,7 @@ def main():
                     print("You must enter a student id! ")
                     student_id = input("Enter Student ID: ")
 
+                #trys to cast the string back into an int
                 student_id = int(student_id)
 
                 isGradeEmpty = True
@@ -112,18 +112,42 @@ def main():
                         isGradeEmpty = False
 
                 try:
-                    grade_value = float(grade)
-                    if grade_value < 0:
-                        print_error("Grade cannot be negative.")
-                        input("Press enter to continue.")
-                        continue  # Go back to menu
+                    student_id = int (student_id)
                 except ValueError:
-                    print_error("Invalid grade format. Please enter a number.")
-                    input("Press enter to continue.")
-                    continue  # Go back to menu
+                        print_error("Invalid ID format. Please enter a number.")
+                        continue  # Go back to menu
 
                 if student_id in ROSTERS[course_id]:
-                    gradebook.add_grade(instructor, course_id, student_id, grade_value)
+                    isGradeEmpty = True
+                    while (isGradeEmpty):
+                        grade = input("Enter Grade: ") 
+                        if (not grade or grade == "" or grade.startswith(" ")):
+                            print("\tGrade cannot be empty")
+                            continue
+
+                        else: 
+                            isGradeEmpty = False
+
+                    try:
+                        grade_value = float(grade)
+
+                        if grade_value < 0:
+                            print_error("Grade cannot be negative.")
+                            input("Press enter to continue.")
+                            continue  # Go back to menu
+                    except ValueError:
+                        print_error("Invalid grade format. Please enter a number.")
+                    try:
+                        grade_value = float(grade)
+                        if grade_value < 0:
+                            print_error("Grade cannot be negative.")
+                            input("Press enter to continue.")
+                            continue  # Go back to menu
+                    except ValueError:
+                        print_error("Invalid grade format. Please enter a number.")
+                        input("Press enter to continue.")
+                        continue  # Go back to menu
+
                 else:
                     print_error("Invalid Student ID.")
                     input("Press enter to continue.")

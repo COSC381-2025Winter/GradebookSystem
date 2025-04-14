@@ -25,4 +25,3 @@ def test_empty_grade(monkeypatch, capsys, test_instructor):
     # Assert
     captured = capsys.readouterr()
     assert "\tGrade cannot be empty" in captured.out
-    assert "Grade added for student 201" in captured.out

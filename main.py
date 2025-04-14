@@ -1,4 +1,4 @@
-from util import clear_screen, print_error, print_success, print_warning, print_information
+from util import clear_screen
 from data import INSTRUCTORS, COURSES, STUDENTS, ROSTERS
 from gradebook import Gradebook
 from instructor import Instructor
@@ -17,20 +17,20 @@ def main():
             clear_screen()
             exit()
         elif not str(user_input).isnumeric():
-            print_error("Invalid Instructor ID. Try again. (q for quit)")
+            print("\033[91mInvalid Instructor ID. Try again. (q for quit)\033[0m")
             continue
 
         try:
             instructor_id = int(user_input)
         except ValueError:
-            print_error("Please enter a valid number.")
+            print("\033[91mPlease enter a valid number.\033[0m")
             input("Press enter to continue.")
             continue
 
         instructor = Instructor(instructor_id)
 
         if not instructor.is_authenticated():
-            print_error("Invalid Instructor ID. Try again. (q for quit)")
+            print("\033[91mInvalid Instructor ID. Try again. (q for quit)\033[0m")
             input("Press enter to continue.")
             continue
 
@@ -47,12 +47,12 @@ def main():
             try:
                 course_id = str(course_id_input).upper()
             except AttributeError:
-                print_error("Invalid Course ID format.")
+                print("\033[91mInvalid Course ID format.\033[0m")
                 input("Press enter to continue.")
                 continue
 
             if not instructor.has_access(course_id):
-                print_error("Invalid Course ID or Access Denied.")
+                print("\033[91mInvalid Course ID or Access Denied.\033[0m")
                 input("Press enter to continue.")
                 continue
 
@@ -72,21 +72,21 @@ def main():
             choice = input("Enter choice: ")
 
             if choice == "x":
-                print_warning("Logging out...")
+                print("\033[93mLogging out...\033[0m")
                 input("Press enter to continue.")
                 break
 
             elif choice == "1":
                 clear_screen()
                 print("========Add Grade========\nStudents in this course:")
-                print_information("Students in this course:")
+                print("\033[94mStudents in this course:\033[0m")
                 for sid in ROSTERS[course_id]:
-                    print_information(f"- {sid}: {STUDENTS.get(sid, 'Unknown')}")
+                    print(f"\033[94m- {sid}: {STUDENTS.get(sid, 'Unknown')}\033[0m")
 
                 try:
                     student_id = int(input("Enter Student ID: "))
                 except ValueError:
-                    print_error("Invalid student ID.")
+                    print("\033[91mInvalid student ID.\033[0m")
                     continue
 
                 isGradeEmpty = True
@@ -101,10 +101,10 @@ def main():
                 try:
                     numeric_grade = float(grade)
                     if numeric_grade < 0:
-                        print_error("Grade cannot be negative.")
+                        print("\033[91mGrade cannot be negative.\033[0m")
                         continue
                 except ValueError:
-                    print_error("Invalid grade format. Please enter a number.")
+                    print("\033[91mInvalid grade format. Please enter a number.\033[0m")
                     continue
 
                 gradebook.add_grade(instructor, course_id, student_id, numeric_grade)
@@ -116,7 +116,7 @@ def main():
                     new_grade = float(input("Enter New Grade: "))
                     gradebook.edit_grade(instructor, course_id, student_id, new_grade)
                 except ValueError:
-                    print_error("Invalid input.")
+                    print("\033[91mInvalid input.\033[0m")
                     input("Press enter to try again.")
                     continue
 
@@ -150,11 +150,11 @@ def main():
                     if new_student_id not in ROSTERS[course_id]:
                         ROSTERS[course_id].append(new_student_id)
                         gradebook.add_grade(instructor, course_id, new_student_id, default_grade, force=True)
-                        print_success(f"Student {new_student_id} added with grade {default_grade}.")
+                        print(f"\033[92mStudent {new_student_id} added with grade {default_grade}.\033[0m")
                     else:
-                        print_warning(f"Student {new_student_id} is already in the course.")
+                        print(f"\033[93mStudent {new_student_id} is already in the course.\033[0m")
                 except ValueError:
-                    print_error("Invalid input. Please enter valid numbers.")
+                    print("\033[91mInvalid input. Please enter valid numbers.\033[0m")
                 input("Press enter to continue.")
 
 if __name__ == "__main__":

@@ -1,86 +1,33 @@
 import datetime
 import pytest
 
-# Mock Data
-INSTRUCTORS = {
-    101: "Dr. Smith",
-}
+import data
+from instructor import Instructor
+from gradebook import Gradebook
 
-STUDENTS = {
-    201: "Alice",
-    202: "Bob",
-    203: "Charlie",
-    204: "David",
-}
+# Automatically reset data.INSTRUCTORS, data.COURSES, data.STUDENTS, data.ROSTERS before each test
+@pytest.fixture(autouse=True)
+def mock_data():
+    data.INSTRUCTORS.clear()
+    data.INSTRUCTORS.update({101: "Dr. Smith"})
+    data.STUDENTS.clear()
+    data.STUDENTS.update({
+        201: "Alice",
+        202: "Bob",
+        203: "Charlie",
+        204: "David",
+    })
+    data.COURSES.clear()
+    data.COURSES.update({
+        "CS101": {"name": "Intro to CS",    "instructor_id": 101},
+        "CS111": {"name": "Java Programming","instructor_id": 101},
+    })
+    data.ROSTERS.clear()
+    data.ROSTERS.update({
+        "CS101": [201, 202],
+        "CS111": [203, 204],
+    })
 
-COURSES = {
-    "CS101": {"name": "Intro to CS", "instructor_id": 101},
-    "CS111": {"name": "Java Programming", "instructor_id": 101}
-}
-
-ROSTERS = {
-    "CS101": [201, 202],
-    "CS111": [203, 204]
-}
-
-# Mock Print Functions
-def print_success(msg): pass
-def print_error(msg): pass
-def print_information(msg): pass
-def print_warning(msg): pass
-
-# Instructor class
-class Instructor:
-    def __init__(self, instructor_id):
-        self.instructor_id = instructor_id
-        self.name = INSTRUCTORS.get(instructor_id)
-        self.courses = {cid: COURSES[cid]["name"] for cid in COURSES if COURSES[cid]["instructor_id"] == instructor_id}
-
-    def is_authenticated(self):
-        return self.name is not None
-
-    def has_access(self, course_id):
-        return course_id in self.courses
-
-    def display_courses(self):
-        return list(self.courses.keys())
-
-# Gradebook class
-class Gradebook:
-    def __init__(self):
-        self.grades = {}  # {course_id: {student_id: {"grade": x, "timestamp": y}}}
-
-    def add_grade(self, instructor, course_id, student_id, grade, force=False):
-        if not instructor.has_access(course_id):
-            return "Access Denied"
-        if course_id not in self.grades:
-            self.grades[course_id] = {}
-        now = datetime.datetime.now()
-        if student_id in self.grades[course_id] and not force:
-            return "Grade already exists"
-        self.grades[course_id][student_id] = {"grade": grade, "timestamp": now}
-        return "Grade added"
-
-    def edit_grade(self, instructor, course_id, student_id, new_grade):
-        if not instructor.has_access(course_id):
-            return "Access Denied"
-        if course_id in self.grades and student_id in self.grades[course_id]:
-            old_timestamp = self.grades[course_id][student_id]["timestamp"]
-            now = datetime.datetime.now()
-            if (now - old_timestamp).days <= 7:
-                self.grades[course_id][student_id] = {"grade": new_grade, "timestamp": now}
-                return "Grade updated"
-            else:
-                return "Edit window expired"
-        else:
-            return "No existing grade"
-
-    def view_grades(self, instructor, course_id):
-        if not instructor.has_access(course_id):
-            return "Access Denied"
-        return self.grades.get(course_id, {})
-
-# Fixtures
 @pytest.fixture
 def instructor():
     return Instructor(101)
@@ -89,7 +36,6 @@ def instructor():
 def gradebook():
     return Gradebook()
 
-# Tests
 def test_add_grade_success(gradebook, instructor):
     result = gradebook.add_grade(instructor, "CS101", 201, 90)
     assert result == "Grade added"

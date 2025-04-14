@@ -2,6 +2,7 @@ from util import *
 from data import INSTRUCTORS, COURSES, STUDENTS, ROSTERS
 from gradebook import Gradebook
 from instructor import Instructor
+from color_ui import print_success, print_error, print_information, print_warning
 
 def main():
     gradebook = Gradebook()

@@ -27,8 +27,8 @@ def mock_data():
     })
     data.ROSTERS.clear()
     data.ROSTERS.update({
-        "CS101": [201, 202],
-        "CS111": [203, 204],
+        "CS101": [201, 202, 203, 204, 205, 206],
+        "CS111": [201, 202, 203, 204, 205, 206],
     })
 
 @pytest.fixture
@@ -39,7 +39,6 @@ def instructor():
 def gradebook():
     return Gradebook()
 
-# Patch built-in input and suppress "press enter" for non-main.py tests
 @pytest.fixture(autouse=True)
 def patch_input(monkeypatch):
     monkeypatch.setattr("builtins.input", lambda _: "")
@@ -110,9 +109,9 @@ def test_empty_input(gradebook, capsys):
     captured = capsys.readouterr()
     assert "Grades are empty. Please add a grade" in captured.out
 
-# Main-interacting tests (mock input more precisely)
+# Main-interacting tests
 def test_negative_grade_input(monkeypatch):
-    inputs = iter(['1', 'light', 'CS101', '1', 'n', '201', '-50', '', 'x', '', 'q'])
+    inputs = iter(['1', 'light', 'CS101', '1', 'n', '201', '-50', '', 'x', '', 'q', ''])
     monkeypatch.setattr('builtins.input', lambda _: next(inputs))
     monkeypatch.setattr('main.clear_screen', lambda: None)
 
@@ -131,7 +130,7 @@ def test_negative_grade_input(monkeypatch):
         main()
 
 def test_non_numeric_grade_input(monkeypatch):
-    inputs = iter(['1', 'light', 'CS101', '1', 'n', '201', 'abc', '', 'x', '', 'q'])
+    inputs = iter(['1', 'light', 'CS101', '1', 'n', '201', 'abc', '', 'x', '', 'q', ''])
     monkeypatch.setattr('builtins.input', lambda _: next(inputs))
     monkeypatch.setattr('main.clear_screen', lambda: None)
 
@@ -150,9 +149,7 @@ def test_non_numeric_grade_input(monkeypatch):
         main()
 
 def test_show_names_when_adding_grade(monkeypatch):
-    inputs = iter([
-        '101', 'light', 'CS101', '1', 'n', '201', 'A', '90', '', 'x', '', 'q'
-    ])
+    inputs = iter(['101', 'light', 'CS101', '1', 'n', '201', 'A', '90', '', 'x', '', 'q', ''])
     monkeypatch.setattr('builtins.input', lambda _: next(inputs))
     monkeypatch.setattr('main.clear_screen', lambda: None)
 
@@ -163,8 +160,7 @@ def test_show_names_when_adding_grade(monkeypatch):
             self.courses = {"CS101": "Intro to CS", "CS111": "Java Programming"}
         def is_authenticated(self): return True
         def has_access(self, course_id): return course_id in self.courses
-        def display_courses(self):
-            print("CS101\nCS111")
+        def display_courses(self): print("CS101\nCS111")
         def set_theme(self, theme): pass
 
     monkeypatch.setattr('main.Instructor', FakeInstructor)
@@ -172,7 +168,7 @@ def test_show_names_when_adding_grade(monkeypatch):
         main()
 
 def test_empty_grade(monkeypatch):
-    inputs = iter(['101', 'light', 'CS101', '1', 'n', '201', '', '99', '', 'x', '', 'q'])
+    inputs = iter(['101', 'light', 'CS101', '1', 'n', '201', '', '99', '', 'x', '', 'q', ''])
     monkeypatch.setattr('builtins.input', lambda _: next(inputs))
     monkeypatch.setattr('main.clear_screen', lambda: None)
 
@@ -183,8 +179,26 @@ def test_empty_grade(monkeypatch):
             self.courses = {"CS101": "Intro to CS", "CS111": "Java Programming"}
         def is_authenticated(self): return True
         def has_access(self, course_id): return course_id in self.courses
-        def display_courses(self):
-            print("CS101\nCS111")
+        def display_courses(self): print("CS101\nCS111")
+        def set_theme(self, theme): pass
+
+    monkeypatch.setattr('main.Instructor', FakeInstructor)
+    with pytest.raises(SystemExit):
+        main()
+
+def test_matching_student_displayed(monkeypatch):
+    inputs = iter(['101', 'light', 'CS101', '1', 'y', '201', '', 'back', '201', '85', '', 'x', '', 'q', ''])
+    monkeypatch.setattr('builtins.input', lambda _: next(inputs))
+    monkeypatch.setattr('main.clear_screen', lambda: None)
+
+    class FakeInstructor:
+        def __init__(self, instructor_id):
+            self.instructor_id = instructor_id
+            self.name = "Dr. Smith"
+            self.courses = {"CS101": "Intro to CS", "CS111": "Java Programming"}
+        def is_authenticated(self): return True
+        def has_access(self, course_id): return course_id in self.courses
+        def display_courses(self): print("CS101\nCS111")
         def set_theme(self, theme): pass
 
     monkeypatch.setattr('main.Instructor', FakeInstructor)

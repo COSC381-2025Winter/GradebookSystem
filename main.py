@@ -25,10 +25,10 @@ def main():
             continue
 
         # Theme selection (apply only if supported)
-        theme = input("Choose theme (light/dark): ")
+        theme = input("Choose theme (light/dark): ").strip().lower()
         if hasattr(instructor, 'set_theme'):
             try:
-                instructor.set_theme(theme.lower())
+                instructor.set_theme(theme)
             except ValueError:
                 pass
 
@@ -53,7 +53,9 @@ def main():
             print("2. edit grade")
             print("3. view grades")
             print("4. sort grades")
-            print("5. add student")
+            # only show add student in dark theme
+            if theme == 'dark':
+                print("5. add student")
             print("x. logout")
 
             choice = str(input("Enter choice: "))
@@ -129,7 +131,7 @@ def main():
                 input("Press enter to continue.")
 
             # Add Student
-            elif choice == '5':
+            elif choice == '5' and theme == 'dark':
                 clear_screen()
                 print("========Add Student========")
                 try:
@@ -149,9 +151,10 @@ def main():
                 input("Press enter to continue.")
 
             else:
-                print("Please type either (1/2/3/4/5/x)")
+                print("Please type either (1/2/3/4/x)" + (" or 5" if theme == 'dark' else ""))
                 input("Press enter to continue.")
 
 
 if __name__ == "__main__":
     main()
+

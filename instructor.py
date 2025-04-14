@@ -21,22 +21,13 @@ class Instructor:
         return course_id in self.courses
 
     def display_courses(self):
-        """
-        Prints the list of course IDs this instructor teaches.
-        """
         for cid in self.courses:
             print(cid)
 
     def set_theme(self, theme):
-        """
-        Sets the instructor's display theme. Only 'light' or 'dark' are valid.
-        """
         if theme not in ("light", "dark"):
             raise ValueError(f"Invalid theme: {theme}")
         self.theme = theme
 
     def get_theme(self):
-        """
-        Returns the current display theme.
-        """
         return self.theme

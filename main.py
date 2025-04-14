@@ -4,7 +4,7 @@ from gradebook import Gradebook, clear_screen
 from util import clear_screen as real_clear_screen
 from color_ui import print_error
 
-# Define a local clear_screen() that only clears if stdout is a TTY.
+# Local clear_screen that only clears if stdout is a TTY.
 def clear_screen_wrapper():
     import sys
     if sys.stdout.isatty():

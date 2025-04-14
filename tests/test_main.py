@@ -3,8 +3,6 @@ from unittest.mock import patch, Mock
 from main import main
 import pytest
 import builtins
-from pytest import CaptureFixture
-from unittest.mock import patch
 
 @pytest.fixture
 def test_instructor():

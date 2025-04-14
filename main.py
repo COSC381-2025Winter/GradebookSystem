@@ -1,154 +1,153 @@
-from util import clear_screen, print_error, print_success, print_warning, print_information
+from util import clear_screen
 from data import INSTRUCTORS, COURSES, STUDENTS, ROSTERS
 from gradebook import Gradebook
 from instructor import Instructor
 
-# Main function to start the Gradebook System
-# Handles instructor authentication and menu navigation
+
 def main():
     gradebook = Gradebook()
 
+    # Instructor login loop
     while True:
         clear_screen()
         print("\n--- Gradebook System ---")
         user_input = input("Enter your Instructor ID (q for quit): ")
-        user_input = str(user_input)
         if user_input.lower() == 'q':
             clear_screen()
             exit()
         if not user_input.isnumeric():
-            print_error("Invalid Instructor ID. Try again. (q for quit)")
+            print("\033[91mInvalid Instructor ID. Try again. (q for quit)\033[0m")
             continue
 
         instructor = Instructor(int(user_input))
         if not instructor.is_authenticated():
-            print_error("Invalid Instructor ID. Try again. (q for quit)")
+            print("\033[91mInvalid Instructor ID. Try again. (q for quit)\033[0m")
             continue
 
-        # Theme selection
-        theme = input("Choose theme (light/dark): ")
-        instructor.set_theme(str(theme).lower())
+        # Theme selection (apply only if supported)
+        theme = input("Choose theme (light/dark): ").strip().lower()
+        if hasattr(instructor, 'set_theme'):
+            try:
+                instructor.set_theme(theme)
+            except ValueError:
+                pass
 
-        # Instructor authenticated, prompt for course selection
+        # Course selection loop
         while True:
             clear_screen()
             instructor.display_courses()
-            course_id = input("Enter Course ID (q for quit / exit to logout): ")
-            if course_id.lower() == 'q':
+            course_input = input("Enter Course ID (q for quit): ")
+            if course_input.lower() == 'q':
                 clear_screen()
                 exit()
-
-            if course_id.lower() == 'exit':
-                print_warning("Logging out...")
-                input("Press enter to continue.")
-                main()
-
-            course_id = course_id.upper()
+            course_id = course_input.upper()
             if not instructor.has_access(course_id):
-                print_error("Invalid Course ID or Access Denied.")
-                input("Press enter to continue.")
+                print("\033[91mInvalid Course ID or Access Denied.\033[0m")
                 continue
+            break
 
-            break  # Valid course selected
-
-        # Course selected, present options to the instructor
+        # Course menu loop
         while True:
             clear_screen()
-            print(f"\nSelected Course: {course_id}: {COURSES[course_id]['name']}")
-            print("\n1. Add Grade")
-            print("2. Edit Grade")
-            print("3. View Grades")
-            print("4. Sort Grades")
-            print("5. Add Student")
-            print("x. Logout")
+            print("1. add grade")
+            print("2. edit grade")
+            print("3. view grades")
+            print("4. sort grades")
+            print("5. add student")
+            print("x. logout")
 
             choice = input("Enter choice: ")
-
-            if choice == "x":
-                print_warning("Logging out...")
-                input("Press enter to continue.")
+            if choice == 'x':
                 break
 
-            elif choice == "1":
+            # Add Grade
+            if choice == '1':
                 clear_screen()
-                print("========Add Grade========\nStudents in this course:")
-                print_information("Students in this course:")
-                for sid in ROSTERS[course_id]:
-                    print_information(f"- {sid}: {STUDENTS.get(sid, 'Unknown')}")
-
+                # Optional search
+                if hasattr(gradebook, 'helper_search_student'):
+                    gradebook.helper_search_student(course_id)
+                # List students
+                for sid in ROSTERS.get(course_id, []):
+                    print(f"- {sid}: {STUDENTS.get(sid, 'Unknown')}")
                 try:
                     student_id = int(input("Enter Student ID: "))
                 except ValueError:
-                    print_error("Invalid student ID.")
+                    print("\033[91mInvalid student ID.\033[0m")
+                    input("Press enter to continue.")
                     continue
-
-                isGradeEmpty = True
-                while isGradeEmpty:
-                    grade = input("Enter Grade: ")
-                    if not grade or grade.strip() == "":
-                        print("\tGrade cannot be empty")
-                        continue
-                    else:
-                        isGradeEmpty = False
-
+                grade_input = input("Enter Grade: ")
+                if not grade_input.strip():
+                    print("\tGrade cannot be empty")
+                    input("Press enter to continue.")
+                    continue
                 try:
-                    numeric_grade = float(grade)
-                    if numeric_grade < 0:
-                        print_error("Grade cannot be negative.")
+                    grade = float(grade_input)
+                    if grade < 0:
+                        print("\033[91mGrade cannot be negative.\033[0m")
+                        input("Press enter to continue.")
                         continue
                 except ValueError:
-                    print_error("Invalid grade format. Please enter a number.")
+                    print("\033[91mInvalid grade format. Please enter a number.\033[0m")
+                    input("Press enter to continue.")
                     continue
+                gradebook.add_grade(instructor, course_id, student_id, grade)
 
-                gradebook.add_grade(instructor, course_id, student_id, numeric_grade)
-
-            elif choice == "2":
+            # Edit Grade
+            elif choice == '2':
                 clear_screen()
+                if hasattr(gradebook, 'helper_search_student'):
+                    gradebook.helper_search_student(course_id)
                 try:
                     student_id = int(input("Enter Student ID: "))
-                    new_grade = float(input("Enter New Grade: "))
-                    gradebook.edit_grade(instructor, course_id, student_id, new_grade)
+                    new_grade_input = input("Enter New Grade: ")
+                    new_grade = float(new_grade_input)
                 except ValueError:
-                    print_error("Invalid input.")
-                    input("Press enter to try again.")
+                    print("\033[91mInvalid input.\033[0m")
+                    input("Press enter to continue.")
                     continue
+                gradebook.edit_grade(instructor, course_id, student_id, new_grade)
 
-            elif choice == "3":
+            # View Grades
+            elif choice == '3':
                 clear_screen()
-                gradebook.view_grades(course_id)
+                grades = gradebook.view_grades(instructor, course_id)
+                if isinstance(grades, dict):
+                    for sid, data in grades.items():
+                        name = STUDENTS.get(sid, f"Student {sid}")
+                        print(f"{name} ({sid}): {data['grade']}")
                 input("Press enter to continue.")
 
-            elif choice == "4":
+            # Sort Grades
+            elif choice == '4':
                 clear_screen()
-                try:
-                    inp = input("Would you like to sort by ascending or descending order? (a/d): ")
-                    inp = inp.lower()
-                    if inp in ['a', 'd']:
-                        gradebook.sort_courses(inp)
-                    else:
-                        print("Please type either (a/d)")
-                        input("Press enter to continue.")
-                except:
-                    print("Please type either (a/d)")
-                    input("Press enter to continue.")
+                order = input("Sort by ascending or descending? (a/d): ").lower()
+                gradebook.sort_courses(order)
+                input("Press enter to continue.")
 
-            elif choice == "5":
+            # Add Student
+            elif choice == '5':
                 clear_screen()
                 print("========Add Student========")
                 try:
                     new_student_id = int(input("Enter New Student ID: "))
                     grade_input = input("Enter Grade (press enter to default to 0): ")
-                    default_grade = int(grade_input) if grade_input.strip() != "" else 0
-
-                    if new_student_id not in ROSTERS[course_id]:
-                        ROSTERS[course_id].append(new_student_id)
-                        gradebook.add_grade(instructor, course_id, new_student_id, default_grade, force=True)
-                        print_success(f"Student {new_student_id} added with grade {default_grade}.")
-                    else:
-                        print_warning(f"Student {new_student_id} is already in the course.")
+                    default_grade = float(grade_input) if grade_input.strip() else 0.0
                 except ValueError:
-                    print_error("Invalid input. Please enter valid numbers.")
+                    print("\033[91mInvalid input. Please enter valid numbers.\033[0m")
+                    input("Press enter to continue.")
+                    continue
+                if new_student_id not in ROSTERS.get(course_id, []):
+                    ROSTERS.setdefault(course_id, []).append(new_student_id)
+                    gradebook.add_grade(instructor, course_id, new_student_id, default_grade, force=True)
+                    print(f"\033[92mStudent {new_student_id} added with grade {default_grade}.\033[0m")
+                else:
+                    print(f"\033[93mStudent {new_student_id} is already in the course.\033[0m")
                 input("Press enter to continue.")
+
+            else:
+                print("Please type either (1/2/3/4/5/x)")
+                input("Press enter to continue.")
+
 
 if __name__ == "__main__":
     main()

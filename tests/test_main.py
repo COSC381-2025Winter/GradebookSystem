@@ -127,7 +127,6 @@ def test_negative_grade_input(monkeypatch):
         def set_theme(self, theme): pass
 
     monkeypatch.setattr('main.Instructor', FakeInstructor)
-    monkeypatch.setattr('builtins.input', lambda _: next(inputs))
     with pytest.raises(SystemExit):
         main()
 
@@ -147,6 +146,47 @@ def test_non_numeric_grade_input(monkeypatch):
         def set_theme(self, theme): pass
 
     monkeypatch.setattr('main.Instructor', FakeInstructor)
+    with pytest.raises(SystemExit):
+        main()
+
+def test_show_names_when_adding_grade(monkeypatch):
+    inputs = iter([
+        '101', 'light', 'CS101', '1', 'n', '201', 'A', '90', '', 'x', '', 'q'
+    ])
     monkeypatch.setattr('builtins.input', lambda _: next(inputs))
+    monkeypatch.setattr('main.clear_screen', lambda: None)
+
+    class FakeInstructor:
+        def __init__(self, instructor_id):
+            self.instructor_id = instructor_id
+            self.name = "Dr. Smith"
+            self.courses = {"CS101": "Intro to CS", "CS111": "Java Programming"}
+        def is_authenticated(self): return True
+        def has_access(self, course_id): return course_id in self.courses
+        def display_courses(self):
+            print("CS101\nCS111")
+        def set_theme(self, theme): pass
+
+    monkeypatch.setattr('main.Instructor', FakeInstructor)
+    with pytest.raises(SystemExit):
+        main()
+
+def test_empty_grade(monkeypatch):
+    inputs = iter(['101', 'light', 'CS101', '1', 'n', '201', '', '99', '', 'x', '', 'q'])
+    monkeypatch.setattr('builtins.input', lambda _: next(inputs))
+    monkeypatch.setattr('main.clear_screen', lambda: None)
+
+    class FakeInstructor:
+        def __init__(self, instructor_id):
+            self.instructor_id = instructor_id
+            self.name = "Dr. Smith"
+            self.courses = {"CS101": "Intro to CS", "CS111": "Java Programming"}
+        def is_authenticated(self): return True
+        def has_access(self, course_id): return course_id in self.courses
+        def display_courses(self):
+            print("CS101\nCS111")
+        def set_theme(self, theme): pass
+
+    monkeypatch.setattr('main.Instructor', FakeInstructor)
     with pytest.raises(SystemExit):
         main()

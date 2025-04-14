@@ -2,7 +2,6 @@ from util import *
 from data import INSTRUCTORS, COURSES, STUDENTS, ROSTERS
 from gradebook import Gradebook
 from instructor import Instructor
-from color_ui import print_success, print_error, print_information, print_warning
 
 def main():
     gradebook = Gradebook()
@@ -34,11 +33,17 @@ def main():
         while True:
             clear_screen()
             instructor.display_courses()
-            course_id = input("Enter Course ID (q for quit): ")
-            if str(course_id).lower() == 'q':
+            course_id_input = input("Enter Course ID (q for quit): ")
+            if str(course_id_input).lower() == 'q':
                 clear_screen()
                 exit()
-            course_id = str(course_id).upper()
+            try:
+                course_id = str(course_id_input).upper()
+            except AttributeError:
+                print_error("Invalid Course ID format.")
+                input("Press enter to continue.")
+                continue
+
             if not instructor.has_access(course_id):
                 print_error("Invalid Course ID or Access Denied.")
                 input("Press enter to continue.")
@@ -49,8 +54,8 @@ def main():
             clear_screen()
             print(f"\nSelected Course: {course_id}: {COURSES[course_id]['name']}")
             print("\n1. Add Grade")
-            print("2. Edit Grade")  # Edit Grade
-            print("3. View Grades")  # View Grades
+            print("2. Edit Grade")
+            print("3. View Grades")
             print("4. Sort Grades")
             print("5. Add Student")
             print("x. Logout")
@@ -73,12 +78,12 @@ def main():
                     student_id = int(input("Enter Student ID: "))
                 except ValueError:
                     print_error("Invalid student ID.")
-                    continue  # Go back to menu
+                    continue
 
                 isGradeEmpty = True
-                while (isGradeEmpty):
+                while isGradeEmpty:
                     grade = input("Enter Grade: ") 
-                    if (not grade or grade == "" or grade.startswith(" ")):
+                    if not grade or grade.strip() == "":
                         print("\tGrade cannot be empty")
                         continue
                     else: 
@@ -88,44 +93,44 @@ def main():
                     numeric_grade = float(grade)
                     if numeric_grade < 0:
                         print_error("Grade cannot be negative.")
-                        continue  # Go back to menu
-                except:
+                        continue
+                except ValueError:
                     print_error("Invalid grade format. Please enter a number.")
-                    continue  # Go back to menu
+                    continue
 
                 gradebook.add_grade(instructor, course_id, student_id, numeric_grade)
 
-            elif choice == "2":  # Edit Grade
+            elif choice == "2":
                 clear_screen()
                 try:
                     student_id = int(input("Enter Student ID: "))
                     new_grade = float(input("Enter New Grade: "))
                     gradebook.edit_grade(instructor, course_id, student_id, new_grade)
-                except:
+                except ValueError:
                     print_error("Invalid input.")
                     input("Press enter to try again.")
                     continue
 
-            elif choice == "3":  # View Grades
+            elif choice == "3":
                 clear_screen()
                 gradebook.view_grades(course_id)
                 input("Press enter to continue.")
 
-            elif choice == "4":  # Sort Grades
+            elif choice == "4":
                 clear_screen()
                 try:
-                    inp = input("Would you like to sort by ascending or decending order? (a/d): ")
+                    inp = input("Would you like to sort by ascending or descending order? (a/d): ")
                     inp = inp.lower()
-                    if inp == 'a' or inp == 'd':
+                    if inp in ['a', 'd']:
                         gradebook.sort_courses(inp)
                     else:
                         print("Please type either (a/d)")
                         input("Press enter to continue.")
-                except: 
+                except:
                     print("Please type either (a/d)")
                     input("Press enter to continue.")
 
-            elif choice == "5":  # Add Student
+            elif choice == "5":
                 clear_screen()
                 print("========Add Student========")
                 try:

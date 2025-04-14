@@ -1,12 +1,11 @@
 import sys
-import sys
 from instructor import Instructor
-from gradebook import Gradebook
+from gradebook import Gradebook, clear_screen
 from util import clear_screen as real_clear_screen
 from color_ui import print_error
 
 # Define a local clear_screen() that only clears if stdout is a TTY.
-def clear_screen():
+def clear_screen_wrapper():
     import sys
     if sys.stdout.isatty():
         real_clear_screen()
@@ -15,11 +14,11 @@ def main():
     try:
         gradebook = Gradebook()
         # Log in:
-        clear_screen()
+        clear_screen_wrapper()
         print("\n--- Gradebook System ---")
         user_input = str(input("Enter your Instructor ID (q for quit): ")).strip()
         if user_input.lower() == 'q':
-            clear_screen()
+            clear_screen_wrapper()
             sys.exit()
         if not user_input.isnumeric():
             print_error("Invalid Instructor ID. Try again. (q for quit)")
@@ -35,11 +34,11 @@ def main():
             print_error(str(e))
         # Course selection:
         while True:
-            clear_screen()
+            clear_screen_wrapper()
             instructor.display_courses()
             course_input = str(input("Enter Course ID (q for quit): ")).strip()
             if course_input.lower() == 'q':
-                clear_screen()
+                clear_screen_wrapper()
                 sys.exit()
             course_id = str(course_input).upper()
             if not instructor.has_access(course_id):
@@ -48,7 +47,7 @@ def main():
             break
         # Main menu:
         while True:
-            clear_screen()
+            clear_screen_wrapper()
             print("1. add grade")
             print("2. edit grade")
             print("3. view grades")
@@ -57,9 +56,9 @@ def main():
             print("x. logout")
             choice = str(input("Enter choice: ")).strip().lower()
             if choice == 'x':
-                sys.exit()  # Immediately exit after logout.
+                sys.exit()  # Exit immediately on logout.
             if choice == '1':
-                clear_screen()
+                clear_screen_wrapper()
                 gradebook.helper_search_student(course_id)
                 sid = str(input("Enter Student ID: ")).strip()
                 # Loop until a valid grade is entered.
@@ -79,7 +78,7 @@ def main():
                     break
                 gradebook.add_grade(instructor, course_id, int(sid), grade_val)
             elif choice == '2':
-                clear_screen()
+                clear_screen_wrapper()
                 gradebook.helper_search_student(course_id)
                 if not gradebook.grades_to_edit(instructor, course_id):
                     print_error("No grades available to edit.")
@@ -101,14 +100,14 @@ def main():
                     break
                 gradebook.edit_grade(instructor, course_id, int(sid), new_grade_val)
             elif choice == '3':
-                clear_screen()
+                clear_screen_wrapper()
                 _ = gradebook.view_grades(instructor, course_id)
             elif choice == '4':
-                clear_screen()
+                clear_screen_wrapper()
                 arr = str(input("Type 'a' for ascending or 'd' for descending sorting: ")).strip().lower()
                 gradebook.sort_courses(arr)
             elif choice == '5':
-                clear_screen()
+                clear_screen_wrapper()
                 gradebook.add_student(instructor, course_id)
             else:
                 print_error("Invalid choice.")

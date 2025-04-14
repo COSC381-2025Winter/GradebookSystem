@@ -30,7 +30,7 @@ class Gradebook:
             _wait_for_continue()
         else:
             self.grades[course_id][student_id] = {"grade": grade, "timestamp": now}
-            # Use STUDENTS lookup; if not found, use lowercase fallback.
+            # Lookup the student's name; if not found, use fallback text.
             name = STUDENTS.get(student_id)
             if not name:
                 name = f"student {student_id}"

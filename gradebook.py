@@ -1,7 +1,14 @@
+import sys
 import datetime
 from data import COURSES, STUDENTS, ROSTERS
 from color_ui import print_success, print_error, print_information, print_warning
-from util import clear_screen
+from util import clear_screen as real_clear_screen
+
+# Define a wrapper for clear_screen: only clear if stdout is a tty.
+def clear_screen():
+    if sys.stdout.isatty():
+        real_clear_screen()
+    # Otherwise, do nothing
 
 def _wait_for_continue():
     # For testing purposes, do nothing.
@@ -30,7 +37,7 @@ class Gradebook:
             _wait_for_continue()
         else:
             self.grades[course_id][student_id] = {"grade": grade, "timestamp": now}
-            # Lookup the student's name; if not found, use fallback text.
+            # Look up student name; if not found, use lowercase fallback.
             name = STUDENTS.get(student_id)
             if not name:
                 name = f"student {student_id}"

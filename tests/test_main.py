@@ -216,7 +216,11 @@ def test_grades_to_edit(monkeypatch, capsys, test_instructor):
 
     # Assert
     captured = capsys.readouterr()
+
+    assert "selected course" in captured.out.lower()
+    assert f"{test_instructor['courses'][0]}".lower() in captured.out.lower()
     assert "Alice (201): 99.0" in captured.out
+
 
 def test_edit_invalid_id(monkeypatch, capsys, test_instructor):
     # Act & Arrange

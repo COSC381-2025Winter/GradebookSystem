@@ -219,8 +219,6 @@ def test_grades_to_edit(monkeypatch, capsys, test_instructor):
 
     assert "selected course" in captured.out.lower()
     assert f"{test_instructor['courses'][0]}".lower() in captured.out.lower()
-    
-
     assert "Alice (201): 99.0" in captured.out
 
 

@@ -44,19 +44,19 @@ def main():
         prompt_for_theme(instructor)
 
         while True:
-            clear_screen()
-            instructor.display_courses()
-
-
-            course_id = input("Enter Course ID  or a Course name (q for quit): ")
-            if course_id == 'q':
+            course_id = input("Enter Course ID or Course Name (q for quit / exit to logout): ")
+            if course_id.lower() == 'q':
                 clear_screen()
                 exit()
-            
+                
+            if course_id.lower() ==  'exit':
+                 print_warning("Logging out...")
+                 input("Press enter to continue.")
+                 main()
             if course_id.replace(' ','').isalpha():        
-                course_id = instructor.get_course_code_by_name(course_id)   #Grabs the Course id
-            if course_id is  not None:
-                course_id = course_id.upper()
+                course_id = instructor.get_course_code_by_name(course_id)  
+
+            course_id = course_id.upper()
 
             if not instructor.has_access(course_id):
                 print_error("Invalid Course ID or Access Denied.")

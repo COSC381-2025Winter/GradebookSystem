@@ -8,6 +8,7 @@ from credentials import PASSWORDS
 import getpass
 
 def prompt_for_theme(instructor):
+    """Prompt user to select a color theme"""
     theme = None
     while theme not in list_available_themes():
         print_information("Available themes: " + ", ".join(list_available_themes()))
@@ -15,6 +16,7 @@ def prompt_for_theme(instructor):
         if theme not in list_available_themes():
             print_error("Invalid theme. Please choose 'light' or 'dark'.\n")
     apply_theme(theme)
+    instructor.set_theme(theme)
     print_success(f"Theme '{theme}' applied successfully!\n")
 
 def main():
@@ -23,10 +25,14 @@ def main():
         clear_screen()
         print("\n--- Gradebook System ---")
         user_input = input("Enter your Instructor ID (q for quit): ")
-        if user_input == 'q' or user_input == 'Q':
+        
+        # Handle quit command
+        if user_input.lower() == 'q':
             clear_screen()
             exit()
-        elif not str(user_input).isnumeric():
+
+        # Validate instructor ID
+        if not str(user_input).isnumeric():
             print_error("Invalid Instructor ID. Try again. (q for quit)")
             continue
 
@@ -36,6 +42,7 @@ def main():
             print_error("Error: Instructor not found")
             continue
 
+        # Authentication
         if instructor_id not in PASSWORDS:
             print_error("Invalid Instructor ID")
             continue
@@ -50,28 +57,35 @@ def main():
             print_error("Authentication failed.")
             continue
 
-        # 🔹 Prompt for theme after successful login
+        # Set theme after successful login
         prompt_for_theme(instructor)
 
+        # Course selection loop
         while True:
             clear_screen()
             instructor.display_courses()
-            course_id = input("Enter Course ID (q for quit / exit to logout): ")
-            if course_id.lower() == 'q':
+            course_id = input("Enter Course ID (q for quit / exit to logout): ").strip().lower()
+            
+            if course_id == 'q':
                 clear_screen()
                 exit()
                 
-            if course_id.lower() ==  'exit':
-                 print_warning("Logging out...")
-                 input("Press enter to continue.")
-                 main()
+            if course_id == 'exit':
+                print_warning("Logging out...")
+                input("Press enter to continue.")
+                break
 
             course_id = course_id.upper()
             if not instructor.has_access(course_id):
                 print_error("Invalid Course ID or Access Denied.")
                 continue
-            break;
+            break
 
+        # Skip to login if user chose to logout
+        if course_id.lower() == 'exit':
+            continue
+
+        # Main menu loop
         while True:
             clear_screen()
             print(f"\nSelected Course: {course_id}: {COURSES[course_id]['name']}")
@@ -82,45 +96,46 @@ def main():
             print("5. Bulk Upload Grades")
             print("x. Logout")
 
-            choice = input("Enter choice: ")
+            choice = input("Enter choice: ").strip().lower()
 
+            # Logout option
             if choice == "x":
                 print_warning("Logging out...")
                 input("Press enter to continue.")
                 break
 
+            # Add Grade
             elif choice == "1":
                 clear_screen()
-                print("========Add Grade========\nStudents in this course:")
-                print_information("Students in this course:")
+                print("========Add Grade========")
+                print("Students in this course:")
                 for sid in ROSTERS[course_id]:
                     print_information(f"- {sid}: {STUDENTS[sid]}")
 
-
-                # call helper method for search_student function
+                # Student search helper
                 gradebook.helper_search_student(course_id)
-
-                # replace add grade header
                 clear_screen()
                 print("========Add Grade========")
 
-                #remove the cast to an int, to check if its an empty string
+                # Get student ID
+                student_id = input("Enter Student ID: ").strip()
+                while not student_id:
+                    print("You must enter a student ID!")
+                    student_id = input("Enter Student ID: ").strip()
 
-                student_id = input("Enter Student ID: ")
-                while student_id == "":
-                    print("You must enter a student id! ")
-                    student_id = input("Enter Student ID: ")
+                try:
+                    student_id = int(student_id)
+                except ValueError:
+                    print_error("Invalid Student ID format.")
+                    input("Press enter to continue.")
+                    continue
 
-                student_id = int(student_id)
-
-                isGradeEmpty = True
-                while isGradeEmpty:
-                    grade = input("Enter Grade: ") 
-                    if not grade or grade == "" or grade.startswith(" "):
+                # Get grade
+                grade = ""
+                while not grade.strip():
+                    grade = input("Enter Grade: ").strip()
+                    if not grade:
                         print("\tGrade cannot be empty")
-                        continue
-                    else: 
-                        isGradeEmpty = False
 
                 try:
                     grade_value = float(grade)
@@ -139,41 +154,43 @@ def main():
                     print_error("Invalid Student ID.")
                     input("Press enter to continue.")
 
+            # Edit Grade
             elif choice == "2":
                 clear_screen()
                 print("========Edit Grade========")
-                # call helper method for search_student function
                 gradebook.helper_search_student(course_id)
                 grade_exists = gradebook.grades_to_edit(instructor, course_id)
 
-                if(grade_exists == True):
-                    student_id = int(input("Enter Student ID: "))
-                    new_grade = input("Enter New Grade: ")
-                    gradebook.edit_grade(instructor, course_id, student_id, new_grade)
+                if grade_exists:
+                    try:
+                        student_id = int(input("Enter Student ID: "))
+                        new_grade = input("Enter New Grade: ").strip()
+                        gradebook.edit_grade(instructor, course_id, student_id, new_grade)
+                    except ValueError:
+                        print_error("Invalid Student ID format.")
+                        input("Press enter to continue.")
 
+            # View Grades
             elif choice == "3":
                 clear_screen()
                 print("========View Grades========")
                 gradebook.view_grades(instructor, course_id)
-            
+
+            # Sort Grades
             elif choice == "4":
-                try:
-                    inp = input("Would you like to sort by ascending or descending order? (a/d): ")
-                    inp = inp.lower()
-                    if inp in ['a', 'd']:
-                        gradebook.sort_courses(inp)
-                    else:
-                        print("Please type either (a/d)")
-                        input("Press enter to continue.")
-                except:
+                inp = input("Would you like to sort by ascending or descending order? (a/d): ").lower()
+                if inp in ['a', 'd']:
+                    gradebook.sort_courses(inp)
+                else:
                     print("Please type either (a/d)")
                     input("Press enter to continue.")
 
+            # Bulk Upload
             elif choice == "5":
                 clear_screen()
                 print("=== Bulk Upload Grades ===")
 
-                file_path = input("Enter the path to your CSV file (q to cancel): ")
+                file_path = input("Enter the path to your CSV file (q to cancel): ").strip()
                 if file_path.lower() == 'q':
                     input("Press enter to return to the main menu.")
                     continue
@@ -193,6 +210,7 @@ def main():
 
                 input("\nPress enter to continue.")
 
+            # Invalid choice
             else:
                 print_error("Invalid choice.")
                 input("Press enter to try again.")

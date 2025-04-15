@@ -47,7 +47,7 @@ class Gradebook:
                 print_error("Error: Grade editing period (7 days) has expired.")
                 input("Press enter to continue.")
         else:
-            print_error("Error: No existing grade found. Use 'add' instead.")
+            print_error("No grade exists for this student. Please use option 1 (Add Grade) to enter a new grade.")
             input("Press enter to continue.")
 
     def view_grades(self, instructor, course_id):
@@ -106,7 +106,7 @@ class Gradebook:
                 print_information(f"{student_name} ({student_id}): {data['grade']}")
             return True
         else:
-            print_warning("No grades have been entered for this course yet. Use 'add' instead")
+            print_warning("No grade exists for this student. Please use option 1 (Add Grade) to enter a new grade.")
             input("Press enter to continue.")
             return False
 

@@ -9,7 +9,7 @@ from color_theme import apply_theme, list_available_themes
 from util import clear_screen
 from credentials import PASSWORDS
 
-# For testing: if we detect pytest, override colored print functions with plain print.
+# For testing environments: disable ANSI colors if running under pytest.
 if "PYTEST_CURRENT_TEST" in os.environ:
     def plain_print(s):
         print(s)
@@ -19,8 +19,13 @@ if "PYTEST_CURRENT_TEST" in os.environ:
     print_warning = plain_print
 
 def safe_input(prompt):
+    """
+    Wraps input() to ensure a string is always returned.
+    If the test's input iterator is exhausted, exit cleanly.
+    """
     try:
-        return input(prompt)
+        # Immediately convert the result of input() to a string.
+        return str(input(prompt))
     except StopIteration:
         sys.exit("Input exhausted.")
 
@@ -29,12 +34,14 @@ def prompt_for_theme(instructor):
     theme = None
     while theme not in list_available_themes():
         print_information("Available themes: " + ", ".join(list_available_themes()))
-        theme = str(safe_input("Choose a theme (light/dark): ")).strip().lower()
+        theme = safe_input("Choose a theme (light/dark): ").strip().lower()
         if theme not in list_available_themes():
             print_error("Invalid theme. Please choose 'light' or 'dark'.\n")
     apply_theme(theme)
-    if hasattr(instructor, 'set_theme'):
-        instructor.set_theme(theme)
+    # Use getattr to check for a callable set_theme; if missing, do nothing.
+    setter = getattr(instructor, 'set_theme', None)
+    if callable(setter):
+        setter(theme)
     print_success(f"Theme '{theme}' applied successfully!\n")
 
 def main():
@@ -42,7 +49,7 @@ def main():
     while True:
         clear_screen()
         print("\n--- Gradebook System ---")
-        user_input = str(safe_input("Enter your Instructor ID (q for quit): ")).strip()
+        user_input = safe_input("Enter your Instructor ID (q for quit): ").strip()
         
         if user_input.lower() == 'q':
             clear_screen()
@@ -74,7 +81,7 @@ def main():
         while True:
             clear_screen()
             instructor.display_courses()
-            course_id = str(safe_input("Enter Course ID (q for quit / exit to logout): ")).strip().lower()
+            course_id = safe_input("Enter Course ID (q for quit / exit to logout): ").strip().lower()
             if course_id == 'q':
                 clear_screen()
                 sys.exit()
@@ -93,7 +100,7 @@ def main():
 
         clear_screen()
         print(f"\nSelected Course: {course_id}: {COURSES[course_id]['name']}")
-        # In tests, show only options 1-4 plus "x. Logout"
+        # In test environments, display a shortened menu.
         if "PYTEST_CURRENT_TEST" in os.environ:
             print("\n1. Add Grade")
             print("2. Edit Grade")
@@ -109,12 +116,11 @@ def main():
             print("x. Logout")
 
         while True:
-            choice = str(safe_input("Enter choice: ")).strip().lower()
+            choice = safe_input("Enter choice: ").strip().lower()
             if choice == "x":
                 print_warning("Logging out...")
                 safe_input("Press enter to continue.")
                 break
-
             elif choice == "1":
                 clear_screen()
                 print("========Add Grade========")
@@ -125,7 +131,7 @@ def main():
                 clear_screen()
                 print("========Add Grade========")
                 while True:
-                    student_id_input = str(safe_input("Enter Student ID: ")).strip()
+                    student_id_input = safe_input("Enter Student ID: ").strip()
                     if not student_id_input:
                         print_error("You must enter a student id!")
                         continue
@@ -136,7 +142,7 @@ def main():
                         print_error("Invalid Student ID format.")
                         continue
                 while True:
-                    grade = str(safe_input("Enter Grade: ")).strip()
+                    grade = safe_input("Enter Grade: ").strip()
                     if not grade:
                         print_error("\tGrade cannot be empty")
                         continue
@@ -155,7 +161,6 @@ def main():
                 else:
                     print_error("Invalid Student ID.")
                     safe_input("Press enter to continue.")
-
             elif choice == "2":
                 clear_screen()
                 print("========Edit Grade========")
@@ -163,21 +168,19 @@ def main():
                 grade_exists = gradebook.grades_to_edit(instructor, course_id)
                 if grade_exists:
                     try:
-                        student_id_input = str(safe_input("Enter Student ID: ")).strip()
+                        student_id_input = safe_input("Enter Student ID: ").strip()
                         student_id = int(student_id_input)
-                        new_grade = str(safe_input("Enter New Grade: ")).strip()
+                        new_grade = safe_input("Enter New Grade: ").strip()
                         gradebook.edit_grade(instructor, course_id, student_id, new_grade)
                     except ValueError:
                         print_error("Invalid Student ID format.")
                         safe_input("Press enter to continue.")
-
             elif choice == "3":
                 clear_screen()
                 print("========View Grades========")
                 gradebook.view_grades(instructor, course_id)
-
             elif choice == "4":
-                inp = str(safe_input("Would you like to sort by ascending or descending order? (a/d): ")).strip().lower()
+                inp = safe_input("Would you like to sort by ascending or descending order? (a/d): ").strip().lower()
                 if inp in ['a', 'd']:
                     if hasattr(gradebook, 'sort_courses'):
                         gradebook.sort_courses(inp)
@@ -186,11 +189,10 @@ def main():
                 else:
                     print_error("Please type either (a/d)")
                     safe_input("Press enter to continue.")
-
             elif choice == "5" and "PYTEST_CURRENT_TEST" not in os.environ:
                 clear_screen()
                 print("=== Bulk Upload Grades ===")
-                file_path = str(safe_input("Enter the path to your CSV file (q to cancel): ")).strip()
+                file_path = safe_input("Enter the path to your CSV file (q to cancel): ").strip()
                 if file_path.lower() == 'q':
                     safe_input("Press enter to return to the main menu.")
                     continue

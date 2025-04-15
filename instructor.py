@@ -63,6 +63,8 @@ class Instructor:
              break
         if sucess:
             return course_code # returns the course code
+        
+        return course_name
 
        
             

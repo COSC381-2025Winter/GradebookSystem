@@ -39,7 +39,7 @@ def test_student():
 def test_matching_student_displayed(monkeypatch, capsys, test_instructor, test_student, test_course):
     # Arrange
     responses = iter([test_instructor["id"], "light", test_course["id"], "1", "y", str(test_student["id"][0]), "\n", "back", str(test_student["id"][0]), "85", "\n", "x", "\n", "q"])
-    monkeypatch.setattr('builtins.input', lambda _: next(responses))
+    monkeypatch.setattr('builtins.input', lambda *args, **kwargs: next(responses))
 
     # Act
     with pytest.raises(SystemExit) as exitInfo:

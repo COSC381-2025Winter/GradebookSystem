@@ -15,8 +15,8 @@ def test_instructor():
 
 def test_empty_grade(monkeypatch, capsys, test_instructor):
     # Arrange
-    responses = iter([(test_instructor["id"]), "light","CS101", "1", "n", "201", "", "99", "", "x", "", "q"])
-    monkeypatch.setattr('builtins.input', lambda _: next(responses))
+    responses = iter([(test_instructor["id"]), "csrocks", "light","CS101", "1", "n", "201", "", "99", "", "x", "", "q"])
+    monkeypatch.setattr('builtins.input', lambda *args, **kwargs: next(responses))
 
     # Act
     with pytest.raises(SystemExit):

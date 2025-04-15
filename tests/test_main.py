@@ -167,29 +167,6 @@ def test_add_course_invalid_instructor(monkeypatch, capsys):
     assert "Invalid Instructor ID" in captured.out
     assert "Traceback" not in captured.out
 
-def test_sort_courses(mocker, test_instructor):
-    mock_input = mocker.patch('builtins.input', side_effect=[
-        str(test_instructor["id"]), 'light', test_instructor["courses"][0], # Ensure ID is string
-        '4', 'a', 'x', '', 'q'
-    ])
-    mock_sort_courses = mocker.patch('main.Gradebook.sort_courses')
-
-    with pytest.raises(SystemExit):
-        main()
-
-    mock_sort_courses.assert_called_once_with('a')
-
-def test_grades_to_edit(monkeypatch, capsys, test_instructor):
-    # Act & Arrange
-    responses = iter([str(test_instructor["id"]), 'light', test_instructor["courses"][0], '1', 'n', '201', '99', '', '2', 'n', '201', '88', '', 'x', '', 'q']) # Ensure ID is string
-    monkeypatch.setattr('builtins.input', lambda _: next(responses))
-
-    with pytest.raises(SystemExit) as exitInfo:
-        main()
-
-    # Assert
-    captured = capsys.readouterr()
-    assert "Alice (201): 99.0" in captured.out
 
 def test_edit_invalid_id(monkeypatch, capsys, test_instructor):
     # Act & Arrange

@@ -1,6 +1,7 @@
 import datetime
 from data import COURSES, STUDENTS, ROSTERS
 from color_ui import print_success, print_error, print_information, print_warning
+from util import clear_screen
 
 class Gradebook:
     def __init__(self):
@@ -109,5 +110,4 @@ class Gradebook:
         for i, entry in enumerate(history, 1):
             timestamp_str = entry["timestamp"].strftime("%Y-%m-%d %H:%M:%S")
             print_information(f"{i}. Grade: {entry['grade']}, Date: {timestamp_str}")
-            
-        input("Press enter to continue.")
+           

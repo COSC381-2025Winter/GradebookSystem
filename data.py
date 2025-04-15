@@ -1,3 +1,20 @@
+# Add these to your existing data.py file
+VALID_GRADES = ['A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-', 'D+', 'D', 'F']
+
+def is_valid_student_id(student_id):
+    """Check if ID is numeric and has valid length"""
+    return str(student_id).isdigit() and len(str(student_id)) == 3
+
+def is_valid_grade(grade):
+    """Check if grade is valid (either in VALID_GRADES or numeric 0-100)"""
+    try:
+        # Handle numeric grades
+        numeric_grade = float(grade)
+        return 0 <= numeric_grade <= 100
+    except ValueError:
+        # Handle letter grades
+        return grade.upper() in VALID_GRADES
+
 # Sample Data for Instructors and Courses
 INSTRUCTORS = {
     101: "Dr. Smith",
@@ -52,13 +69,3 @@ ROSTERS = {
     "CS402": [219, 222, 223]
 }
 
-# Validation
-VALID_GRADES = ['A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-', 'D+', 'D', 'F']
-
-def is_valid_student_id(student_id):
-    """Check if ID is 3 digits"""
-    return str(student_id).isdigit() and len(str(student_id)) == 3
-
-def is_valid_grade(grade):
-    """Check if grade is in VALID_GRADES"""
-    return grade.upper() in VALID_GRADES

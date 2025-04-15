@@ -1,5 +1,5 @@
 from gradebook import Gradebook
-from instructor import Instructor
+from instructor import Instructor, add_instructor
 from data import ROSTERS, COURSES, STUDENTS
 from color_ui import print_success, print_error, print_information, print_warning
 from color_theme import apply_theme, list_available_themes
@@ -33,7 +33,7 @@ def main():
                 print_error("Instructor name cannot be empty")
                 continue
             else:
-                instructor_id = Instructor.add_instructor(instructor_name)
+                instructor_id = add_instructor(instructor_name)
                 print_success(f"Instructor '{instructor_name}' registered with ID {instructor_id}")
                 input("Press Enter to continue...")
         elif not str(user_input).isnumeric():

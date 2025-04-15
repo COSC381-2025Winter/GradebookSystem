@@ -1,15 +1,19 @@
-from gradebook import Gradebook
 import pytest
+import re
+from gradebook import Gradebook
 from main import main
+
+def remove_ansi(text):
+    return re.sub(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])', '', text)
 
 @pytest.fixture
 def test_grades():
     gb = Gradebook()
     gb.grades = {
         "CS101": {
-            "201": {"grade": "D", "timestamp": ""},
-            "202": {"grade": "A", "timestamp": ""},
-            "203": {"grade": "C", "timestamp": ""}
+            201: {"grade": 65.0, "timestamp": ""},
+            202: {"grade": 95.0, "timestamp": ""},
+            203: {"grade": 80.0, "timestamp": ""}
         }
     }
     return gb
@@ -20,19 +24,13 @@ def empty_grades():
 
 def test_asecending_list(test_grades):
     test_grades.sort_courses('a')
-    assert test_grades.grades["CS101"] == {
-        "202": {"grade": "A", "timestamp": ""},
-        "203": {"grade": "C", "timestamp": ""},
-        "201": {"grade": "D", "timestamp": ""}
-    }
+    sorted_keys = list(test_grades.grades["CS101"].keys())
+    assert sorted_keys == [202, 203, 201]  # highest to lowest (ascending)
 
 def test_decending_list(test_grades):
     test_grades.sort_courses('d')
-    assert test_grades.grades["CS101"] == {
-        "201": {"grade": "D", "timestamp": ""},
-        "203": {"grade": "C", "timestamp": ""},
-        "202": {"grade": "A", "timestamp": ""}
-    }
+    sorted_keys = list(test_grades.grades["CS101"].keys())
+    assert sorted_keys == [201, 203, 202]  # lowest to highest (descending)
 
 def test_bad_input(test_grades, capsys, monkeypatch):
     monkeypatch.setattr('builtins.input', lambda _: '')
@@ -42,23 +40,15 @@ def test_bad_input(test_grades, capsys, monkeypatch):
 
 def test_empty_input(empty_grades, capsys, monkeypatch):
     monkeypatch.setattr('builtins.input', lambda _: '')
+    empty_grades.grades = {}
     empty_grades.sort_courses('a')
     captured = capsys.readouterr()
-    assert "Grades are empty. Please add a grade" in captured.out
+    output = remove_ansi(captured.out)
+    assert "Grades are empty. Please add a grade" in output
 
 def test_negative_grade_input(monkeypatch, capsys):
     inputs = iter([
-        '1',        # Instructor ID
-        'light',    # Theme input
-        'CS101',    # Course ID
-        '1',        # Menu option: Add Grade
-        'n',        # do not search students by id/name
-        '201',      # Student ID
-        '-50',      # Negative grade
-        '',         # Press enter after error
-        'x',        # Logout
-        '',         # Press enter after logout
-        'q'         # Quit
+        '1', 'light', 'CS101', '1', 'n', '201', '-50', '', 'x', '', 'q'
     ])
     monkeypatch.setattr('builtins.input', lambda _: next(inputs))
     monkeypatch.setattr('main.clear_screen', lambda: None)
@@ -85,17 +75,7 @@ def test_negative_grade_input(monkeypatch, capsys):
 
 def test_non_numeric_grade_input(monkeypatch, capsys):
     inputs = iter([
-        '1',        # Instructor ID
-        'light',    # Theme input
-        'CS101',    # Course ID
-        '1',        # Add Grade
-        'n',
-        '201',      # Student ID
-        'abc',      # Non-numeric grade
-        '',         # Press enter after error
-        'x',        # Logout
-        '',         # Press enter after logout
-        'q'         # Quit
+        '1', 'light', 'CS101', '1', 'n', '201', 'abc', '', 'x', '', 'q'
     ])
     monkeypatch.setattr('builtins.input', lambda _: next(inputs))
     monkeypatch.setattr('main.clear_screen', lambda: None)

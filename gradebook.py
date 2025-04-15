@@ -6,13 +6,16 @@ from color_ui import print_success, print_error, print_information, print_warnin
 from util import clear_screen
 
 class Gradebook:
-    def __init__(self):
+    def __init__(self, file_path="grades.csv"):
+        self.csv_path = file_path
         self.grades = {}
         self.load_grades()
 
+
     def load_grades(self):
-        if os.path.exists("grades.csv"):
-            with open("grades.csv", newline="") as f:
+        if os.path.exists(self.csv_path):
+            with open(self.csv_path, newline="") as f:
+
                 reader = csv.DictReader(f)
                 for row in reader:
                     course_id = row["course_id"]
@@ -27,7 +30,7 @@ class Gradebook:
                     }
 
     def save_grades(self):
-        with open("grades.csv", "w", newline="") as f:
+        with open(self.csv_path, "w", newline="") as f:
             fieldnames = ["course_id", "student_id", "grade", "timestamp"]
             writer = csv.DictWriter(f, fieldnames=fieldnames)
             writer.writeheader()

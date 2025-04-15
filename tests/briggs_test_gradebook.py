@@ -26,8 +26,9 @@ def setup_gradebook():
 def test_edit_grade_confirm_yes(monkeypatch, capsys, setup_gradebook):
     gb, instructor, course_id, student_id = setup_gradebook
 
-    # Simulate confirmation = 'y', then enter
-    monkeypatch.setattr("builtins.input", lambda prompt="": 'y' if "change it to" in prompt else "")
+    # Create a list of inputs and simulate responses one by one
+    responses = iter(['y' if "change it to" in prompt else ''])  # Simulate 'y' confirmation for grade change
+    monkeypatch.setattr("builtins.input", lambda prompt="": next(responses))  # Ensure the response is always taken from 'responses'
 
     gb.edit_grade(instructor, course_id, student_id, 95)
     captured = capsys.readouterr()
@@ -40,8 +41,9 @@ def test_edit_grade_confirm_yes(monkeypatch, capsys, setup_gradebook):
 def test_edit_grade_confirm_no(monkeypatch, capsys, setup_gradebook):
     gb, instructor, course_id, student_id = setup_gradebook
 
-    # Simulate confirmation = 'n', then enter
-    monkeypatch.setattr("builtins.input", lambda prompt="": 'n' if "change it to" in prompt else "")
+    # Create a list of inputs and simulate responses one by one
+    responses = iter(['n' if "change it to" in prompt else ''])  # Simulate 'n' cancellation for grade change
+    monkeypatch.setattr("builtins.input", lambda prompt="": next(responses))  # Ensure the response is always taken from 'responses'
 
     gb.edit_grade(instructor, course_id, student_id, 95)
     captured = capsys.readouterr()
@@ -53,8 +55,9 @@ def test_edit_grade_confirm_no(monkeypatch, capsys, setup_gradebook):
 def test_edit_grade_input_enter(monkeypatch, capsys, setup_gradebook):
     gb, instructor, course_id, student_id = setup_gradebook
 
-    # Simulate just pressing enter (input is empty string)
-    monkeypatch.setattr("builtins.input", lambda prompt="": "")
+    # Create a list of inputs and simulate just pressing enter (empty string)
+    responses = iter([''])  # Simulate an empty response (pressing enter)
+    monkeypatch.setattr("builtins.input", lambda prompt="": next(responses))  # Ensure the response is always taken from 'responses'
 
     gb.edit_grade(instructor, course_id, student_id, 95)
     captured = capsys.readouterr()
@@ -77,7 +80,9 @@ def test_edit_grade_expired_window(monkeypatch, capsys):
         }
     }
 
-    monkeypatch.setattr("builtins.input", lambda prompt="": "")  # doesn't matter, will be skipped
+    # Create a list of inputs (it won't matter here, so we use an empty response)
+    responses = iter([''])
+    monkeypatch.setattr("builtins.input", lambda prompt="": next(responses))
 
     gb.edit_grade(instructor, course_id, student_id, 95)
     captured = capsys.readouterr()
@@ -92,7 +97,9 @@ def test_edit_grade_no_existing_grade(monkeypatch, capsys):
     course_id = "CS101"
     student_id = "stu999"  # no entry
 
-    monkeypatch.setattr("builtins.input", lambda prompt="": "")  # doesn't matter
+    # Create a list of inputs (it won't matter here, so we use an empty response)
+    responses = iter([''])
+    monkeypatch.setattr("builtins.input", lambda prompt="": next(responses))
 
     gb.edit_grade(instructor, course_id, student_id, 88)
     captured = capsys.readouterr()

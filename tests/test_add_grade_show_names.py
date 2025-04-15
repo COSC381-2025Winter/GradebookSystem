@@ -3,53 +3,50 @@ import pytest
 
 @pytest.fixture
 def test_instructor():
-    # Uses instructor from data.py
-    # 101, Dr. Smith
-    # "CS101": {"name": "Intro to CS", "instructor_id": 101},
-    # "CS111": {"name": "Java Programming", "instructor_id": 101},
     return {
         "id": 101,
         "name": "Dr. Smith",
         "courses": ["CS101", "CS111"],
-        "invalid_course": "CSabc"
     }
 
 @pytest.fixture
 def test_course():
-    #use course from data.py
-    #"CS101": {"name": "Intro to CS", "instructor_id": 101}
-    #"CS101": [201, 202, 203, 204, 205, 206]
     return {
         "id": "CS101",
         "name": "Intro to CS",
         "instructor_id": 101,
-        "color_theme": "light",
-        "roster": [201, 202, 203, 204, 205, 206]
+        "roster": [201]
     }
 
 @pytest.fixture
 def test_student():
-    #uses a student from data.py
-    #201: "Alice"
     return {
-        "id": 201,
+        "id": "201",
         "name": "Alice"
     }
 
-
-#test if name is being displayed after student id number when adding student
 def test_show_names_when_adding_grade(monkeypatch, capsys, test_instructor, test_student, test_course):
-    #Arrange
-    responses = iter([test_instructor["id"], 
-                    "light",
-                    test_course["id"],
-                    "1", "n", test_student["id"], "A", "\n", "x", "\n", "q"])
-    monkeypatch.setattr('builtins.input', lambda _: next(responses))
+    responses = iter([
+    "101",       # Instructor ID
+    "light",     # Theme
+    "CS101",     # Course ID
+    "1",         # Add Grade
+    "n",         # Don't use helper search
+    "201",       # Student ID
+    "95",        # Grade
+    "",          # Press enter after grade added
+    "x",         # Switch course
+    "",          # Press enter after switch
+    "l",         # Logout
+    "",          # ✅ Press enter after logout prompt (this was missing)
+])
+    monkeypatch.setattr("builtins.input", lambda _: next(responses))
+    monkeypatch.setattr("util.clear_screen", lambda: None)
 
-    #Act
-    with pytest.raises(SystemExit) as exitInfo:
-        main()
-    
-    #Assert
+    # Catch system exit at the end of main loop
+    main()
+
     captured = capsys.readouterr()
+
+    # Check that the student name is shown when listing students
     assert test_student["name"].lower() in captured.out.lower()

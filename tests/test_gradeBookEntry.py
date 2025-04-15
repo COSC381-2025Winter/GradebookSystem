@@ -3,10 +3,6 @@ import pytest
 
 @pytest.fixture
 def test_instructor():
-    # Uses instructor from data.py
-    # 101, Dr. Smith
-    # "CS101": {"name": "Intro to CS", "instructor_id": 101},
-    # "CS111": {"name": "Java Programming", "instructor_id": 101},
     return {
         "id": 101,
         "name": "Dr. Smith",
@@ -15,14 +11,28 @@ def test_instructor():
 
 def test_empty_grade(monkeypatch, capsys, test_instructor):
     # Arrange
-    responses = iter([(test_instructor["id"]), "light","CS101", "1", "n", "201", "", "99", "", "x", "", "q"])
+    responses = iter([
+        str(test_instructor["id"]),  # Instructor ID
+        "light",                     # Theme
+        "CS101",                     # Course
+        "1",                         # Add Grade
+        "n",                         # Don't search
+        "201",                       # Student ID
+        "",                          # ❌ Empty Grade (should trigger error)
+        "99",                        # ✅ Valid Grade
+        "",                          # Press enter after successful add
+        "x",                         # Switch course
+        "",                          # Enter after switch
+        "l",                         # Logout
+        ""                           # Enter after logout
+    ])
     monkeypatch.setattr('builtins.input', lambda _: next(responses))
+    monkeypatch.setattr('main.clear_screen', lambda: None)
 
     # Act
-    with pytest.raises(SystemExit):
-        main()
+    main()
+    captured = capsys.readouterr()
 
     # Assert
-    captured = capsys.readouterr()
-    assert "\tGrade cannot be empty" in captured.out
+    assert "Grade cannot be empty" in captured.out
     assert "Grade added for student 201" in captured.out

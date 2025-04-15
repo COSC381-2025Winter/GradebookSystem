@@ -8,7 +8,7 @@ def test_instructor():
     # "CS101": {"name": "Intro to CS", "instructor_id": 101},
     # "CS111": {"name": "Java Programming", "instructor_id": 101},
     return {
-        "id": 101,
+        "id": "101",
         "name": "Dr. Smith",
         "courses": ["CS101", "CS111"],
         "invalid_course": "CSabc"
@@ -22,8 +22,8 @@ def test_course():
     return {
         "id": "CS101",
         "name": "Intro to CS",
-        "instructor_id": 101,
-        "roster": [201, 202, 203, 204, 205, 206]
+        "instructor_id": "101",
+        "roster": ["201", "202", "203", "204", "205", "206"]
     }
 
 @pytest.fixture
@@ -31,19 +31,34 @@ def test_student():
     # uses a student from data.py
     # 201: "Alice"
     return {
-        "id": [201, 203],
+        "id": ["201", "203"],
         "name": ["Alice", "Charlie"]
     }
 
 # test if matching student is displayed after searching for one specific student using their id (test within add grade option)
 def test_matching_student_displayed(monkeypatch, capsys, test_instructor, test_student, test_course):
     # Arrange
-    responses = iter([test_instructor["id"], "light", test_course["id"], "1", "y", str(test_student["id"][0]), "\n", "back", str(test_student["id"][0]), "85", "\n", "x", "\n", "q"])
-    monkeypatch.setattr('builtins.input', lambda _: next(responses))
+    responses = iter([
+    test_instructor["id"],       # Instructor ID
+    "light",                     # Theme
+    test_course["id"],           # Course ID
+    "1",                         # Add Grade option
+    "y",                         # Search students by ID/name?
+    str(test_student["id"][0]),  # Search term (ID)
+    "",                          # Press enter to continue searching
+    "back",                      # Back from inner loop
+    str(test_student["id"][0]),  # Enter Student ID
+    "85",                        # Grade
+    "",                          # Press enter after grade added
+    "x",                         # Switch course
+    "",                          # Press enter after switch
+    "l",                          # Logout
+    ""
+])
+    monkeypatch.setattr('builtins.input', lambda *args, **kwargs: next(responses))
 
     # Act
-    with pytest.raises(SystemExit) as exitInfo:
-        main()
+    main()
 
     # Assert
     captured = capsys.readouterr()
@@ -53,12 +68,11 @@ def test_matching_student_displayed(monkeypatch, capsys, test_instructor, test_s
 # test if matching students are displayed after searching for letter "c" that may be apart of multiple students' names (test within edit grade option)
 def test_display_students_containing_letter_match(monkeypatch, capsys, test_instructor, test_student, test_course):
     # Arrange
-    responses = iter([test_instructor["id"], "light", test_course["id"], "2", "Y", "c", "\n", "back", str(test_student["id"][1]), "68", "\n", "x", "\n", "q"])
+    responses = iter([test_instructor["id"], "light", test_course["id"], "2", "Y", "c", "\n", "back", str(test_student["id"][1]), "68", "\n", "x", "\n", "l", ""])
     monkeypatch.setattr('builtins.input', lambda _: next(responses))
 
     # Act
-    with pytest.raises(SystemExit) as exitInfo:
-        main()
+    main()
 
     # Assert
     captured = capsys.readouterr()
@@ -70,12 +84,11 @@ def test_display_students_containing_letter_match(monkeypatch, capsys, test_inst
 # test if no matching students found displays message (test within edit grade option)
 def test_no_matching_students(monkeypatch, capsys, test_instructor, test_student, test_course):
     # Arrange
-    responses = iter([test_instructor["id"], "light", test_course["id"], "2", "y", "zxy", "\n", "back", str(test_student["id"][0]), "99", "\n", "x", "\n", "q"])
+    responses = iter([test_instructor["id"], "light", test_course["id"], "2", "y", "zxy", "\n", "back", str(test_student["id"][0]), "99", "\n", "x", "\n", "l", ""])
     monkeypatch.setattr('builtins.input', lambda _: next(responses))
 
     # Act
-    with pytest.raises(SystemExit) as exitInfo:
-        main()
+    main()
 
     # Assert
     captured = capsys.readouterr()

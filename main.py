@@ -44,6 +44,7 @@ def main():
         prompt_for_theme(instructor)
 
         while True:
+            instructor.display_courses()
             course_id = input("Enter Course ID or Course Name (q for quit / exit to logout): ")
             if course_id.lower() == 'q':
                 clear_screen()

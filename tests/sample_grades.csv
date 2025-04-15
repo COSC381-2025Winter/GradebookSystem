@@ -1,0 +1,9 @@
+student_id,grade
+201,90.5
+202,85
+203,A
+204,B+
+205,75.25
+206,C-
+207,101  # invalid
+208,X     # invalid

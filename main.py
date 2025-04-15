@@ -5,6 +5,8 @@ from color_ui import print_success, print_error, print_information, print_warnin
 from color_theme import apply_theme, list_available_themes
 from util import clear_screen
 import time
+from credentials import PASSWORDS
+import getpass
 
 def prompt_for_theme(instructor):
     theme = None
@@ -36,10 +38,18 @@ def main():
             print_error("Error: Instructor not found")
             continue
 
-        instructor = Instructor(instructor_id)
+        if instructor_id not in PASSWORDS:
+            print_error("Invalid Instructor ID")
+            continue
 
+        password = getpass.getpass("Enter your password: ")
+        if PASSWORDS[instructor_id] != password:
+            print_error("Incorrect password.")
+            continue
+
+        instructor = Instructor(instructor_id)
         if not instructor.is_authenticated():
-            print_error("Invalid Instructor ID. Try again. (q for quit)")
+            print_error("Authentication failed.")
             continue
 
         # 🔹 Prompt for theme after successful login

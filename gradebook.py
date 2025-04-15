@@ -28,7 +28,6 @@ class Gradebook:
             input("Press enter to continue.")
 
     def edit_grade(self, instructor, course_id, student_id, new_grade):
-
         """Edits an existing grade but only within 7 days of the first entry"""
         if not instructor.has_access(course_id):
             print_error("Access Denied: You are not authorized to edit this course.")

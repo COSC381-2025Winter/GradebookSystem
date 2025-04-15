@@ -209,7 +209,7 @@ def test_sort_courses(mocker, test_instructor):
 def test_grades_to_edit(monkeypatch, capsys, test_instructor):
     # Act & Arrange
     responses = iter([str(test_instructor["id"]), 'light', test_instructor["courses"][0], '1', 'n', '201', '99', '', '2', 'n', '201', '88', '', 'x', '', 'q']) # Ensure ID is string
-    monkeypatch.setattr('builtins.input', lambda _: next(responses))
+    monkeypatch.setattr('builtins.input', lambda *args, **kwargs: next(responses))
 
     with pytest.raises(SystemExit) as exitInfo:
         main()
@@ -225,7 +225,7 @@ def test_grades_to_edit(monkeypatch, capsys, test_instructor):
 def test_edit_invalid_id(monkeypatch, capsys, test_instructor):
     # Act & Arrange
     responses = iter([str(test_instructor["id"]), 'light', test_instructor["courses"][0], '1', 'n', '201', '99', '', '2', 'n', '202', '88', '', 'x', '', 'q']) # Ensure ID is string
-    monkeypatch.setattr('builtins.input', lambda _: next(responses))
+    monkeypatch.setattr('builtins.input', lambda *args, **kwargs: next(responses))
 
     with pytest.raises(SystemExit) as exitInfo:
         main()

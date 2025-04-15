@@ -20,12 +20,21 @@ class Gradebook:
         now = datetime.datetime.now()
 
         if student_id in self.grades[course_id]:
-            print_error("Error: Grade already exists. Use 'edit' instead.")
-            input("Press enter to continue.")
+            option = input("Grade already exists. Do you want to edit it? (Y/N): ")
+            if option.upper() == "Y":  # 'option' determines whether to update an existing grade.
+                self.grades[course_id][student_id] = {
+                    "grade": grade,
+                    "timestamp": now
+}
+
+                print_success(f"Grade updated for student {student_id}: {grade}")
+            else:
+                print_information("Grade not updated.")
         else:
             self.grades[course_id][student_id] = {"grade": grade, "timestamp": now}
             print_success(f"Grade added for student {student_id}: {grade}")
-            input("Press enter to continue.")
+            print_information("Press enter to continue.")
+            input()
 
     def edit_grade(self, instructor, course_id, student_id, new_grade):
         """Edits an existing grade but only within 7 days of the first entry"""

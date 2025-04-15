@@ -4,6 +4,7 @@ from data import ROSTERS, COURSES, STUDENTS
 from color_ui import print_success, print_error, print_information, print_warning
 from color_theme import apply_theme, list_available_themes
 from util import clear_screen
+import time
 
 def prompt_for_theme(instructor):
     theme = None
@@ -64,11 +65,11 @@ def main():
                 print_error("Invalid Course ID or Access Denied.")
             else:
                 print_success("Valid Course ID!")
+                time.sleep(1.5)
             break;
 
         while True:
             clear_screen()
-            print_success("Course ID found!")
             print(f"\nSelected Course: {course_id}: {COURSES[course_id]['name']}")
             print("\n1. Add Grade")
             print("2. Edit Grade")
@@ -161,7 +162,7 @@ def main():
                     inp = inp.lower()
                     if inp == 'a' or inp == 'd':
                         gradebook.sort_courses(inp)
-                        input("Press enter to continue.")
+                        time.sleep(1.5)
                     else:
                         print("Please type either (a/d)")
                         input("Press enter to continue.")

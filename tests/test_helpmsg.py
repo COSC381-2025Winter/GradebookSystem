@@ -41,7 +41,7 @@ def test_validinfo(monkeypatch, capsys):
 def test_gradebookAscending(monkeypatch, capsys):
     responses = iter(['101','dark','CS101',
                       '1','n','201','60.0', '',
-                      '4', 'a','','4', 'd','',
+                      '4', 'a','4', 'd',
                       'x','','q'])
     monkeypatch.setattr('builtins.input', lambda _: next(responses))
     

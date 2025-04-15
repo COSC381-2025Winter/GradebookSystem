@@ -62,12 +62,13 @@ def main():
             course_id = course_id.upper()
             if not instructor.has_access(course_id):
                 print_error("Invalid Course ID or Access Denied.")
-                continue
+            else:
+                print_success("Valid Course ID!")
             break;
 
         while True:
             clear_screen()
-            print_success("Valid Course ID!")
+            print_success("Course ID found!")
             print(f"\nSelected Course: {course_id}: {COURSES[course_id]['name']}")
             print("\n1. Add Grade")
             print("2. Edit Grade")

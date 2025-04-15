@@ -41,7 +41,7 @@ def test_validinfo(monkeypatch, capsys):
 def test_gradebookAscending(monkeypatch, capsys):
     responses = iter(['101','dark','CS101',
                       '1','n','201','60.0', '',
-                      '4', 'a', '4', 'd',
+                      '4', 'a','','4', 'd','',
                       'x','','q'])
     monkeypatch.setattr('builtins.input', lambda _: next(responses))
     
@@ -49,5 +49,16 @@ def test_gradebookAscending(monkeypatch, capsys):
         main()
 
     captured = capsys.readouterr()
-    assert "Grades printed in ascending order!\n" in captured.out
-    assert "Grades printed in descending order!\n" in captured.out
+    assert "Grades sorted in ascending order!" in captured.out
+    assert "Grades sorted in descending order!" in captured.out
+
+def test_gradebookEdit(monkeypatch, capsys):
+    responses = iter(['101','dark','CS101','1','n','201','60.0', '',
+                      '2', 'n', '201', '70.0', '', 'x', '', 'q'])
+    monkeypatch.setattr('builtins.input', lambda _: next(responses))
+
+    with pytest.raises(SystemExit) as exitInfo:
+        main()
+
+    captured = capsys.readouterr()
+    assert "Student grade edited successfully!" in captured.out

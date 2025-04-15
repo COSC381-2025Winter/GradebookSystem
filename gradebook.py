@@ -25,6 +25,7 @@ class Gradebook:
         else:
             self.grades[course_id][student_id] = {"grade": grade, "timestamp": now}
             print_success(f"Grade added for student {student_id}: {grade}")
+            print_success("\nGrade added successfully!")
             input("Press enter to continue.")
 
     def edit_grade(self, instructor, course_id, student_id, new_grade):
@@ -42,6 +43,7 @@ class Gradebook:
             if delta.days <= 7:
                 self.grades[course_id][student_id] = {"grade": new_grade, "timestamp": now}
                 print_success(f"Grade updated for student {student_id}: {new_grade}")
+                print_success("\nStudent grade edited successfully!") 
                 input("Press enter to continue.")
             else:
                 print_error("Error: Grade editing period (7 days) has expired.")
@@ -83,12 +85,12 @@ class Gradebook:
         # Sort the list alphabetically 
         if arrangement_type == 'd':
             sorted_grades = {course: dict(sorted(students.items(), key=lambda item: item[1]["grade"])) for course, students in self.grades.items()}
-            print_success("Grades printed in descending order!\n") # --------------------------------
+            print_success("\nGrades sorted in descending order!") # --------------------------------
 
         # Reverses the dictionary
         elif arrangement_type == 'a':
             sorted_grades = {course: dict(sorted(students.items(), key=lambda item: item[1]["grade"], reverse=True)) for course, students in self.grades.items()}
-            print_success("Grades printed in ascending order!\n") # --------------------------------
+            print_success("\nGrades sorted in ascending order!") # --------------------------------
 
         # Replace the original dictionary with sorted one
         self.grades = sorted_grades

@@ -51,7 +51,7 @@ def main():
             course_id = input("Enter Course ID (q for quit / exit to logout): ")
             if course_id.lower() == 'q':
                 clear_screen()
-                print_warning("--- Gradebook System ---\nEnding program...") # ---------------------
+                print_warning("--- Gradebook System ---\nEnding program...")
                 exit()
                 
             if course_id.lower() ==  'exit':
@@ -63,12 +63,11 @@ def main():
             if not instructor.has_access(course_id):
                 print_error("Invalid Course ID or Access Denied.")
                 continue
-            else:
-                print_success("Valid Course ID!") # -----------------------------------
             break;
 
         while True:
             clear_screen()
+            print_success("Valid Course ID!")
             print(f"\nSelected Course: {course_id}: {COURSES[course_id]['name']}")
             print("\n1. Add Grade")
             print("2. Edit Grade")
@@ -109,7 +108,7 @@ def main():
                 student_id = int (student_id)
 
                 if student_id in ROSTERS[course_id]:
-                    print_success(f"Student found!\n") # ------------------------------------------------
+                    print_success(f"Student found!\n")
 
                 isGradeEmpty = True
                 while isGradeEmpty:
@@ -133,7 +132,7 @@ def main():
 
                 if student_id in ROSTERS[course_id]:
                     gradebook.add_grade(instructor, course_id, student_id, grade_value)
-                    print_success("Grade added successfully!\n") # ---------------------------------
+                    
                 else:
                     print_error("Invalid Student ID.")
                     input("Press enter to continue.")
@@ -149,7 +148,6 @@ def main():
                     student_id = int(input("Enter Student ID: "))
                     new_grade = input("Enter New Grade: ")
                     gradebook.edit_grade(instructor, course_id, student_id, new_grade)
-                    print_success(f"Student with ID {student_id} grade changed successfully!") # --------------------------
                     
             elif choice == "3":  # View Grades
                 clear_screen()
@@ -162,6 +160,7 @@ def main():
                     inp = inp.lower()
                     if inp == 'a' or inp == 'd':
                         gradebook.sort_courses(inp)
+                        input("Press enter to continue.")
                     else:
                         print("Please type either (a/d)")
                         input("Press enter to continue.")

@@ -80,12 +80,12 @@ def main():
             print("\n1. Add Grade")
             print("2. Edit Grade")
             print("3. View Grades")
-            print("4. Sort Grades")
-            print("x. Logout")
+            print("4. Logout")
+            print("5. View Grade History")
 
             choice = input("Enter choice: ")
 
-            if choice == "x":
+            if choice == "4":  # Logout
                 print_warning("Logging out...")
                 input("Press enter to continue.")
                 break
@@ -156,18 +156,19 @@ def main():
                 clear_screen()
                 print("========View Grades========")
                 gradebook.view_grades(instructor, course_id)
-            
-            elif choice == "4":
+                
+            elif choice == "5":  # View Grade History
+                clear_screen()
+                print("========View Grade History========")
+                print_information("Students in this course:")
+                for sid in ROSTERS[course_id]:
+                    print_information(f"- {sid}: {STUDENTS[sid]}")
+                
                 try:
-                    inp = input("Would you like to sort by ascending or decending order? (a/d): ")
-                    inp = inp.lower()
-                    if inp == 'a' or inp == 'd':
-                        gradebook.sort_courses(inp)
-                    else:
-                        print("Please type either (a/d)")
-                        input("Press enter to continue.")
-                except: 
-                    print("Please type either (a/d)")
+                    student_id = int(input("Enter Student ID: "))
+                    gradebook.view_grade_history(instructor, course_id, student_id)
+                except ValueError:
+                    print_error("Invalid input. Student ID must be a number.")
                     input("Press enter to continue.")
 
             else:

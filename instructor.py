@@ -15,9 +15,6 @@ class Instructor:
         if self.name:
             self._load_courses()     
 
-    def get_Instructors():
-        return INSTRUCTORS
-
     def _load_courses(self):
         for course_id, course in COURSES.items():
             if course['instructor_id'] == self.instructor_id:
@@ -57,14 +54,12 @@ class Instructor:
     def get_theme(self):
         return self.color_theme.get_theme()
 
-
-    @staticmethod
     def add_instructor(name):
         root_name = os.path.dirname(os.path.abspath(__file__))
         file_name = os.path.join(root_name, "data.py")
 
         #read the whole file
-        with open(root_name + "\\data.py", 'r') as file:
+        with open(root_name + "/data.py", 'r') as file:
                 content = file.read()
 
         

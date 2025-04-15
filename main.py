@@ -15,21 +15,9 @@ def prompt_for_theme(instructor):
     apply_theme(theme)
     print_success(f"Theme '{theme}' applied successfully!\n")
 
-def prompt_for_theme(instructor):
-    theme = None
-    while theme not in list_available_themes():
-        print_information("Available themes: " + ", ".join(list_available_themes()))
-        theme = input("Choose a theme (light/dark): ").strip().lower()
-        if theme not in list_available_themes():
-            print_error("Invalid theme. Please choose 'light' or 'dark'.\n")
-    apply_theme(theme)
-    print_success(f"Theme '{theme}' applied successfully!\n")
-
 def main():
     gradebook = Gradebook()
-
     while True:
-       
         clear_screen()
         print("\n--- Gradebook System ---")
         

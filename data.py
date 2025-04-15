@@ -52,22 +52,18 @@ ROSTERS = {
     "CS402": [219, 222, 223]
 }
 
-
-
-
-
 INSTRUCTORS = {
 	101: "Dr. Smith", 
 	102: "Dr. Johnson", 
 	103: "Prof. Lee", 
 	104: "Dr. Davis", 
-	105: "dr.Ahmed", 
+	105: "Dr. Ahmed", 
 }
 INSTRUCTORS = {
 	101: "Dr. Smith", 
 	102: "Dr. Johnson", 
 	103: "Prof. Lee", 
 	104: "Dr. Davis", 
-	105: "dr.Ahmed", 
-	106: "dr.ahmed", 
+	105: "Dr. Ahmed", 
+	106: "Dr. Mohamed", 
 }

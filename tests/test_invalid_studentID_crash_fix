@@ -1,0 +1,75 @@
+import builtins
+import pytest
+
+from main import main
+
+def test_invalid_student_id_handling(monkeypatch, capsys):
+    """
+    test that entering a non-integer or empty Student ID does not crash the system
+    and re-prompts with 'You must enter a student id! ' until valid input is given.
+    """
+
+    # sequence of inputs: instructor ID, course ID, choice to add grade,
+    # invalid student ID (""), then "abc", then valid "123", then grade "90",
+    # then logout ("x")
+    fake_inputs = iter([
+        "101",         # valid instructor ID
+        "CS101",     # valid course ID
+        "1",         # choice: Add Grade
+        "",          # invalid student ID (empty)
+        "abc",       # invalid student ID (non-numeric)
+        "201",       # valid student ID
+        "90",        # valid grade
+        "",          # sim enter press
+        "x",         # logout
+        "",          # press enter after logout message
+        "q"          # quit program
+    ])
+
+    monkeypatch.setattr(builtins, "input", lambda _: next(fake_inputs))
+
+    try:
+        main()
+    except SystemExit:
+        pass  # we expect an exit() call after 'q'
+
+    output = capsys.readouterr().out
+
+    # confirm that the warning was printed twice before success
+    assert output.count("You must enter a student id! ") == 2
+    assert "========Add Grade========" in output
+    assert "Logging out..." in output
+
+def test_invalid_student_id_edit_grade_handling(monkeypatch, capsys):
+    """
+    test that editing a grade with a non-integer or empty Student ID
+    does not crash and re-prompts with 'You must enter a student id! '
+    until valid input is given.
+    """
+
+    fake_inputs = iter([
+        "101",         # valid instructor ID
+        "CS101",       # valid course ID
+        "2",           # choice: Edit Grade
+        "",            # invalid student ID (empty)
+        "abc",         # invalid student ID (non-numeric)
+        "201",         # valid student ID
+        "88",          # new grade input
+        "",            # sim enter press
+        "x",           # logout
+        "",            # press enter after logout message
+        "q"            # quit program
+    ])
+
+    monkeypatch.setattr(builtins, "input", lambda _: next(fake_inputs))
+
+    try:
+        main()
+    except SystemExit:
+        pass
+
+    output = capsys.readouterr().out
+
+    assert output.count("You must enter a student id! ") == 2
+    assert "========Edit Grade========" in output
+    assert "Logging out..." in output

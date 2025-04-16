@@ -1,5 +1,5 @@
 from gradebook import Gradebook
-from instructor import Instructor, add_instructor
+from instructor import Instructor
 from data import ROSTERS, COURSES, STUDENTS
 from color_ui import print_success, print_error, print_information, print_warning
 from color_theme import apply_theme, list_available_themes
@@ -30,14 +30,22 @@ def main():
             exit()
         elif user_input == '0':
             clear_screen()
-            instructor_name = input("What is the Instructors name, ie: Dr. Smith: ")
+            instructor_name = input("What is the Instructor's name (e.g., Dr. Smith): ").strip()
             if not instructor_name:
                 print_error("Instructor name cannot be empty")
                 continue
-            else:
-                instructor_id = add_instructor(instructor_name)
-                print_success(f"Instructor '{instructor_name}' registered with ID {instructor_id}")
-                input("Press Enter to continue...")
+
+            password = getpass.getpass("Enter a password for the instructor: ").strip()
+            if not password:
+                print_error("Password cannot be empty")
+                continue
+
+            instructor_id = Instructor.add_instructor(instructor_name, password)
+            print_success(f"Instructor '{instructor_name}' registered with ID {instructor_id}")
+            input("Press Enter to continue...")
+
+                
+
         elif not str(user_input).isnumeric():
             print_error("Invalid Instructor ID. Try again. (q for quit)")
             continue

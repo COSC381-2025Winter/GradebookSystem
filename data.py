@@ -4,8 +4,10 @@ INSTRUCTORS = {
     102: "Dr. Johnson",
     103: "Prof. Lee",
     104: "Dr. Davis",
-    105: "Dr.ahmed",
+    105: "dr. ahmed",
 }
+
+
 
 STUDENTS = {
     201: "Alice",

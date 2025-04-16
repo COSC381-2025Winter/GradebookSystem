@@ -3,53 +3,63 @@ import pytest, test_main
     
 @pytest.fixture
 def expected_output():
-    x = """
-1. add grade
-2. edit grade
-3. view grades
-4. sort grades
-x. logout
+    return """
+1. Add Grade
+2. Edit Grade
+3. View Grades
+4. Sort Grades
+x. Switch Course
 """
-    return x
-  
-def test_Course_selection_with_lowercase(monkeypatch, capsys,expected_output):
-# Act & Arrange
-    responses = iter(["101", "light", "cs101", 'x', ' ', 'q'])
-    monkeypatch.setattr('builtins.input', lambda _: next(responses))
-    
+
+def test_Course_selection_with_lowercase(monkeypatch, capsys, expected_output):
+    responses = iter([
+        "101",     # Instructor ID
+        "light",   # Theme
+        "cs101",   # Course ID lowercase
+        "x",       # Switch Course
+        "",
+        "l",       # Logout
+        "",         # Confirm logout
+        "q"
+    ])
+    monkeypatch.setattr("builtins.input", lambda _: next(responses))
     with pytest.raises(SystemExit) as exitInfo:
         main()
-        
     captured = capsys.readouterr()
-    s = expected_output.lower()
-   
-  # Assert
-    assert s in captured.out.lower()
-    
-def test_Course_selection_with_uppercase(monkeypatch, capsys,expected_output):
-# Act & Arrange
-    responses = iter(["101", "light", "CS101", 'x', ' ', 'q'])
-    monkeypatch.setattr('builtins.input', lambda _: next(responses))
-    
+    assert expected_output.strip().lower() in captured.out.lower()
+
+
+def test_Course_selection_with_uppercase(monkeypatch, capsys, expected_output):
+    responses = iter([
+        "101",     # Instructor ID
+        "light",   # Theme
+        "CS101",   # Course ID uppercase
+        "x",       # Switch Course
+        "",
+        "l",       # Logout
+        "",         # Confirm logout
+        "q"
+    ])
+    monkeypatch.setattr("builtins.input", lambda _: next(responses))
     with pytest.raises(SystemExit) as exitInfo:
         main()
-        
     captured = capsys.readouterr()
-    s = expected_output.lower()
-   
-  # Assert
-    assert s in captured.out.lower()
-    
-def test_Course_selection_with_mixed_input(monkeypatch, capsys,expected_output):
-# Act & Arrange
-    responses = iter(["101", "light", "Cs101", 'x', ' ', 'q'])
-    monkeypatch.setattr('builtins.input', lambda _: next(responses))
-    
+    assert expected_output.strip().lower() in captured.out.lower()
+
+
+def test_Course_selection_with_mixed_input(monkeypatch, capsys, expected_output):
+    responses = iter([
+        "101",     # Instructor ID
+        "light",   # Theme
+        "Cs101",   # Course ID mixed-case
+        "x",       # Switch Course
+        "",
+        "l",       # Logout
+        "",         # Confirm logout
+        "q"
+    ])
+    monkeypatch.setattr("builtins.input", lambda _: next(responses))
     with pytest.raises(SystemExit) as exitInfo:
         main()
-        
     captured = capsys.readouterr()
-    s = expected_output.lower()
-   
-  # Assert
-    assert s in captured.out.lower()
+    assert expected_output.strip().lower() in captured.out.lower()

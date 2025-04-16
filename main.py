@@ -93,13 +93,14 @@ def main():
                 print_success("Instructor found!\n") 
                 instructor.display_courses()
                 course_id = input("Enter Course ID or Course Name (l or exit to logout): ")
-    
-                if course_id.lower() ==  'exit' or course_id.lower() == 'l':
+
+                if course_id.lower() in ['exit', 'l']:
                     print_warning("Logging out...")
                     loggout = True
                     input("Press enter to continue.")
+                    break
 
-                if course_id.replace(' ','').isalpha():        
+                if course_id.replace(' ', '').isalpha():        
                     course_id = instructor.get_course_code_by_name(course_id)  
 
                 course_id = course_id.upper()
@@ -126,7 +127,7 @@ def main():
                 if choice == "x":
                     print_information("Switching course...")
                     input("Press enter to continue.")
-                    break  # Go back to course selection
+                    break
 
                 elif choice == "1":  # Add Grade
                     clear_screen()
@@ -140,12 +141,17 @@ def main():
                     clear_screen()
                     print("========Add Grade========")
 
-                    student_id = input("Enter Student ID: ")
-                    while student_id == "":
-                        print("You must enter a student id! ")
-                        student_id = input("Enter Student ID: ")
+                    student_id_input = input("Enter Student ID: ").strip()
+                    while student_id_input == "":
+                        print_error("You must enter a student ID!")
+                        student_id_input = input("Enter Student ID: ").strip()
 
-                    student_id = int(student_id)
+                    try:
+                        student_id = int(student_id_input)
+                    except ValueError:
+                        print_error("Invalid input. Please enter a numeric Student ID.")
+                        input("Press enter to continue.")
+                        continue
 
                     if student_id in ROSTERS[course_id]:
                         print_success(f"Student found!\n")
@@ -153,8 +159,8 @@ def main():
                         isGradeEmpty = True
                         while isGradeEmpty:
                             grade = input("Enter Grade: ") 
-                            if not grade or grade == "" or grade.startswith(" "):
-                                print("\tGrade cannot be empty")
+                            if not grade or grade.strip() == "":
+                                print_error("Grade cannot be empty.")
                                 continue
                             else: 
                                 isGradeEmpty = False
@@ -178,15 +184,20 @@ def main():
                 elif choice == "2":  # Edit Grade
                     clear_screen()
                     print("========Edit Grade========")
-                    # call helper method for search_student function
                     gradebook.helper_search_student(course_id)
                     grade_exists = gradebook.grades_to_edit(instructor, course_id)
 
-                    if(grade_exists == True):
-                        student_id = int(input("Enter Student ID: "))
+                    if grade_exists:
+                        student_id_input = input("Enter Student ID: ").strip()
+                        if not student_id_input.isdigit():
+                            print_error("Invalid input. Please enter a numeric Student ID.")
+                            input("Press enter to continue.")
+                            continue
+
+                        student_id = int(student_id_input)
                         new_grade = input("Enter New Grade: ")
                         gradebook.edit_grade(instructor, course_id, student_id, new_grade)
-                        
+
                 elif choice == "3":  # View Grades
                     clear_screen()
                     print("========View Grades========")
@@ -194,16 +205,15 @@ def main():
                 
                 elif choice == "4":
                     try:
-                        inp = input("Would you like to sort by ascending or decending order? (a/d): ")
-                        inp = inp.lower()
-                        if inp == 'a' or inp == 'd':
+                        inp = input("Would you like to sort by ascending or descending order? (a/d): ").lower()
+                        if inp in ['a', 'd']:
                             gradebook.sort_courses(inp)
                             time.sleep(1.5)
                         else:
-                            print("Please type either (a/d)")
+                            print_error("Please type either (a/d)")
                             input("Press enter to continue.")
                     except:
-                        print("Please type either (a/d)")
+                        print_error("Please type either (a/d)")
                         input("Press enter to continue.")
 
                 else:

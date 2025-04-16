@@ -232,4 +232,7 @@ def test_edit_invalid_id(monkeypatch, capsys, test_instructor):
 
     # Assert
     captured = capsys.readouterr()
-    assert "Error: No existing grade found. Use 'add' instead." in captured.out
+    assert "No grade exists for this student. Please use option 1 (Add Grade) to enter a new grade." in captured.out
+
+  
+

@@ -4,6 +4,7 @@ from data import ROSTERS, COURSES, STUDENTS
 from color_ui import print_success, print_error, print_information, print_warning
 from color_theme import apply_theme, list_available_themes
 from util import clear_screen
+import time
 from credentials import PASSWORDS
 import getpass
 
@@ -25,6 +26,7 @@ def main():
         user_input = input("Enter your Instructor ID (q for quit): ")
         if user_input == 'q' or user_input == 'Q':
             clear_screen()
+            print_warning("--- Gradebook System ---\nEnding program...") 
             exit()
         elif not str(user_input).isnumeric():
             print_error("Invalid Instructor ID. Try again. (q for quit)")
@@ -54,10 +56,13 @@ def main():
         prompt_for_theme(instructor)
 
         while True:
+            clear_screen()
+            print_success("Instructor found!\n") 
             instructor.display_courses()
             course_id = input("Enter Course ID or Course Name (q for quit / exit to logout): ")
             if course_id.lower() == 'q':
                 clear_screen()
+                print_warning("--- Gradebook System ---\nEnding program...")
                 exit()
                 
             if course_id.lower() ==  'exit':
@@ -72,6 +77,9 @@ def main():
             if not instructor.has_access(course_id):
                 print_error("Invalid Course ID or Access Denied.")
                 continue
+            else:
+                print_success("Valid Course ID!")
+                time.sleep(1.5)
             break;
 
         while True:
@@ -112,7 +120,11 @@ def main():
                     print("You must enter a student id! ")
                     student_id = input("Enter Student ID: ")
 
-                student_id = int(student_id)
+                #cast the string back into an int
+                student_id = int (student_id)
+
+                if student_id in ROSTERS[course_id]:
+                    print_success(f"Student found!\n")
 
                 isGradeEmpty = True
                 while isGradeEmpty:
@@ -136,6 +148,7 @@ def main():
 
                 if student_id in ROSTERS[course_id]:
                     gradebook.add_grade(instructor, course_id, student_id, grade_value)
+                    
                 else:
                     print_error("Invalid Student ID.")
                     input("Press enter to continue.")
@@ -151,7 +164,7 @@ def main():
                     student_id = int(input("Enter Student ID: "))
                     new_grade = input("Enter New Grade: ")
                     gradebook.edit_grade(instructor, course_id, student_id, new_grade)
-
+                    
             elif choice == "3":  # View Grades
                 clear_screen()
                 print("========View Grades========")
@@ -163,6 +176,7 @@ def main():
                     inp = inp.lower()
                     if inp == 'a' or inp == 'd':
                         gradebook.sort_courses(inp)
+                        time.sleep(1.5)
                     else:
                         print("Please type either (a/d)")
                         input("Press enter to continue.")

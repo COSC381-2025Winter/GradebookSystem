@@ -59,7 +59,7 @@ def main():
             clear_screen()
             print_success("Instructor found!\n") 
             instructor.display_courses()
-            course_id = input("Enter Course ID (q for quit / exit to logout): ")
+            course_id = input("Enter Course ID or Course Name (q for quit / exit to logout): ")
             if course_id.lower() == 'q':
                 clear_screen()
                 print_warning("--- Gradebook System ---\nEnding program...")
@@ -69,8 +69,11 @@ def main():
                  print_warning("Logging out...")
                  input("Press enter to continue.")
                  main()
+            if course_id.replace(' ','').isalpha():        
+                course_id = instructor.get_course_code_by_name(course_id)  
 
             course_id = course_id.upper()
+
             if not instructor.has_access(course_id):
                 print_error("Invalid Course ID or Access Denied.")
                 continue

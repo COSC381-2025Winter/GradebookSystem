@@ -4,6 +4,8 @@ from data import ROSTERS, COURSES, STUDENTS
 from color_ui import print_success, print_error, print_information, print_warning
 from color_theme import apply_theme, list_available_themes
 from util import clear_screen
+from credentials import PASSWORDS
+import getpass
 
 def prompt_for_theme(instructor):
     theme = None
@@ -34,23 +36,39 @@ def main():
             print_error("Error: Instructor not found")
             continue
 
-        instructor = Instructor(instructor_id)
+        if instructor_id not in PASSWORDS:
+            print_error("Invalid Instructor ID")
+            continue
 
+        password = getpass.getpass("Enter your password: ")
+        if PASSWORDS[instructor_id] != password:
+            print_error("Incorrect password.")
+            continue
+
+        instructor = Instructor(instructor_id)
         if not instructor.is_authenticated():
-            print_error("Invalid Instructor ID. Try again. (q for quit)")
+            print_error("Authentication failed.")
             continue
 
         # 🔹 Prompt for theme after successful login
         prompt_for_theme(instructor)
 
         while True:
-            clear_screen()
             instructor.display_courses()
-            course_id = input("Enter Course ID (q for quit): ")
+            course_id = input("Enter Course ID or Course Name (q for quit / exit to logout): ")
             if course_id.lower() == 'q':
                 clear_screen()
                 exit()
+                
+            if course_id.lower() ==  'exit':
+                 print_warning("Logging out...")
+                 input("Press enter to continue.")
+                 main()
+            if course_id.replace(' ','').isalpha():        
+                course_id = instructor.get_course_code_by_name(course_id)  
+
             course_id = course_id.upper()
+
             if not instructor.has_access(course_id):
                 print_error("Invalid Course ID or Access Denied.")
                 continue

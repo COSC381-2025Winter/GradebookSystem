@@ -4,6 +4,7 @@ from main import main
 from instructor import Instructor
 from gradebook import Gradebook
 import pytest
+import builtins
 
 @pytest.fixture
 def test_instructor():
@@ -29,6 +30,32 @@ def test_quit_on_course_id_input(monkeypatch, quit_input):
     with pytest.raises(SystemExit):
         main()
 
+@pytest.mark.parametrize("logout_input", ['exit', 'EXIT'])
+def test_logout_on_course_id_input(monkeypatch, capsys, logout_input):
+    inputs = iter([
+        '101',         # Instructor ID
+        'light',       # Theme selection
+        logout_input,  # Course ID triggers 'exit'
+        '',            # Press enter to continue
+        'q'            # Instructor ID after main() restarts -> quit
+    ])
+
+    def fake_input(prompt):
+        try:
+            return next(inputs)
+        except StopIteration:
+            return 'q'
+
+    monkeypatch.setattr(builtins, 'input', fake_input)
+
+    # Patch the recursive main() call so it doesn't actually re-enter recursively
+    with patch("main.main", side_effect=SystemExit):
+        with pytest.raises(SystemExit):
+            main()
+
+    # Verify that the logout message was printed
+    captured = capsys.readouterr()
+    assert "Logging out..." in captured.out
 
 def test_check_empty_string(monkeypatch,capsys):
     #arrange
@@ -216,10 +243,26 @@ def test_grades_to_edit(monkeypatch):
     # View grades
     assert gradebook.grades_to_edit(instructor, "CS101") == True
 
+def test_grades_to_edit(monkeypatch, capsys, test_instructor):
+    # Act & Arrange
+    responses = iter([str(test_instructor["id"]), 'light', test_instructor["courses"][0], '1', 'n', '201', '99', '', '2', 'n', '201', '88', '', 'x', '', 'q']) # Ensure ID is string
+    monkeypatch.setattr('builtins.input', lambda *args, **kwargs: next(responses))
+
+    with pytest.raises(SystemExit) as exitInfo:
+        main()
+
+    # Assert
+    captured = capsys.readouterr()
+
+    assert "selected course" in captured.out.lower()
+    assert f"{test_instructor['courses'][0]}".lower() in captured.out.lower()
+    assert "Alice (201): 99.0" in captured.out
+
+
 def test_edit_invalid_id(monkeypatch, capsys, test_instructor):
     # Act & Arrange
     responses = iter([str(test_instructor["id"]), 'light', test_instructor["courses"][0], '1', 'n', '201', '99', '', '2', 'n', '202', '88', '', 'x', '', 'q']) # Ensure ID is string
-    monkeypatch.setattr('builtins.input', lambda _: next(responses))
+    monkeypatch.setattr('builtins.input', lambda *args, **kwargs: next(responses))
 
     with pytest.raises(SystemExit) as exitInfo:
         main()

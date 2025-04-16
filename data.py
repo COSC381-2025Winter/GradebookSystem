@@ -3,8 +3,10 @@ INSTRUCTORS = {
     101: "Dr. Smith",
     102: "Dr. Johnson",
     103: "Prof. Lee",
-    104: "Dr. Davis"
+    104: "Dr. Davis",
 }
+
+
 
 STUDENTS = {
     201: "Alice",
@@ -51,3 +53,4 @@ ROSTERS = {
     "CS301": [219, 220, 221],
     "CS402": [219, 222, 223]
 }
+

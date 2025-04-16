@@ -1,3 +1,13 @@
+import sys
+import os
+
+# Add the parent directory to sys.path
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.abspath(os.path.join(current_dir, '..'))
+if parent_dir not in sys.path:
+    sys.path.insert(0, parent_dir)
+
+
 from gradebook import Gradebook
 from instructor import Instructor
 from data import ROSTERS, COURSES, STUDENTS
@@ -23,15 +33,35 @@ def main():
     while True:
         clear_screen()
         print("\n--- Gradebook System ---")
-        user_input = input("Enter your Instructor ID (q for quit): ")
-        if user_input.lower() == 'q':
+        
+        clear_screen()
+        user_input = input("Enter your Instructor ID  (q for quit) 0 for new instructor: ")
+        if user_input == 'q' or user_input == 'Q':
             clear_screen()
             print_warning("--- Gradebook System ---\nEnding program...") 
             exit()
+        elif user_input == '0':
+            clear_screen()
+            instructor_name = input("What is the Instructor's name (e.g., Dr. Smith): ").strip()
+            if not instructor_name:
+                print_error("Instructor name cannot be empty")
+                continue
+
+            password = getpass.getpass("Enter a password for the instructor: ").strip()
+            if not password:
+                print_error("Password cannot be empty")
+                continue
+
+            instructor_id = Instructor.add_instructor(instructor_name, password)
+            print_success(f"Instructor '{instructor_name}' registered with ID {instructor_id}")
+            input("Press Enter to continue...")
+
+                
+
         elif not str(user_input).isnumeric():
             print_error("Invalid Instructor ID. Try again. (q for quit)")
             continue
-
+       
         try:
             instructor_id = int(user_input)
         except ValueError:

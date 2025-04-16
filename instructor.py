@@ -46,7 +46,8 @@ class Instructor:
         themed_print(f"\n{current_semester} {current_year}")  # Print semester and year first
         themed_print(f"Welcome {self.name}! Your courses:")  # Then print welcome message
         for cid, cname in self.courses.items():
-            themed_print(f"- {cname} ({cid})")  # Use formatting from winter_semester branch
+            print_information(f"- {cname} ({cid})")
+            themed_print(f"- {cname} ({cid})") # Use formatting from winter_semester branch
 
     # Theme management passthroughs
     def set_theme(self, theme):
@@ -55,35 +56,17 @@ class Instructor:
     def get_theme(self):
         return self.color_theme.get_theme()
 
+    def get_course_code_by_name(self,course_name):
+    # Iterate through the dictionary to find the course with the given name
+        sucess=False
+        for course_code, course_info in COURSES.items():
+            if course_name.lower() in course_info["name"].lower():  # ignores cases when searching
+             sucess =True
+             break
+        if sucess:
+            return course_code # returns the course code
+        
+        return course_name
 
-def add_instructor(name):
-    root_name = os.path.dirname(os.path.abspath(__file__))
-    file_path = os.path.join(root_name, "data.py")
-
-    # Assign a new unique ID
-    new_id = max(INSTRUCTORS.keys()) + 1
-    INSTRUCTORS[new_id] = name
-
-    # Format new instructor dictionary
-    new_instructors_block = "# Sample Data for Instructors and Courses\nINSTRUCTORS = {\n"
-    for iid, iname in sorted(INSTRUCTORS.items()):
-        new_instructors_block += f"    {iid}: \"{iname}\",\n"
-    new_instructors_block += "}"
-
-    # Read and replace the old INSTRUCTORS block
-    with open(file_path, 'r') as f:
-        content = f.read()
-
-    # Use regex to replace the old INSTRUCTORS block
-    updated_content = re.sub(
-        r"# Sample Data for Instructors and Courses\nINSTRUCTORS\s*=\s*\{[^}]*\}",
-        new_instructors_block.strip(),
-        content,
-        flags=re.DOTALL
-    )
-
-    # Write the updated content back
-    with open(file_path, 'w') as f:
-        f.write(updated_content)
-
-    return new_id
+       
+            

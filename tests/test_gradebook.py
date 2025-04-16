@@ -48,7 +48,7 @@ def test_empty_input(empty_grades, capsys, monkeypatch):
 
 def test_negative_grade_input(monkeypatch, capsys):
     inputs = iter([
-        '1',        # Instructor ID
+        '101',        # Instructor ID
         'light',    # Theme input
         'CS101',    # Course ID
         '1',        # Menu option: Add Grade
@@ -85,7 +85,7 @@ def test_negative_grade_input(monkeypatch, capsys):
 
 def test_non_numeric_grade_input(monkeypatch, capsys):
     inputs = iter([
-        '1',        # Instructor ID
+        '101',        # Instructor ID
         'light',    # Theme input
         'CS101',    # Course ID
         '1',        # Add Grade

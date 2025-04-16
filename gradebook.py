@@ -183,7 +183,13 @@ class Gradebook:
         matches = []
         query_str = str(query).lower()
 
-        for student_id in ROSTERS[course_id]:
+        try:
+            roster = ROSTERS[course_id]
+        except KeyError:
+            print_error(f"No roster found for course ID: {course_id}")
+            return
+
+        for student_id in roster:
             student_name = STUDENTS.get(student_id, "Unknown")
             if query_str in student_name.lower() or query == str(student_id):
                 matches.append((student_id, student_name))
@@ -193,14 +199,14 @@ class Gradebook:
             for sid, name in matches:
                 print(f"- {name} (ID: {sid})")
         else:
-            print("No matching students found.")
+            print_error("No matching students found.")
 
     def helper_search_student(self, course_id):
-        """Helper function that prompts and handles student search input"""
-        answer = True
-        while answer:
-            answer = input("Would you like to search for students by ID/name?(y/n): ")
-            if answer.lower() == "y":
+        max_attempts = 3
+        attempts = 0
+        while attempts < max_attempts:
+            answer = input("Would you like to search for students by ID/name? (y/n): ").strip().lower()
+            if answer == "y":
                 while True:
                     clear_screen()
                     print("========Search Student=========")
@@ -209,7 +215,11 @@ class Gradebook:
                         break
                     self.search_student(course_id, query)
                     input("\nPress enter to continue searching or type 'back' in the next prompt.")
-            elif answer.lower() == "n":
+                break  # after search, exit the prompt
+            elif answer == "n":
                 break
             else:
-                print("Invalid input")
+                attempts += 1
+                print_error("Invalid input. Please type 'y' or 'n'.")
+        if attempts >= max_attempts:
+            print_warning("Too many invalid inputs. Skipping search.")

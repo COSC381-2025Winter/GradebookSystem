@@ -1,6 +1,8 @@
 import datetime
 from unittest.mock import patch, Mock
 from main import main
+from instructor import Instructor
+from gradebook import Gradebook
 import pytest
 
 @pytest.fixture
@@ -167,6 +169,52 @@ def test_add_course_invalid_instructor(monkeypatch, capsys):
     assert "Invalid Instructor ID" in captured.out
     assert "Traceback" not in captured.out
 
+def test_sort_courses(monkeypatch, test_instructor):
+
+    # Setup
+    gradebook = Gradebook()
+    course_id = "CS101"
+    gradebook.grades = {
+        course_id: {
+            201: {"grade": 88, "timestamp": None},
+            202: {"grade": 72, "timestamp": None},
+            203: {"grade": 95, "timestamp": None},
+        }
+    }
+
+    # Mock input to simulate 'a' for ascending
+    monkeypatch.setattr("builtins.input", lambda _: "a")
+
+    # Run sort
+    gradebook.sort_courses("a")
+
+    # Extract sorted grades
+    sorted_grades = list(gradebook.grades[course_id].items())
+    grades_values = [entry["grade"] for _, entry in sorted_grades]
+
+    # Check descending order (highest to lowest)
+    assert grades_values == sorted(grades_values, reverse=True)
+
+def test_grades_to_edit(monkeypatch):
+    instructor = Instructor(101)  # Assigned to CS101
+    gradebook = Gradebook()
+
+    inputs = iter([
+        "CS101", "201", "95",     # add_grade inputs
+        "",                       # "Press enter to continue" after add
+        "CS101", "201", "97", "y",# edit_grade inputs
+        ""                        # "Press enter to continue" after edit
+    ])
+    monkeypatch.setattr("builtins.input", lambda _: next(inputs))
+
+    # Add grade for CS101 student
+    gradebook.add_grade(instructor, "CS101", 201, "95")
+
+    # Edit grade (should be within 7 days)
+    gradebook.edit_grade(instructor, "CS101", 201, "97")
+
+    # View grades
+    assert gradebook.grades_to_edit(instructor, "CS101") == True
 
 def test_edit_invalid_id(monkeypatch, capsys, test_instructor):
     # Act & Arrange

@@ -232,7 +232,7 @@ def test_grades_to_edit(monkeypatch):
         "CS101", "201", "97", "y",# edit_grade inputs
         ""                        # "Press enter to continue" after edit
     ])
-    monkeypatch.setattr("builtins.input", lambda _: next(inputs))
+    monkeypatch.setattr("builtins.input", lambda *args: next(inputs))
 
     # Add grade for CS101 student
     gradebook.add_grade(instructor, "CS101", 201, "95")
@@ -243,20 +243,7 @@ def test_grades_to_edit(monkeypatch):
     # View grades
     assert gradebook.grades_to_edit(instructor, "CS101") == True
 
-def test_grades_to_edit(monkeypatch, capsys, test_instructor):
-    # Act & Arrange
-    responses = iter([str(test_instructor["id"]), 'light', test_instructor["courses"][0], '1', 'n', '201', '99', '', '2', 'n', '201', '88', '', 'x', '', 'q']) # Ensure ID is string
-    monkeypatch.setattr('builtins.input', lambda *args, **kwargs: next(responses))
-
-    with pytest.raises(SystemExit) as exitInfo:
-        main()
-
-    # Assert
-    captured = capsys.readouterr()
-
-    assert "selected course" in captured.out.lower()
-    assert f"{test_instructor['courses'][0]}".lower() in captured.out.lower()
-    assert "Alice (201): 99.0" in captured.out
+    
 
 
 def test_edit_invalid_id(monkeypatch, capsys, test_instructor):

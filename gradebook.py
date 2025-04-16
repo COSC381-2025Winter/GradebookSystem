@@ -33,6 +33,7 @@ class Gradebook:
         else:
             self.grades[course_id][student_id] = {"grade": grade, "timestamp": now}
             print_success(f"Grade added for student {student_id}: {grade}")
+            print_success("\nGrade added successfully!")
             print_information("Press enter to continue.")
             input()
 
@@ -51,7 +52,7 @@ class Gradebook:
             delta = now - old_timestamp
 
             if delta.days <= 7:
-                print_warning(f" Current Grade for Student {student_id}: {old_grade}")
+                print_warning(f"Current Grade for Student {student_id}: {old_grade}")
                 confirmation = input("Are you sure you want to change it to {new_grade}? (y/n):").strip().lower()
                 
                 if confirmation == 'y':
@@ -59,12 +60,13 @@ class Gradebook:
                     print_success(f"Grade updated for student {student_id}: {new_grade}")
                 else:
                     print_information("Grade update canceled.")
+                
                 input("Press enter to continue.")
             else:
                 print_error("Error: Grade editing period (7 days) has expired.")
                 input("Press enter to continue.")
         else:
-            print_error("Error: No existing grade found. Use 'add' instead.")
+            print_error("No grade exists for this student. Please use option 1 (Add Grade) to enter a new grade.")
             input("Press enter to continue.")
 
     def view_grades(self, instructor, course_id):
@@ -79,6 +81,7 @@ class Gradebook:
             for student_id, data in self.grades[course_id].items():
                 student_name = STUDENTS[student_id]
                 print_information(f"{student_name} ({student_id}): {data['grade']}")
+            print_success("\nGrades found!\n") # -----------------------------------------------
         else:
             print_warning("No grades have been entered for this course yet.")
         
@@ -99,10 +102,12 @@ class Gradebook:
         # Sort the list alphabetically 
         if arrangement_type == 'd':
             sorted_grades = {course: dict(sorted(students.items(), key=lambda item: item[1]["grade"])) for course, students in self.grades.items()}
+            print_success("\nGrades sorted in descending order!") # --------------------------------
 
         # Reverses the dictionary
         elif arrangement_type == 'a':
             sorted_grades = {course: dict(sorted(students.items(), key=lambda item: item[1]["grade"], reverse=True)) for course, students in self.grades.items()}
+            print_success("\nGrades sorted in ascending order!") # --------------------------------
 
         # Replace the original dictionary with sorted one
         self.grades = sorted_grades
@@ -123,7 +128,7 @@ class Gradebook:
                 print_information(f"{student_name} ({student_id}): {data['grade']}")
             return True
         else:
-            print_warning("No grades have been entered for this course yet. Use 'add' instead")
+            print_warning("No grade exists for this student. Please use option 1 (Add Grade) to enter a new grade.")
             input("Press enter to continue.")
             return False
 

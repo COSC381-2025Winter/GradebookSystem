@@ -54,11 +54,11 @@ def test_gradebookAscending(monkeypatch, capsys):
 
 def test_gradebookEdit(monkeypatch, capsys):
     responses = iter(['101','csrocks','dark','CS101','1','n','201','60.0', '',
-                      '2', 'n', '201', '70.0', '', 'x', '', 'l', '', 'q'])
+                      '2', 'n', '201', '70.0', 'y', '', 'x', '', 'l', '', 'q'])
     monkeypatch.setattr('builtins.input', lambda *args: next(responses))
 
     with pytest.raises(SystemExit) as exitInfo:
         main()
 
     captured = capsys.readouterr()
-    assert "Student grade edited successfully!" in captured.out
+    assert "Grade updated for student" in captured.out

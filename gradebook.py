@@ -45,14 +45,22 @@ class Gradebook:
             return
 
         if course_id in self.grades and student_id in self.grades[course_id]:
+            old_data = self.grades[course_id][student_id]
+            old_grade = old_data["grade"]
             old_timestamp = self.grades[course_id][student_id]["timestamp"]
             now = datetime.datetime.now()
             delta = now - old_timestamp
 
             if delta.days <= 7:
-                self.grades[course_id][student_id] = {"grade": new_grade, "timestamp": now}
-                print_success(f"Grade updated for student {student_id}: {new_grade}")
-                print_success("\nStudent grade edited successfully!") 
+                print_warning(f"Current Grade for Student {student_id}: {old_grade}")
+                confirmation = input("Are you sure you want to change it to {new_grade}? (y/n):").strip().lower()
+                
+                if confirmation == 'y':
+                    self.grades[course_id][student_id] = {"grade": new_grade, "timestamp": now}
+                    print_success(f"Grade updated for student {student_id}: {new_grade}")
+                else:
+                    print_information("Grade update canceled.")
+                
                 input("Press enter to continue.")
             else:
                 print_error("Error: Grade editing period (7 days) has expired.")

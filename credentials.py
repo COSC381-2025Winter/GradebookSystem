@@ -4,5 +4,4 @@ PASSWORDS = {
     103: "algomaster",
     104: "softeng456",
     105: "106",
-    106: "101",
 }

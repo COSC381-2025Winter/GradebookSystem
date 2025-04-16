@@ -13,7 +13,7 @@ def test_quitmsg(monkeypatch, capsys):
 
 # test if instructor is valid and quit
 def test_quitmsg2(monkeypatch, capsys):
-    responses = iter(['101','csrocks','dark','q'])
+    responses = iter(['101','csrocks','dark','l', '', 'q'])
     monkeypatch.setattr('builtins.input', lambda _: next(responses))
 
     with pytest.raises(SystemExit) as exitInfo:
@@ -25,7 +25,7 @@ def test_quitmsg2(monkeypatch, capsys):
 
 # test if successfully found valid course ID, student ID, valid grade
 def test_validinfo(monkeypatch, capsys):
-    responses = iter(['101','csrocks','dark','CS101','1','n','201','50.0', '','3', '', 'x','','q'])
+    responses = iter(['101','csrocks','dark','CS101','1','n','201','50.0', '','3', '', 'x','','l', '', 'q'])
     monkeypatch.setattr('builtins.input', lambda *args: next(responses))
 
     with pytest.raises(SystemExit) as exitInfo:
@@ -42,7 +42,7 @@ def test_gradebookAscending(monkeypatch, capsys):
     responses = iter(['101','csrocks','dark','CS101',
                       '1','n','201','60.0', '',
                       '4', 'a','4', 'd',
-                      'x','','q'])
+                      'x','','l','', 'q'])
     monkeypatch.setattr('builtins.input', lambda *args: next(responses))
     
     with pytest.raises(SystemExit) as exitInfo:
@@ -54,7 +54,7 @@ def test_gradebookAscending(monkeypatch, capsys):
 
 def test_gradebookEdit(monkeypatch, capsys):
     responses = iter(['101','csrocks','dark','CS101','1','n','201','60.0', '',
-                      '2', 'n', '201', '70.0', '', 'x', '', 'q'])
+                      '2', 'n', '201', '70.0', '', 'x', '', 'l', '', 'q'])
     monkeypatch.setattr('builtins.input', lambda *args: next(responses))
 
     with pytest.raises(SystemExit) as exitInfo:

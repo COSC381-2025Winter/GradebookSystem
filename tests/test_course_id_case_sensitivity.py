@@ -19,10 +19,12 @@ def test_Course_selection_with_lowercase(monkeypatch, capsys, expected_output):
         "x",       # Switch Course
         "",
         "l",       # Logout
-        ""         # Confirm logout
+        "",         # Confirm logout
+        "q"
     ])
     monkeypatch.setattr("builtins.input", lambda _: next(responses))
-    main()
+    with pytest.raises(SystemExit) as exitInfo:
+        main()
     captured = capsys.readouterr()
     assert expected_output.strip().lower() in captured.out.lower()
 
@@ -35,10 +37,12 @@ def test_Course_selection_with_uppercase(monkeypatch, capsys, expected_output):
         "x",       # Switch Course
         "",
         "l",       # Logout
-        ""         # Confirm logout
+        "",         # Confirm logout
+        "q"
     ])
     monkeypatch.setattr("builtins.input", lambda _: next(responses))
-    main()
+    with pytest.raises(SystemExit) as exitInfo:
+        main()
     captured = capsys.readouterr()
     assert expected_output.strip().lower() in captured.out.lower()
 
@@ -51,9 +55,11 @@ def test_Course_selection_with_mixed_input(monkeypatch, capsys, expected_output)
         "x",       # Switch Course
         "",
         "l",       # Logout
-        ""         # Confirm logout
+        "",         # Confirm logout
+        "q"
     ])
     monkeypatch.setattr("builtins.input", lambda _: next(responses))
-    main()
+    with pytest.raises(SystemExit) as exitInfo:
+        main()
     captured = capsys.readouterr()
     assert expected_output.strip().lower() in captured.out.lower()

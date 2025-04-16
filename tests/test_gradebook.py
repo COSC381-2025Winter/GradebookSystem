@@ -51,8 +51,8 @@ def test_empty_input(empty_grades, capsys, monkeypatch):
 
 def test_negative_grade_input(monkeypatch, capsys):
     inputs = iter([
-        '1',        # Instructor ID
-        'light',    # Theme
+        '101',        # Instructor ID
+        'light',    # Theme input
         'CS101',    # Course ID
         '1',        # Add Grade
         'n',        # Skip search
@@ -62,7 +62,8 @@ def test_negative_grade_input(monkeypatch, capsys):
         'x',        # Switch Course
         '',         # Enter after switch
         'l',        # Logout
-        ''          # Enter after logout
+        '',          # Enter after logout
+        'q'
     ])
     monkeypatch.setattr('builtins.input', lambda _: next(inputs))
     monkeypatch.setattr('main.clear_screen', lambda: None)
@@ -78,18 +79,21 @@ def test_negative_grade_input(monkeypatch, capsys):
             print(f"Courses for {self.name}:")
             for cid, cname in self.courses.items():
                 print(f"{cid}: {cname}")
+        def get_course_code_by_name(self, course_name):
+            return course_name
 
     monkeypatch.setattr('main.Instructor', FakeInstructor)
 
-    main()
+    with pytest.raises(SystemExit) as exitInfo:
+        main()
     captured = capsys.readouterr()
     assert "Grade cannot be negative" in captured.out
 
 
 def test_non_numeric_grade_input(monkeypatch, capsys):
     inputs = iter([
-        '1',        # Instructor ID
-        'light',    # Theme
+        '101',        # Instructor ID
+        'light',    # Theme input
         'CS101',    # Course ID
         '1',        # Add Grade
         'n',        # Skip search
@@ -99,7 +103,8 @@ def test_non_numeric_grade_input(monkeypatch, capsys):
         'x',        # Switch Course
         '',         # Enter after switch
         'l',        # Logout
-        ''          # Enter after logout
+        '',          # Enter after logout
+        'q'
     ])
     monkeypatch.setattr('builtins.input', lambda _: next(inputs))
     monkeypatch.setattr('main.clear_screen', lambda: None)
@@ -115,9 +120,12 @@ def test_non_numeric_grade_input(monkeypatch, capsys):
             print(f"Courses for {self.name}:")
             for cid, cname in self.courses.items():
                 print(f"{cid}: {cname}")
+        def get_course_code_by_name(self, course_name):
+            return course_name
 
     monkeypatch.setattr('main.Instructor', FakeInstructor)
+    with pytest.raises(SystemExit) as exitInfo:
+        main()
 
-    main()
     captured = capsys.readouterr()
     assert "Invalid grade format" in captured.out

@@ -44,6 +44,7 @@ class Instructor:
         themed_print(f"\n{current_semester} {current_year}") # Print semester and year first
         themed_print(f"Welcome {self.name}! Your courses:") # Then print welcome message
         for cid, cname in self.courses.items():
+            print_information(f"- {cname} ({cid})")
             themed_print(f"- {cname} ({cid})") # Use formatting from winter_semester branch
 
     # Theme management passthroughs
@@ -52,3 +53,18 @@ class Instructor:
 
     def get_theme(self):
         return self.color_theme.get_theme()
+
+    def get_course_code_by_name(self,course_name):
+    # Iterate through the dictionary to find the course with the given name
+        sucess=False
+        for course_code, course_info in COURSES.items():
+            if course_name.lower() in course_info["name"].lower():  # ignores cases when searching
+             sucess =True
+             break
+        if sucess:
+            return course_code # returns the course code
+        
+        return course_name
+
+       
+            

@@ -53,12 +53,16 @@ def test_matching_student_displayed(monkeypatch, capsys, test_instructor, test_s
     "x",                         # Switch course
     "",                          # Press enter after switch
     "l",                          # Logout
-    ""
-])
+    "",
+    'q'
+    ])
+
+    
     monkeypatch.setattr('builtins.input', lambda *args, **kwargs: next(responses))
 
     # Act
-    main()
+    with pytest.raises(SystemExit) as exitInfo:
+        main()
 
     # Assert
     captured = capsys.readouterr()
@@ -68,11 +72,12 @@ def test_matching_student_displayed(monkeypatch, capsys, test_instructor, test_s
 # test if matching students are displayed after searching for letter "c" that may be apart of multiple students' names (test within edit grade option)
 def test_display_students_containing_letter_match(monkeypatch, capsys, test_instructor, test_student, test_course):
     # Arrange
-    responses = iter([test_instructor["id"], "light", test_course["id"], "2", "Y", "c", "\n", "back", str(test_student["id"][1]), "68", "\n", "x", "\n", "l", ""])
+    responses = iter([test_instructor["id"], "light", test_course["id"], "2", "Y", "c", "\n", "back", str(test_student["id"][1]), "68", "\n", "x", "\n", "l", "", 'q'])
     monkeypatch.setattr('builtins.input', lambda _: next(responses))
 
     # Act
-    main()
+    with pytest.raises(SystemExit) as exitInfo:
+        main()
 
     # Assert
     captured = capsys.readouterr()
@@ -84,11 +89,12 @@ def test_display_students_containing_letter_match(monkeypatch, capsys, test_inst
 # test if no matching students found displays message (test within edit grade option)
 def test_no_matching_students(monkeypatch, capsys, test_instructor, test_student, test_course):
     # Arrange
-    responses = iter([test_instructor["id"], "light", test_course["id"], "2", "y", "zxy", "\n", "back", str(test_student["id"][0]), "99", "\n", "x", "\n", "l", ""])
+    responses = iter([test_instructor["id"], "light", test_course["id"], "2", "y", "zxy", "\n", "back", str(test_student["id"][0]), "99", "\n", "x", "\n", "l", "", 'q'])
     monkeypatch.setattr('builtins.input', lambda _: next(responses))
 
     # Act
-    main()
+    with pytest.raises(SystemExit) as exitInfo:
+        main()
 
     # Assert
     captured = capsys.readouterr()

@@ -20,12 +20,22 @@ class Gradebook:
         now = datetime.datetime.now()
 
         if student_id in self.grades[course_id]:
-            print_error("Error: Grade already exists. Use 'edit' instead.")
-            input("Press enter to continue.")
+            option = input("Grade already exists. Do you want to edit it? (Y/N): ")
+            if option.upper() == "Y":  # 'option' determines whether to update an existing grade.
+                self.grades[course_id][student_id] = {
+                    "grade": grade,
+                    "timestamp": now
+}
+
+                print_success(f"Grade updated for student {student_id}: {grade}")
+            else:
+                print_information("Grade not updated.")
         else:
             self.grades[course_id][student_id] = {"grade": grade, "timestamp": now}
             print_success(f"Grade added for student {student_id}: {grade}")
-            input("Press enter to continue.")
+            print_success("\nGrade added successfully!")
+            print_information("Press enter to continue.")
+            input()
 
     def edit_grade(self, instructor, course_id, student_id, new_grade):
         """Edits an existing grade but only within 7 days of the first entry"""
@@ -42,12 +52,13 @@ class Gradebook:
             if delta.days <= 7:
                 self.grades[course_id][student_id] = {"grade": new_grade, "timestamp": now}
                 print_success(f"Grade updated for student {student_id}: {new_grade}")
+                print_success("\nStudent grade edited successfully!") 
                 input("Press enter to continue.")
             else:
                 print_error("Error: Grade editing period (7 days) has expired.")
                 input("Press enter to continue.")
         else:
-            print_error("Error: No existing grade found. Use 'add' instead.")
+            print_error("No grade exists for this student. Please use option 1 (Add Grade) to enter a new grade.")
             input("Press enter to continue.")
 
     def view_grades(self, instructor, course_id):
@@ -62,6 +73,7 @@ class Gradebook:
             for student_id, data in self.grades[course_id].items():
                 student_name = STUDENTS[student_id]
                 print_information(f"{student_name} ({student_id}): {data['grade']}")
+            print_success("\nGrades found!\n") # -----------------------------------------------
         else:
             print_warning("No grades have been entered for this course yet.")
         
@@ -82,10 +94,12 @@ class Gradebook:
         # Sort the list alphabetically 
         if arrangement_type == 'd':
             sorted_grades = {course: dict(sorted(students.items(), key=lambda item: item[1]["grade"])) for course, students in self.grades.items()}
+            print_success("\nGrades sorted in descending order!") # --------------------------------
 
         # Reverses the dictionary
         elif arrangement_type == 'a':
             sorted_grades = {course: dict(sorted(students.items(), key=lambda item: item[1]["grade"], reverse=True)) for course, students in self.grades.items()}
+            print_success("\nGrades sorted in ascending order!") # --------------------------------
 
         # Replace the original dictionary with sorted one
         self.grades = sorted_grades
@@ -106,7 +120,7 @@ class Gradebook:
                 print_information(f"{student_name} ({student_id}): {data['grade']}")
             return True
         else:
-            print_warning("No grades have been entered for this course yet. Use 'add' instead")
+            print_warning("No grade exists for this student. Please use option 1 (Add Grade) to enter a new grade.")
             input("Press enter to continue.")
             return False
 

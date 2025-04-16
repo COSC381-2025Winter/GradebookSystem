@@ -39,12 +39,14 @@ def test_show_names_when_adding_grade(monkeypatch, capsys, test_instructor, test
     "",          # Press enter after switch
     "l",         # Logout
     "",          # ✅ Press enter after logout prompt (this was missing)
+    'q'
 ])
-    monkeypatch.setattr("builtins.input", lambda _: next(responses))
+    monkeypatch.setattr("builtins.input", lambda *args, **kwargs: next(responses))
     monkeypatch.setattr("util.clear_screen", lambda: None)
 
     # Catch system exit at the end of main loop
-    main()
+    with pytest.raises(SystemExit) as exitInfo:
+        main()
 
     captured = capsys.readouterr()
 

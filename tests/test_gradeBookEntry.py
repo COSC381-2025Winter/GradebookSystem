@@ -24,13 +24,15 @@ def test_empty_grade(monkeypatch, capsys, test_instructor):
         "x",                         # Switch course
         "",                          # Enter after switch
         "l",                         # Logout
-        ""                           # Enter after logout
+        "",                           # Enter after logout
+        "q"
     ])
-    monkeypatch.setattr('builtins.input', lambda _: next(responses))
+    monkeypatch.setattr('builtins.input', lambda *args, **kwargs: next(responses))
     monkeypatch.setattr('main.clear_screen', lambda: None)
 
     # Act
-    main()
+    with pytest.raises(SystemExit) as exitInfo:
+        main()
     captured = capsys.readouterr()
 
     # Assert

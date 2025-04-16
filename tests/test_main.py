@@ -21,7 +21,8 @@ def test_logout_on_course_id_input(monkeypatch, capsys, logout_input):
     inputs = iter(['101', 'light', logout_input, '', 'q'])
     monkeypatch.setattr('builtins.input', lambda _: next(inputs))
 
-    main()
+    with pytest.raises(SystemExit) as exitInfo:
+        main()
 
     captured = capsys.readouterr()
     assert "logging out" in captured.out.lower()
@@ -40,9 +41,11 @@ def test_login_with_valid_id(monkeypatch, capsys, test_instructor):
     mock_datetime = Mock()
     mock_datetime.now.return_value = datetime.datetime(2024, 9, 15)
     monkeypatch.setattr('instructor.datetime.datetime', mock_datetime)
-    responses = iter([str(test_instructor["id"]), 'light', 'l', ''])
+    responses = iter([str(test_instructor["id"]), 'light', 'l', '', 'q'])
     monkeypatch.setattr('builtins.input', lambda _: next(responses))
-    main()
+
+    with pytest.raises(SystemExit) as exitInfo:
+        main()
     captured = capsys.readouterr()
     assert "fall 2024" in captured.out.lower()
     assert test_instructor["name"].lower() in captured.out.lower()
@@ -56,34 +59,42 @@ def test_login_with_mocked_dates(monkeypatch, capsys, test_instructor, date, exp
     mock_datetime = Mock()
     mock_datetime.now.return_value = date
     monkeypatch.setattr('instructor.datetime.datetime', mock_datetime)
-    responses = iter([str(test_instructor["id"]), 'light', 'l', ''])
+    responses = iter([str(test_instructor["id"]), 'light', 'l', '', 'q'])
     monkeypatch.setattr('builtins.input', lambda _: next(responses))
-    main()
+
+    with pytest.raises(SystemExit) as exitInfo:
+        main()
     captured = capsys.readouterr()
     assert expected in captured.out.lower()
 
 # --- COURSE SELECTION TESTS ---
 
 def test_select_invalid_course(monkeypatch, capsys, test_instructor):
-    responses = iter([str(test_instructor["id"]), 'light', test_instructor["invalid_course"], 'l', ''])
+    responses = iter([str(test_instructor["id"]), 'light', test_instructor["invalid_course"], 'l', '', 'q'])
     monkeypatch.setattr('builtins.input', lambda _: next(responses))
-    main()
+
+    with pytest.raises(SystemExit) as exitInfo:
+        main()
     captured = capsys.readouterr()
     assert 'invalid course id' in captured.out.lower()
 
 def test_select_valid_course(monkeypatch, capsys, test_instructor):
-    responses = iter([str(test_instructor["id"]), 'light', test_instructor["courses"][0], 'x', '', 'l', ''])
+    responses = iter([str(test_instructor["id"]), 'light', test_instructor["courses"][0], 'x', '', 'l', '', 'q'])
     monkeypatch.setattr('builtins.input', lambda _: next(responses))
-    main()
+
+    with pytest.raises(SystemExit) as exitInfo:
+        main()
     captured = capsys.readouterr()
     assert "selected course" in captured.out.lower()
 
 # --- GRADE & SORT TESTS ---
 
 def test_check_empty_string(monkeypatch, capsys):
-    responses = iter(['101', 'light', 'CS101', '1', 'n', '', '201', 'A', '', 'x', '', 'l', ''])
+    responses = iter(['101', 'light', 'CS101', '1', 'n', '', '201', 'A', '', 'x', '', 'l', '', 'q'])
     monkeypatch.setattr('builtins.input', lambda _: next(responses))
-    main()
+    
+    with pytest.raises(SystemExit) as exitInfo:
+        main()
     captured = capsys.readouterr()
     assert "you must enter a student id" in captured.out.lower()
 
@@ -105,30 +116,45 @@ def test_sort_courses(mocker, test_instructor):
     ])
     mock_sort_courses = mocker.patch('main.Gradebook.sort_courses')
     
-    main()
+    with pytest.raises(SystemExit) as exitInfo:
+        main()
     
     mock_sort_courses.assert_any_call('a')  # or assert_called_once_with if you’re sure
 
 def test_grades_to_edit(monkeypatch, capsys, test_instructor):
+    # Act & Arrange
     responses = iter([
         str(test_instructor["id"]), 'light', test_instructor["courses"][0],
         '1', 'n', '201', '99', '',
         '2', 'n', '201', '88', '',
-        'x', '', 'l', ''
+        'x', '', 'l', '', 'q'
     ])
-    monkeypatch.setattr('builtins.input', lambda _: next(responses))
-    main()
+    monkeypatch.setattr('builtins.input', lambda *args, **kwargs: next(responses))
+
+    with pytest.raises(SystemExit) as exitInfo:
+        main()
+
+    # Assert
     captured = capsys.readouterr()
-    assert "alice (201): 99.0" in captured.out.lower()
+
+    assert "selected course" in captured.out.lower()
+    assert f"{test_instructor['courses'][0]}".lower() in captured.out.lower()
+    assert "Alice (201): 99.0" in captured.out
+
 
 def test_edit_invalid_id(monkeypatch, capsys, test_instructor):
+    # Act & Arrange
     responses = iter([
         str(test_instructor["id"]), 'light', test_instructor["courses"][0],
         '1', 'n', '201', '99', '',
         '2', 'n', '202', '88', '',
-        'x', '', 'l', ''
+        'x', '', 'l', '', 'q'
     ])
-    monkeypatch.setattr('builtins.input', lambda _: next(responses))
-    main()
+    monkeypatch.setattr('builtins.input', lambda *args, **kwargs: next(responses))
+
+    with pytest.raises(SystemExit) as exitInfo:
+        main()
+
+    # Assert
     captured = capsys.readouterr()
-    assert "no existing grade found" in captured.out.lower()
+    assert "No grade exists for this student. Please use option 1 (Add Grade) to enter a new grade." in captured.out
